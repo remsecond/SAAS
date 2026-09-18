@@ -2,9 +2,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
-const {createServer,hashPasscode,readConfig,validateSnapshot} = require('./server.cjs');
-const passwords = {max:crypto.randomBytes(24).toString('hex'),adrian:crypto.randomBytes(24).toString('hex')};
-const env = {HALLWAY_SESSION_SECRET:crypto.randomBytes(32).toString('hex'),HALLWAY_MAX_PASSCODE_HASH:hashPasscode(passwords.max),HALLWAY_ADRIAN_PASSCODE_HASH:hashPasscode(passwords.adrian)};
+const {createServer,readConfig,validateSnapshot} = require('./server.cjs');
+const env = {HALLWAY_SESSION_SECRET:crypto.randomBytes(32).toString('hex')};
 async function app(t) {
   let time=Date.now();
   const server=createServer({env,now:()=>time,sessionTtl:10000});
@@ -12,13 +11,12 @@ async function app(t) {
   t.after(()=>new Promise(resolve=>server.close(resolve)));
   const base=`http://127.0.0.1:${server.address().port}`;
   const request=(path,options={})=>fetch(base+path,{redirect:'manual',...options});
-  const login=(studentId,passcode=passwords[studentId],headers={})=>request('/login',{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({studentId,passcode})});
+  const login=(studentId,headers={})=>request('/login',{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({studentId})});
   return {request,login,advance:()=>{time+=11000}};
 }
 const cookie = response => response.headers.get('set-cookie').split(';')[0];
 test('configuration fails closed and never includes configuration contents in errors',()=>{
   assert.throws(()=>readConfig({}),/secret/);
-  assert.throws(()=>readConfig({...env,HALLWAY_MAX_PASSCODE_HASH:'invalid'}),/hashes/);
   assert.throws(()=>readConfig({...env,HALLWAY_SNAPSHOTS_JSON:'SECRET INVALID'}),{message:'Invalid protected snapshot configuration'});
 });
 test('unauthenticated pages/data blocked; static assets and fixture files unavailable',async t=>{
@@ -27,10 +25,9 @@ test('unauthenticated pages/data blocked; static assets and fixture files unavai
   assert.equal((await request('/api/snapshot')).status,401);
   for(const path of ['/fixtures.cjs','/public/index.html','/.env','/server.cjs','/snapshots/max.json']) assert.equal((await request(path)).status,404);
 });
-test('wrong passcode and identity rejected; session controls student despite tampered requests',async t=>{
+test('invalid identity rejected; session controls student despite tampered requests',async t=>{
   const {request,login}=await app(t);
-  assert.equal((await login('max',passwords.adrian)).status,401);
-  assert.equal((await login('other',passwords.max)).status,401);
+  assert.equal((await login('other')).status,401);
   const maxLogin=await login('max');assert.equal(maxLogin.status,303);
   const set=maxLogin.headers.get('set-cookie');for(const flag of ['Secure','HttpOnly','SameSite=Strict','Path=/','Max-Age=10'])assert(set.includes(flag));
   const maxCookie=cookie(maxLogin),adrianCookie=cookie(await login('adrian'));
@@ -49,21 +46,21 @@ test('wrong passcode and identity rejected; session controls student despite tam
 test('expiration, logout, and session rotation invalidate earlier session',async t=>{
   const {request,login,advance}=await app(t);
   const old=cookie(await login('max'));
-  const replacement=cookie(await login('max',passwords.max,{Cookie:old}));
+  const replacement=cookie(await login('max',{Cookie:old}));
   assert.equal((await request('/api/snapshot',{headers:{Cookie:old}})).status,401);
   const out=await request('/logout',{method:'POST',headers:{Cookie:replacement}});assert.equal(out.status,303);assert(out.headers.get('set-cookie').includes('Max-Age=0'));
   assert.equal((await request('/api/snapshot',{headers:{Cookie:replacement}})).status,401);
   const expiring=cookie(await login('adrian'));advance();
   assert.equal((await request('/api/snapshot',{headers:{Cookie:expiring}})).status,401);
 });
-test('rate limits reject attempts, including forged forwarding headers',async t=>{
+test('rate limits reject login floods, including forged forwarding headers',async t=>{
   const {login}=await app(t);
-  for(let i=0;i<10;i++) assert.equal((await login('max','wrong',{'X-Forwarded-For':'192.0.2.'+i})).status,401);
+  for(let i=0;i<10;i++) assert.equal((await login('max',{'X-Forwarded-For':'192.0.2.'+i})).status,303);
   const limited=await login('max');assert.equal(limited.status,429);assert.equal(limited.headers.get('retry-after'),'900');
 });
 test('cross-origin mutations and oversized bodies rejected',async t=>{
   const {request,login}=await app(t);
-  assert.equal((await login('max',passwords.max,{Origin:'https://evil.example'})).status,403);
+  assert.equal((await login('max',{Origin:'https://evil.example'})).status,403);
   assert.equal((await request('/logout',{method:'POST',headers:{'Sec-Fetch-Site':'cross-site'}})).status,403);
   assert.equal((await request('/login',{method:'POST',body:'x'.repeat(5000)})).status,413);
 });

@@ -9,9 +9,9 @@
 
 ## Access
 
-- Private login notes are stored in `private-data/access-hLfCFq/`.
-- Keep that directory out of Git and share each student's note privately.
-- Run `npm run setup-access` only when intentionally provisioning a new set of access credentials; it creates a new directory and never overwrites an existing one.
+- The fictional demo requires no passcode. Choose Max or Adrian and click **Open my snapshot**.
+- The ignored `private-data/access-hLfCFq/runtime.env` contains the session-signing secret.
+- Run `npm run setup-access` only when intentionally provisioning a new session secret; it creates a new directory and never overwrites an existing one.
 - The app uses fictional fixture data unless `HALLWAY_SNAPSHOTS_JSON` is supplied with reviewed, ownership-verified snapshots.
 
 ## Checks

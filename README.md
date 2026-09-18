@@ -17,22 +17,20 @@ npm run check
 npm run setup-access
 ```
 
-Setup writes a fresh ignored `private-data/access-*` directory containing `runtime.env` (hashes and session secret) and separate student access notes. It never prints values or overwrites an earlier set. Windows access is restricted to the current user; Unix permissions are 0700/0600. Keep these files outside shared folders. Share each note privately after adding the verified hosted URL. Never put credentials in URLs, screenshots, repository files, or logs.
+Setup writes a fresh ignored `private-data/access-*` directory containing `runtime.env` (the session secret) and separate student access notes. It never prints the secret or overwrites an earlier set. Windows access is restricted to the current user; Unix permissions are 0700/0600. Keep these files outside shared folders.
 
-Load local configuration with `node --env-file=private-data/access-<generated>/runtime.env server.cjs`, or set values through Replit's Secrets and published-app secrets. `npm start` uses its environment. Missing/invalid configuration leaves the app locked. Secure cookies require HTTPS for browser use. Automated tests exercise HTTP directly with ephemeral credentials and verify cookie attributes.
+Load local configuration with `node --env-file=private-data/access-<generated>/runtime.env server.cjs`, or set values through Replit's Secrets and published-app secrets. `npm start` uses its environment. Missing/invalid configuration leaves the app locked. Secure cookies require HTTPS for browser use. Automated tests exercise HTTP directly and verify cookie attributes.
 
 | Protected setting | Purpose |
 | --- | --- |
-| `HALLWAY_MAX_PASSCODE_HASH` | Max's independent scrypt hash |
-| `HALLWAY_ADRIAN_PASSCODE_HASH` | Adrian's independent scrypt hash |
 | `HALLWAY_SESSION_SECRET` | Random session signing secret, at least 32 bytes |
 | `HALLWAY_SNAPSHOTS_JSON` | Optional JSON bundles keyed `max` and `adrian`; omitted identities use fictional fixtures |
 
-Use setup for `scrypt$<hex salt>$<hex derived key>` hashes. Plaintext passcodes are never runtime settings. Rotate access by replacing the hashes/session secret and restarting or republishing.
+Use setup to generate a session secret. Rotate sessions by replacing the secret and restarting or republishing.
 
 ## Security boundary
 
-The server gates both the page and `/api/snapshot`. Its verified session chooses the student; parameters cannot select another bundle. Cookies are Secure, HttpOnly, SameSite, time-limited, and revoked on logout. Attempts are limited; personal responses use `Cache-Control: no-store`. No public route exposes snapshots, source files, or configuration. No service worker is installed. School text is escaped before rendering.
+The server gates both the page and `/api/snapshot`. The student chosen on the sign-in screen is stored in the signed session; parameters cannot select another bundle. This fictional demo does not require a passcode. Cookies are Secure, HttpOnly, SameSite, time-limited, and revoked on logout. Attempts are limited; personal responses use `Cache-Control: no-store`. No public route exposes snapshots, source files, or configuration. No service worker is installed. School text is escaped before rendering.
 
 Sessions and attempt counters are in memory. **Run one instance only.** Set Autoscale maximum servers to 1. A Reserved VM is another option only after reviewing actual account cost. Restarts, scale-to-zero, and republishing invalidate sessions and reset counters. This is a small demo, not multi-instance authentication infrastructure.
 
@@ -42,7 +40,7 @@ Sessions and attempt counters are in memory. **Run one instance only.** Set Auto
 2. Configure Secrets and published-app secrets. Start with fictional fixtures; leave `HALLWAY_SNAPSHOTS_JSON` unset.
 3. Run checks and start the app. Test the gate and both logins in the HTTPS preview.
 4. Use server hosting, never Static. Run `npm start`; internal port 3000, external port 80; maximum one instance. Read the actual cost and obtain approval for any new paid commitment.
-5. Publish and open the actual hosted HTTPS URL. Verify signed-out rejection, both identities, wrong passcodes, logout, and tampered student parameters. Check narrow widths, enlarged text, focus and navigation.
+5. Publish and open the actual hosted HTTPS URL. Verify signed-out rejection, both identities, logout, and tampered student parameters. Check narrow widths, enlarged text, focus and navigation.
 6. Record URL and exact deployed commit in HANDOFF.md, update private access notes, and share privately. Preview or git push is not deployment verification.
 
 [Replit deployment types](https://docs.replit.com/features/publishing/deployment-types) documents hosting choices and maximum-server configuration. Check account-specific prices in the publishing screen.
@@ -57,7 +55,7 @@ Prepare and review bundles outside Git. Inject reviewed JSON into protected `HAL
 
 Only the authorized snapshot is loaded. Filters update immediately; tile/list views, Home, nested Back, themes, text sizing, and navigation-local drafts/checklists remain. Reload/logout resets local work. Source caveats appear beside affected content; prepared examples are labeled. Trends & Learnings has no history or fabricated analysis. No messages are sent or school records changed.
 
-Checks include syntax/privacy checks, HTTP security tests, simulated-DOM UI logic, and private credential provisioning. Simulated DOM tests do not establish rendered layout, browser cookies, actual keyboard accessibility, or iPhone usability. Browser/device verification remains required before distribution.
+Checks include syntax/privacy checks, HTTP security tests, simulated-DOM UI logic, and private session-secret provisioning. Simulated DOM tests do not establish rendered layout, browser cookies, actual keyboard accessibility, or iPhone usability. Browser/device verification remains required before distribution.
 
 ## Updating code
 

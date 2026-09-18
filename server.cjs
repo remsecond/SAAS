@@ -3,14 +3,9 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { promisify } = require('node:util');
-const scrypt = promisify(crypto.scrypt);
 const STUDENTS = ['max', 'adrian'];
 const COOKIE = '__Host-hallway';
 const TTL = 8 * 60 * 60 * 1000;
-function hashPasscode(passcode, salt = crypto.randomBytes(16).toString('hex')) {
-  return `scrypt$${salt}$${crypto.scryptSync(passcode, salt, 64).toString('hex')}`;
-}
 function validateSnapshot(bundle, studentId) {
   const fail = () => { throw new Error('Invalid protected snapshot configuration'); };
   const snap = bundle?.snapshot;
@@ -64,13 +59,6 @@ function validateSnapshot(bundle, studentId) {
 }
 function readConfig(env) {
   if (typeof env.HALLWAY_SESSION_SECRET !== 'string' || Buffer.byteLength(env.HALLWAY_SESSION_SECRET) < 32) throw new Error('Protected session secret is missing or invalid');
-  const hashes = {};
-  for (const student of STUDENTS) {
-    const hash = env[`HALLWAY_${student.toUpperCase()}_PASSCODE_HASH`];
-    if (!/^scrypt\$[a-f0-9]{32,128}\$[a-f0-9]{128}$/.test(hash || '')) throw new Error('Protected passcode hashes are missing or invalid');
-    hashes[student] = hash.split('$');
-  }
-  if (env.HALLWAY_MAX_PASSCODE_HASH === env.HALLWAY_ADRIAN_PASSCODE_HASH) throw new Error('Distinct passcode hashes are required');
   let snapshots = {};
   if (env.HALLWAY_SNAPSHOTS_JSON) {
     try {
@@ -79,14 +67,13 @@ function readConfig(env) {
       for (const student of Object.keys(snapshots)) validateSnapshot(snapshots[student], student);
     } catch { throw new Error('Invalid protected snapshot configuration'); }
   }
-  return { hashes, secret: env.HALLWAY_SESSION_SECRET, snapshots };
+  return { secret: env.HALLWAY_SESSION_SECRET, snapshots };
 }
-const loginPage = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hallway · Sign in</title><style>body{font:1.1rem system-ui;background:#141410;color:#f5f3e9;margin:auto;padding:2rem 1rem;max-width:26rem}label,input,select,button{display:block;width:100%;box-sizing:border-box;margin:.7rem 0;font:inherit}input,select,button{padding:.8rem;border-radius:.6rem}button{background:#edb66a;color:#171712;border:0}p{line-height:1.5}a{color:#edb66a}</style><h1>Hallway</h1><p>Know what you're walking into.</p><p>A frozen school snapshot. No live updates.</p><form method="post" action="/login"><label for="studentId">Your name</label><select name="studentId" id="studentId"><option value="max">Max</option><option value="adrian">Adrian</option></select><label for="passcode">Your demo passcode</label><input id="passcode" name="passcode" type="password" autocomplete="current-password" required maxlength="256"><button>Open my snapshot</button></form><p>Use your own passcode to open your snapshot.</p></html>`;
+const loginPage = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hallway · Sign in</title><style>body{font:1.1rem system-ui;background:#141410;color:#f5f3e9;margin:auto;padding:2rem 1rem;max-width:26rem}label,select,button{display:block;width:100%;box-sizing:border-box;margin:.7rem 0;font:inherit}select,button{padding:.8rem;border-radius:.6rem}button{background:#edb66a;color:#171712;border:0}p{line-height:1.5}a{color:#edb66a}</style><h1>Hallway</h1><p>Know what you're walking into.</p><p>A frozen school snapshot. No live updates.</p><form method="post" action="/login"><label for="studentId">Your name</label><select name="studentId" id="studentId"><option value="max">Max</option><option value="adrian">Adrian</option></select><button>Open my snapshot</button></form></html>`;
 function createServer({ env = process.env, now = Date.now, sessionTtl = TTL, getFixture } = {}) {
   const config = readConfig(env);
   const fixture = getFixture || require('./fixtures.cjs').getFixture;
   const sessions = new Map(), attempts = new Map();
-  let activeLogins = 0;
   let globalAttempts = {count:0,until:now()+15*60*1000};
   const sign = token => crypto.createHmac('sha256', config.secret).update(token).digest('hex');
   function session(req) {
@@ -125,20 +112,15 @@ function createServer({ env = process.env, now = Date.now, sessionTtl = TTL, get
         for (const [key, entry] of sessions) if (entry.expires <= now()) sessions.delete(key);
         let limit = attempts.get(ip);
         if (!limit) { limit = { count:0, until:now()+15*60*1000 }; attempts.set(ip,limit); }
-        if (limit.count >= 10 || globalAttempts.count >= 100 || activeLogins >= 4) return reply(res,429,'Too many attempts. Try again in 15 minutes.',{'Retry-After':'900'});
+        if (limit.count >= 10 || globalAttempts.count >= 100) return reply(res,429,'Too many attempts. Try again in 15 minutes.',{'Retry-After':'900'});
         limit.count++;
         globalAttempts.count++;
         let body = '';
         for await (const chunk of req) { body += chunk; if (Buffer.byteLength(body) > 4096) return reply(res,413,'Request too large'); }
         let values;
         try { values = (req.headers['content-type'] || '').includes('application/json') ? JSON.parse(body) : Object.fromEntries(new URLSearchParams(body)); } catch { return reply(res,400,'Invalid request'); }
-        const student = values?.studentId, passcode = values?.passcode;
-        if (!STUDENTS.includes(student) || typeof passcode !== 'string' || !passcode || passcode.length > 256) return reply(res,401,'Name or passcode was not accepted. <a href="/login">Try again</a>');
-        if (activeLogins >= 4) return reply(res,429,'Too many attempts. Try again in 15 minutes.',{'Retry-After':'900'});
-        activeLogins++;
-        let valid;
-        try { const [, salt, expected] = config.hashes[student]; valid = crypto.timingSafeEqual(await scrypt(passcode,salt,64), Buffer.from(expected,'hex')); } finally { activeLogins--; }
-        if (!valid) return reply(res,401,'Name or passcode was not accepted. <a href="/login">Try again</a>');
+        const student = values?.studentId;
+        if (!STUDENTS.includes(student)) return reply(res,401,'Name was not accepted. <a href="/login">Try again</a>');
         const old = session(req); if (old) sessions.delete(old.token);
         if (sessions.size >= 1000) return reply(res,503,'Please try again later.');
         const token = crypto.randomBytes(32).toString('hex');
@@ -162,4 +144,4 @@ if (require.main === module) {
   try { createServer().listen(Number(process.env.PORT || 3000),'0.0.0.0',()=>console.log('Hallway access gate ready')); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { createServer, hashPasscode, validateSnapshot, readConfig };
+module.exports = { createServer, validateSnapshot, readConfig };
