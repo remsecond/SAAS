@@ -1,0 +1,1 @@
+- [Preview proxy origin checks](preview-proxy-origin-checks.md) — browser-facing Origin may differ from the internal Host; use Fetch Metadata to preserve same-origin form posts.

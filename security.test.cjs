@@ -61,6 +61,7 @@ test('rate limits reject login floods, including forged forwarding headers',asyn
 test('cross-origin mutations and oversized bodies rejected',async t=>{
   const {request,login}=await app(t);
   assert.equal((await login('max',{Origin:'https://evil.example'})).status,403);
+  assert.equal((await login('max',{Origin:'https://browser-facing-preview.example','Sec-Fetch-Site':'same-origin'})).status,303);
   assert.equal((await request('/logout',{method:'POST',headers:{'Sec-Fetch-Site':'cross-site'}})).status,403);
   assert.equal((await request('/login',{method:'POST',body:'x'.repeat(5000)})).status,413);
 });

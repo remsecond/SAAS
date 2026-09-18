@@ -93,6 +93,7 @@ function createServer({ env = process.env, now = Date.now, sessionTtl = TTL, get
   }
   function sameOrigin(req) {
     if (req.headers['sec-fetch-site'] === 'cross-site') return false;
+    if (req.headers['sec-fetch-site'] === 'same-origin') return true;
     if (!req.headers.origin) return true;
     try { const origin = new URL(req.headers.origin); return origin.host === req.headers.host && (origin.protocol === 'https:' || (origin.protocol === 'http:' && ['localhost','127.0.0.1','[::1]'].includes(origin.hostname))); } catch { return false; }
   }
