@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.*
+!.env.example
+private-data/
+snapshots/
+*.log
+.DS_Store

@@ -1,0 +1,8 @@
+{
+  "name": "hallway-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hallway interface prototype with fictional data",
+  "scripts": { "start": "node server.cjs", "check": "node check.cjs" },
+  "engines": { "node": ">=20" }
+}
