@@ -1,22 +1,41 @@
-# Project handoff
+# Hallway sprint handoff
 
-## Current milestone
+## Release status — September 18, 2026
 
-GitHub bridge initialized from the existing Hallway interface. All published fixtures are fictionalized. Original personal prototype and source documents remain outside this repository.
+**Not deployed or verified in Replit. No hosted URL to distribute yet.**
 
-## Next bounded work
+The clean starting checkout and remote HEAD were `8bf412a`. This sprint implements a protected fictional demo and adds security/UI checks. The revision containing this handoff is a deployment candidate, not a deployed revision. Resolve its exact commit with `git rev-parse HEAD` after pulling it.
 
-1. Confirm Replit import/run works.
-2. Implement per-student server-side passcodes and secure sessions, with brute-force limits and isolation tests.
-3. Capture and verify one bounded snapshot per student outside Git.
-4. Explain missing values at point of use; never equate failed retrieval with no work due.
-5. Test on actual iPhones before distributing personal demo links.
+Browser inventory worked in the earlier connection check. During the sprint, opening Replit returned `Transport closed`; repeated inventory and reset calls failed identically. No Replit project inventory, sign-in, import, secret configuration, pricing review, publication, or hosted gate verification was possible. The user has been asked to reconnect the integration. No paid commitment was made. The prior Sites preview remains unchanged.
 
-## Constraints
+## Student data
 
-- Do not broaden audience or add school data without the correct protection.
-- Do not rebuild the interface from scratch or introduce a live Canvas integration for the frozen demo.
-- No student signs in as their parent.
-- Preserve drafts across in-app navigation; resetting on reload is acceptable when explained.
-- No AI calls until separately scoped and configured.
-- A Git push is not a confirmed Replit publication.
+Max: fictional fixture only. Adrian: fictional fixture only. No verified personal bundle was found in the supplied workspace, and fresh source access was blocked by the browser transport. See [SNAPSHOT-INVENTORY.md](SNAPSHOT-INVENTORY.md). Reported audit examples were not converted into verified records.
+
+## Implemented behavior
+
+- Server-side student sessions and protected snapshot delivery; independent passcode hashes and secret configuration, logout, expiry, attempt limits, and no-store responses.
+- Shared UI separated from fictional fixtures, escaped source content, clear identity, frozen clock and honest capture labels.
+- Immediate filters, tile/list views, Home/nested Back, local draft/checklist retention, themes and text sizing.
+- Visible source caveats and unavailable states, labeled prepared examples, and a Trends & Learnings placeholder with no collected history.
+- Private access-file provisioning, without printing secret values. Permanent demo credentials have not been generated or installed.
+
+## Testing and limits
+
+`npm run check` passed: static/syntax and fixture separation checks plus 19 tests (7 HTTP security, 11 simulated-DOM interaction, 1 temporary credential provisioning). Test credentials exist only for the tests and are not permanent access codes. Independent review identified and corrected a login-concurrency race and incomplete snapshot validation before this result.
+
+No actual browser rendering, browser login cookie flow, narrow-screen visual review, keyboard traversal, Replit hosted verification, or real iPhone test has been completed for this revision. The simulated DOM checks logical focus restoration and navigation; it cannot certify real focus or layout. Do not distribute until hosted verification passes.
+
+Sessions and rate limits are in-memory and require one server instance. Restarts/republishing sign everyone out and reset counters. Keep Replit maximum servers at 1 and document any hosting changes before release.
+
+## Resume in Replit
+
+Use the [README runbook](README.md). Reconnect the browser, inspect for an existing matching project, and have Roberto complete sign-in if needed. Synchronize the tested commit without discarding Replit-only changes. Configure protected secrets and publish fictional fixtures first, with maximum one server. Read the actual cost and ask before any new paid commitment.
+
+Verify the actual HTTPS deployment URL while signed out and under each student's session, including wrong passcodes, isolation, tampered requests, logout, and browser interactions. Record that URL and deployed commit here. Only then add it to each private access note. Have each boy test on his actual iPhone before claiming phone acceptance.
+
+## Updates
+
+Code: review, run checks, commit/push, pull exact revision in Replit, republish, verify hosted URL.
+
+Data: verify ownership, capture timestamp, reference clock, coverage and evidence outside Git; inject the reviewed bundles through protected runtime configuration, republish, and recheck both student boundaries. Never commit snapshots or secrets. No emails/messages, school edits, AI services, or background sync are part of this demo.

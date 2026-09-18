@@ -2,37 +2,63 @@
 
 **Know what you're walking into.**
 
-Phone-first school planning interface. This repository contains fictional UI fixtures only, not real student records. The repository is currently public.
+A phone-first frozen snapshot demo. Both student slots currently use fictional examples. Neither personal snapshot has been verified or installed; see [snapshot inventory](SNAPSHOT-INVENTORY.md).
 
-## Run
+## Deployment status
 
-Node.js 20 or newer. No dependencies are required.
+No Replit deployment or hosted HTTPS URL has been verified. Browser access returned `Transport closed` when opening Replit; inventory retry and session reset also failed. The existing Sites preview was left untouched. GitHub publication is not Replit deployment.
+
+## Run and test
+
+Node.js 20 or newer. No dependencies, database, school connection, AI, or background refresh.
 
 ```
 npm run check
-npm start
+npm run setup-access
 ```
 
-Open http://localhost:3000. The standalone public/index.html can also be opened directly.
+Setup writes a fresh ignored `private-data/access-*` directory containing `runtime.env` (hashes and session secret) and separate student access notes. It never prints values or overwrites an earlier set. Windows access is restricted to the current user; Unix permissions are 0700/0600. Keep these files outside shared folders. Share each note privately after adding the verified hosted URL. Never put credentials in URLs, screenshots, repository files, or logs.
 
-## Replit handoff
+Load local configuration with `node --env-file=private-data/access-<generated>/runtime.env server.cjs`, or set values through Replit's Secrets and published-app secrets. `npm start` uses its environment. Missing/invalid configuration leaves the app locked. Secure cookies require HTTPS for browser use. Automated tests exercise HTTP directly with ephemeral credentials and verify cookie attributes.
 
-Import this GitHub repository into Replit. Run `npm start`; the included server listens on PORT or port 3000. Use that same command when publishing the web app. Review Replit's actual deployment settings and costs before publishing. The .replit file supplies the intended start command and port mapping; the Replit workspace must still be configured and tested.
+| Protected setting | Purpose |
+| --- | --- |
+| `HALLWAY_MAX_PASSCODE_HASH` | Max's independent scrypt hash |
+| `HALLWAY_ADRIAN_PASSCODE_HASH` | Adrian's independent scrypt hash |
+| `HALLWAY_SESSION_SECRET` | Random session signing secret, at least 32 bytes |
+| `HALLWAY_SNAPSHOTS_JSON` | Optional JSON bundles keyed `max` and `adrian`; omitted identities use fictional fixtures |
 
-Pull reviewed GitHub changes into Replit before republishing. A GitHub push alone does not update an existing Replit deployment. No Replit deployment has been created by this repository initialization.
+Use setup for `scrypt$<hex salt>$<hex derived key>` hashes. Plaintext passcodes are never runtime settings. Rotate access by replacing the hashes/session secret and restarting or republishing.
 
-## Current behavior
+## Security boundary
 
-Immediate filters, tile/list views, nested Back, Home, themes, large-text preview, draft retention during the session, and local checklist state. Date/time is frozen. No school connection, AI, analytics or outgoing messages. External resource buttons explain that they are not connected.
+The server gates both the page and `/api/snapshot`. Its verified session chooses the student; parameters cannot select another bundle. Cookies are Secure, HttpOnly, SameSite, time-limited, and revoked on logout. Attempts are limited; personal responses use `Cache-Control: no-store`. No public route exposes snapshots, source files, or configuration. No service worker is installed. School text is escaped before rendering.
 
-## Personal demos — not implemented yet
+Sessions and attempt counters are in memory. **Run one instance only.** Set Autoscale maximum servers to 1. A Reserved VM is another option only after reviewing actual account cost. Restarts, scale-to-zero, and republishing invalidate sessions and reset counters. This is a small demo, not multi-instance authentication infrastructure.
 
-The next phase is separate frozen snapshots protected by a server-side passcode gate. Both page access and data access must be protected. Student identity must come from a verified session, never a client-selected student ID. Passcodes must not appear in source, URLs or browser bundles. Use secure session cookies, hashed passcodes, login attempt limits and logout.
+## Replit publication
 
-Real snapshots must be injected through protected runtime storage/configuration outside Git and outside the public folder. Do not add either boy's data until the access gate and isolation tests pass. A hidden link or client-side password check is not protection.
+1. Inspect existing apps for matching `remsecond/SAAS` before importing a duplicate. Synchronize reviewed GitHub code, preserving any Replit-only work.
+2. Configure Secrets and published-app secrets. Start with fictional fixtures; leave `HALLWAY_SNAPSHOTS_JSON` unset.
+3. Run checks and start the app. Test the gate and both logins in the HTTPS preview.
+4. Use server hosting, never Static. Run `npm start`; internal port 3000, external port 80; maximum one instance. Read the actual cost and obtain approval for any new paid commitment.
+5. Publish and open the actual hosted HTTPS URL. Verify signed-out rejection, both identities, wrong passcodes, logout, and tampered student parameters. Check narrow widths, enlarged text, focus and navigation.
+6. Record URL and exact deployed commit in HANDOFF.md, update private access notes, and share privately. Preview or git push is not deployment verification.
 
-Every unavailable value needs a verified plain-language reason or an honest unknown state. Do not invent school facts to fill the screen. Prepared study examples must be labeled as examples.
+[Replit deployment types](https://docs.replit.com/features/publishing/deployment-types) documents hosting choices and maximum-server configuration. Check account-specific prices in the publishing screen.
 
-## Ownership
+## Replacing snapshots
 
-Codex maintains the implementation; GitHub is the shared source of truth; Replit is the proposed runtime/hosting destination. Keep runtime secrets out of Git. Retain change notes in HANDOFF.md.
+Use `fixtures.cjs` and the parent-folder contract as structural examples. A personal import additionally requires `snapshot.ownership` containing `verified: true`, its matching `studentId`, and a nonempty `evidence` explanation from an actual ownership review. This flag is an operator attestation, not automated proof. Every owned record must match its bundle's student and all references must resolve. Include actual capture time, separate frozen reference time, timezone, declared coverage, and evidence. Distinguish no matching filters, nothing due in a verified scope, not captured, unavailable through the parent view, and unknown reasons. Never infer the reason from a blank field.
+
+Prepare and review bundles outside Git. Inject reviewed JSON into protected `HALLWAY_SNAPSHOTS_JSON`, restart/republish, and retest both identities and signed-out access. Keep fictional fixtures until source verification and protected deployment are complete. Never put private records in public assets, source maps, Git, browser storage, or caches.
+
+## Interface and test limits
+
+Only the authorized snapshot is loaded. Filters update immediately; tile/list views, Home, nested Back, themes, text sizing, and navigation-local drafts/checklists remain. Reload/logout resets local work. Source caveats appear beside affected content; prepared examples are labeled. Trends & Learnings has no history or fabricated analysis. No messages are sent or school records changed.
+
+Checks include syntax/privacy checks, HTTP security tests, simulated-DOM UI logic, and private credential provisioning. Simulated DOM tests do not establish rendered layout, browser cookies, actual keyboard accessibility, or iPhone usability. Browser/device verification remains required before distribution.
+
+## Updating code
+
+Review, run `npm run check`, commit and push. Pull that exact revision in Replit, recheck settings and tests, then republish. Verify the hosted URL and update HANDOFF.md. Keep secrets and records out of commits.

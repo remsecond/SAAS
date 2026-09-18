@@ -1,8 +1,8 @@
 {
   "name": "hallway-demo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Hallway interface prototype with fictional data",
-  "scripts": { "start": "node server.cjs", "check": "node check.cjs" },
+  "description": "Hallway protected frozen snapshot demo",
+  "scripts": { "start": "node server.cjs", "check": "node check.cjs && node --test security.test.cjs ui.test.cjs setup.test.cjs", "setup-access": "node setup.cjs" },
   "engines": { "node": ">=20" }
 }
