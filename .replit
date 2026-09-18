@@ -1,4 +1,5 @@
 run = "npm start"
+modules = ["nodejs-20", "web"]
 
 [deployment]
 # Configure maximum servers = 1 in Publishing settings before release.
@@ -9,3 +10,6 @@ deploymentTarget = "autoscale"
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[nix]
+channel = "stable-25_05"
