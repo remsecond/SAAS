@@ -101,9 +101,9 @@ nav button.active{color:var(--title);border-top:3px solid var(--brand)}
 body[data-theme=default] .st-green,body[data-theme=contrast] .st-green{background:#6fcf73;border-color:#6fcf73}
 body[data-theme=default] .st-amber,body[data-theme=contrast] .st-amber{background:#ffb74d;border-color:#ffb74d}
 body[data-theme=default] .st-excused,body[data-theme=contrast] .st-excused{background:#9fb8d8;border-color:#9fb8d8}
-/* Fixed palette; the slot comes from the course ID only. Collisions are fine: the class label is authoritative. */
-.course-0{--course:#2f5d9e}.course-1{--course:#6d4aa0}.course-2{--course:#11767a}.course-3{--course:#a3336d}
-.course-4{--course:#4a5a6a}.course-5{--course:#3f3fa0}.course-6{--course:#7a5230}.course-7{--course:#1b6f9a}
+/* Fixed ten-color palette; the slot comes from course IDs only. Beyond ten classes colors repeat, and the class label stays authoritative. */
+.course-0{--course:#2f5d9e}.course-1{--course:#6d4aa0}.course-2{--course:#0f7a74}.course-3{--course:#a3336d}.course-4{--course:#4a5a6a}
+.course-5{--course:#7a5230}.course-6{--course:#1f7fb8}.course-7{--course:#8a3b8f}.course-8{--course:#5f6b1a}.course-9{--course:#283f7a}
 .card,.card-edge{--edge:var(--course)}
 body[data-theme=default] .card,body[data-theme=default] .card-edge{--edge:color-mix(in srgb,var(--course) 45%,#fff)}
 body[data-theme=contrast] .card,body[data-theme=contrast] .card-edge{--edge:color-mix(in srgb,var(--course) 30%,#fff)}

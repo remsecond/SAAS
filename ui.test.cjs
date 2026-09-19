@@ -393,11 +393,15 @@ test('with no upcoming dated item, Home says so and still routes to earlier and 
   assert.doesNotMatch(html,/No unfinished work|all caught up|all clear/i);
   assert.doesNotMatch(html,/st-green[^]*Coming up/,'no green summary');
 });
-test('course color comes from the course id alone and survives filters, layout, renames and status changes',async()=>{
+test('course color comes from course ids alone, stays distinct for up to ten classes, and survives filters, layout, renames and status changes',async()=>{
   const ui=await createUI();
   const tone=id=>ui.run(`data.find(d=>d.id===${JSON.stringify(id)}).courseTone`);
   assert.equal(tone('a9001'),tone('a9002'),'same course, same color');
   assert.equal(tone('a9001'),ui.run("courseTone('c501')"));
+  assert.notEqual(ui.run("courseTone('c501')"),ui.run("courseTone('c502')"),'different classes get different colors');
+  const many=bundleFor('max');many.courses=Array.from({length:10},(_,i)=>({...many.courses[0],id:'c'+(900+i*7)}));
+  const wide=await createUI({bundles:{max:many}});
+  assert.equal(new Set(wide.run('bundle.courses.map(c=>courseTone(c.id))')).size,10,'ten classes, ten colors');
   const cls=html=>(html.match(/class="tile card course-(\d)" data-go="a9003"/)||[])[1];
   await ui.click({period:'all'});
   const before=cls(ui.html());assert.ok(before!==undefined);

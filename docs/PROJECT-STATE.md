@@ -9,7 +9,7 @@
 **What changed**
 - Type roles are shared tokens (`--t-page`, `--t-section`, `--t-title`, `--t-class`, `--t-due`, `--t-status`), set in em so the Text size setting scales them. Headings use Montserrat 700; only the brand uses 900. Assignment titles use Figtree 700. Coursework metadata is no longer all caps.
 - One card structure everywhere (Home rows, Board tiles, Board list): class → title → "Due Mon, Sep 21 · 3:00 PM" → labeled recorded status. The year appears only when it differs from the capture year. A missing date reads "Date not captured"; the detail page keeps the explanation.
-- Course color is a fixed 8-slot palette picked by hashing the course ID. It shows as a top strip on tiles and a left edge on rows, courses and the detail header, with a subtle tint in light mode only. Dark and high-contrast modes use a lighter edge and no tint.
+- Course color is a fixed 10-color palette. A course's slot is its position among the capture's course IDs (numeric order), so up to ten classes never share a color; names, status, filters and layout never affect it. (A pure hash put 9 real classes into 5 colors, so this refines "from course ID"; flagged for Codex review.) It shows as a top strip on tiles and a left edge on rows, courses and the detail header, with a subtle tint in light mode only. Dark and high-contrast modes use a lighter edge and no tint.
 - Status is a small marker plus a sentence-case label: "Submitted in captured Canvas data" (green), "Graded" (green), "Excused", "Marked missing at capture" (amber), "Not submitted in Canvas", "In class / on paper" and "Status not captured" (neutral). The submission-state mapping, attention rule and `done` rule are unchanged.
 - Home reuses the hero, now labeled "Next deadline in this capture", with the absolute reference time next to it. "After that" shows up to three upcoming attention items, ordered by due date, then course ID, then assignment ID; hero items are not repeated. After that comes an "Earlier items to check (N)" disclosure, most recent first, which says recorded status can be out of date. Then the undated count, "See all unfinished work", the side note, and the rest of Home unchanged. With nothing upcoming, the hero says "No upcoming dated item is listed in this capture" and shows the coverage limitation; the earlier and undated routes still show. The all-clear logic is unchanged.
 
@@ -17,15 +17,17 @@
 
 | Check | Result |
 | --- | --- |
-| `npm run check` | PASS, 53/53 (48 existing, 3 updated for new wording, 5 new: grouping and tie order, no-upcoming, course-color stability, status labels and card order, year display) |
+| `npm run check` | PASS, 53/53 in the cloud workspace and in the Replit shell (48 existing, 3 updated for new wording, 5 new: grouping and tie order, no-upcoming, course-color stability and distinctness, status labels and card order, year display) |
 | Browser, Chromium: 320/390/1280 px × 100/180% text × light/dark/high contrast (18 combinations, synthetic data, local server) | PASS 76/76: no horizontal scroll, titles and dates never clipped, card text contrast ≥ 4.5:1, Home controls ≥ 44 px, visible keyboard focus on the disclosure, Enter opens and closes it, detail keeps "Sign in to Canvas" and "Open this assignment in Canvas" |
 | Grayscale screenshot | Every state is readable from its text label |
-| Unpublished preview on Replit with actual data | Pending: next step |
+| Unpublished preview on Replit with actual data (dev URL, not the published app) | PASS at 390 px (first profile: light, dark and high contrast at 100%; second profile: light at 100% and 180%): each profile sees only its own coursework; 9/9 classes get distinct colors; no horizontal scroll; no clipped titles or dates; Home controls ≥ 44 px. Home shows the hero, then 3 upcoming items, then "Earlier items to check" (9 for one profile, 4 for the other) and the undated count. Only facts are recorded here; no screenshots of real coursework leave Replit |
 | Real iPhone | NOT RUN (Roberto's device) |
 
 **Known limitation, not changed here.** At 180% text on a 390 px screen, the bottom navigation labels break mid-word ("Course s"). This happened before this change.
 
-**Next.** Unpublished Replit preview with the actual captures → implementation PR → Codex review. Publication is Roberto's decision after that review.
+**Replit afterwards.** After the preview, Replit's workspace went back to `main`, so the published app and the workspace match again. To see the preview again: `git checkout claude/design-vnext-preview`, then run the app. Do not Republish from that branch without Roberto's go.
+
+**Next.** Implementation PR → Codex review. Publication is Roberto's decision after that review.
 
 
 ## Design-preview delegation — September 19, 2026 / Codex
