@@ -2,7 +2,7 @@
 
 ## Scope freeze
 
-Finish the existing Hallway application using the supplied SAAS design as a styling reference. Keep useful assignment detail, resources, drafts, checklists, Back/Home, filters, and tile/list views. No passcodes. No replacement application or new hosting project.
+Finish the existing Hallway application using the supplied SAAS design as a styling reference. Max and Adrian must each see their own actual course content, with a visible student switcher. This is a settled user requirement, not an open choice. Do not substitute fictional or prepared example boards. Keep useful assignment detail, resources, drafts, checklists, Back/Home, filters, and tile/list views. No passcodes. No replacement application or new hosting project.
 
 ## Implemented locally
 
@@ -16,7 +16,7 @@ Finish the existing Hallway application using the supplied SAAS design as a styl
 
 ## Release gates still open
 
-- Resolve whether Max/Adrian boards use distinct prepared examples or actual supplied course content. No student selector or new student data has been added in this revision.
+- Locate or capture each student's actual Canvas coursework and linked materials, associate records through student/course enrollment IDs, and load separate snapshots. No student selector or actual student bundles have been added in this revision.
 - Implement and test switching, including separate drafts/checklists per student.
 - Browser visual/keyboard check at 320px, 390px, desktop, and 180% text. Browser transport is unavailable in this session; automated DOM tests are not a substitute.
 - Pull into the existing Replit project without losing Replit-only edits; run checks and publish.

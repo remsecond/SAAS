@@ -1,6 +1,6 @@
 # Snapshot evidence inventory
 
-Historical inventory for the earlier personal-snapshot plan. The user has since requested one public design preview without a passcode or student selection. Reported prototype scenarios can inform that preview without being presented as verified personal records.
+Current requirement: two personal snapshots using Max and Adrian's actual coursework, with student selection and no passcode. The previous assertion that the user wanted a single shared example board was incorrect. Prototype scenarios are not a replacement for actual course records.
 
 Reviewed September 18, 2026. Neither personal snapshot is ready for deployment.
 
