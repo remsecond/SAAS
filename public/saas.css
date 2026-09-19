@@ -42,7 +42,7 @@ h1,h2,h3,.brand,.tile strong,.section-title{font-family:Montserrat,Arial,sans-se
 .controls p,.controls small,.demoset>summary{color:var(--muted)}
 .controls select{background:var(--bg);color:var(--text);border-radius:0}
 header{background:var(--brand);color:#fff;padding:8px 16px;flex-wrap:wrap}
-.brandrow{display:flex;align-items:center;gap:10px;min-width:0}.mark{flex:none;background:#fff;color:#a6192e;font-family:Montserrat,Arial,sans-serif;font-weight:900;font-size:.8em;letter-spacing:.04em;padding:9px 7px;line-height:1}
+.brandrow{display:flex;align-items:center;gap:10px;min-width:0}.mark{flex:none;background:#fff;color:#a6192e;font-family:Montserrat,Arial,sans-serif;font-weight:900;font-size:.8em;letter-spacing:.04em;padding:7px 7px 5px;line-height:1;text-align:center}.mark svg{display:block;width:3.3em;height:.88em;margin:3px auto 0;fill:currentColor}
 .brand{text-transform:uppercase;letter-spacing:.06em}.tagline{color:#fff;font-size:.65em}
 .identity{color:#fff}.demo{margin:12px 16px;font-size:.8em}
 .hero,.panel,.row,.change,.chip,.filterselect,.tile,.badge,.action,.callout,textarea,.home-shortcut{border-radius:0}
