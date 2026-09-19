@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "prv_MKsakBoGc01brAxg8"
+uri = "file://attached_assets/generated_videos/hallway-project-demo-vertical.mp4"
+type = "video"
+title = "Hallway Animated Project Video"
+description = "An 8-second vertical 1080p animated product demo for Hallway, using fictional abstract student data and the app's charcoal, cream, and amber visual style."
+logical_id = "a873046c-7c29-4de9-a71c-adf4a7e5cd1e"
+content_hash = "sha256:7a4b24a50eb7d39ffbd90fa658d2e62d846970dcfe6d8a2d1d03ece4c71578ff"
+size = 3094725
+mtime_ms = 1789777040816
+storage_uri = "gcs://replit-rams-assets-riker/rams/assets/repl:9dd277f2-d9cf-464c-8502-afd97abd395b/a873046c-7c29-4de9-a71c-adf4a7e5cd1e/c6555c86-2eba-4a80-b5a3-b4146247407b"
+storage_version_token = "1789777053046301"
+content_type = "video/mp4"
