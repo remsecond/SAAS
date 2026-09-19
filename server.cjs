@@ -16,7 +16,10 @@ function createServer({snapshotDir}={}) {
       'X-Content-Type-Options':'nosniff',
       'Referrer-Policy':'no-referrer',
       'X-Frame-Options':'DENY',
-      'Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+      // Replit injects its feedback widget into the published page. The widget needs its
+      // script (replit-cdn.com), its API (replit.com), its font and blob: screenshots.
+      // Replit's analytics script (i.replit.com) is deliberately NOT allowed.
+      'Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline' https://replit-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://replit.com; img-src 'self' data: blob:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
       'Content-Type':'text/html; charset=utf-8'
     };
     const reply=(status,body,extra={})=>{res.writeHead(status,{...headers,...extra});res.end(req.method==='HEAD'?'':body)};
