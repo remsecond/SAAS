@@ -1,5 +1,7 @@
 # Morning briefing: one useful starting point
 
+September 19 design update: [DESIGN-VNEXT.md](DESIGN-VNEXT.md) supersedes earliest-dated/overdue-first selection and resolves the Home placement question. The authorized first build is typography, course-color/status separation and calm Home grouping, reusing the hero. This packet's broader briefing prose is still a proposal; do not implement its old selection rule.
+
 Status: proposed experiment, ready for Claude’s scope review. Preparing this packet is authorized; implementation and publication have not started. **In. Out. Laugh. Feel settled.**
 
 ## Ownership and scope

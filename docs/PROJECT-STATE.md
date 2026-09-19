@@ -1,5 +1,13 @@
 # Hallway single coordination state
 
+## Design-preview delegation — September 19, 2026 / Codex
+
+Latest explicit request from Roberto: write the design update and delegate the build. [DESIGN-VNEXT.md](DESIGN-VNEXT.md) defines the authorized first preview: consistent type hierarchy, stable course color with separate status labels, and calm Home grouping. Claude is delivery/integration/release owner; Codex owns spec and independent review. Broader heat-map/carousel/AI ideas remain exploratory. No publication authorized.
+
+Base fetched: origin/main `ccdfa18`; app release remains `5c8b6bc`. Documentation prepared in isolated branch `codex/design-vnext`; no app files changed here. The complete build packet is delivered through GitHub with this spec. Claude acknowledgement/execution is not yet confirmed; no direct Claude-session wakeup bridge is available. Next: Claude acknowledges, checks current Replit state and builds the unpublished preview, then Codex reviews it. No routine prompt relay requested from Roberto.
+
+Earlier briefing questions resolved by this spec: reuse the hero footprint; never default the lead to oldest overdue work. The broad prose briefing remains unstarted. Existing independent Canvas-change review and real-iPhone acceptance remain open, not claimed completed by this documentation checkpoint. Earlier checkpoint blocks below are history where they conflict with this authorized preview scope.
+
 ## Current checkpoint: September 19, 2026 (afternoon Pacific) / Claude, implementation-integration-release lead
 
 This block is the current state. Codex's checkpoint below is preserved as written and is now history where this block differs. Nothing here authorizes implementation or publication. No agent is running after this commit; no scheduled task exists.
