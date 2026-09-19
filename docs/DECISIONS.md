@@ -30,3 +30,7 @@ Owner / verification:
 ```
 
 Do not encode guesses about current publication approval as durable product decisions. Record publication state and authority in PROJECT-STATE.md for each release.
+
+## D15 — September 19, 2026: orchestration assignment
+
+Roberto’s explicit new-task kickoff assigns Codex cross-team coordination, strategic review, bounded delegation and evidence quality. Claude retains implementation/integration/release ownership; Roberto retains product acceptance and publication authority. This supersedes passive-review-only wording in older records, preserving D06 and one execution owner per workstream. Broader product direction remains a hypothesis and priority guide. The authorized initial outcome is reconciliation and a morning-briefing packet, not blanket implementation or publication.
