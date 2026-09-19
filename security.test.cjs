@@ -142,3 +142,41 @@ test('SAAS theme and bundled fonts load through the public server',async t=>{
     assert.equal(Buffer.from(await response.arrayBuffer()).subarray(0,4).toString(),'wOF2');
   }
 });
+
+// ---- Codex independent review, Sept 19: one malformed record must never take both profiles down ----
+test('a null or non-object record makes only that bundle invalid; the other profile stays selectable',async t=>{
+  for(const key of ['courses','assignments','resources','sources','changes']) for(const junk of [null,42,'text',[]]){
+    const broken=bundleFor('max');broken[key]=[junk,...broken[key]];
+    const result=validateBundle(broken,'max');
+    assert.equal(result.ok,false,key+' with '+JSON.stringify(junk));assert.ok(result.errors.length>0);
+  }
+  const broken=bundleFor('max');broken.courses[0]=null;
+  const request=await app(t,{max:JSON.stringify(broken),adrian:JSON.stringify(bundleFor('adrian'))});
+  const list=await request('/api/students');
+  assert.equal(list.status,200,'the profile list still loads');
+  const students=(await list.json()).students;
+  assert.deepEqual(students.map(s=>[s.id,s.available]),[['max',false],['adrian',true]]);
+  const bad=await request('/api/snapshot?student=max');
+  assert.equal(bad.status,503);assert.equal((await bad.json()).error,'snapshot_unavailable');
+  assert.equal((await request('/api/snapshot?student=adrian')).status,200);
+});
+
+test('nested junk, an unusable time zone and a backwards coverage window are validation errors, never crashes',()=>{
+  const cases={
+    'assignment submission null':b=>{b.assignments[0].submission=null},
+    'assignment feedback holds null':b=>{b.assignments[0].feedback=[null]},
+    'resource availability null':b=>{b.resources[0].availability=null},
+    'resource action is a string':b=>{b.resources[0].action='x'},
+    'snapshot student null':b=>{b.snapshot.student=null},
+    'coverage ids not strings':b=>{b.snapshot.coverage.includedCourseIds=[null]},
+    'unusable time zone':b=>{b.snapshot.timeZone='Invalid/Zone'},
+    'coverage window backwards':b=>{const c=b.snapshot.coverage;[c.windowStart,c.windowEnd]=[c.windowEnd,c.windowStart]},
+  };
+  for(const [name,breakIt] of Object.entries(cases)){
+    const b=bundleFor('max');breakIt(b);let result;
+    assert.doesNotThrow(()=>{result=validateBundle(b,'max')},name);
+    assert.equal(result.ok,false,name);
+  }
+  for(const whole of [null,undefined,42,'x',[]]) assert.equal(validateBundle(whole,'max').ok,false);
+  assert.equal(validateBundle(bundleFor('max'),'max').ok,true,'a good bundle still passes');
+});
