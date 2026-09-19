@@ -1,5 +1,53 @@
 # Hallway single coordination state
 
+## Current checkpoint: September 19, 2026 (afternoon Pacific) / Claude, implementation-integration-release lead
+
+This block is the current state. Codex's checkpoint below is preserved as written and is now history where this block differs. Nothing here authorizes implementation or publication. No agent is running after this commit; no scheduled task exists.
+
+**Roles (Roberto, explicit, Sept 19):** Roberto: product acceptance and publication authority; involved only for authentication or a necessary product/publication decision. Codex: strategic orchestration, independent review, evidence quality. Claude: implementation, integration, release. Coordination runs through GitHub. One execution owner per workstream.
+
+**Revisions, each with its evidence**
+
+| Place | Revision | Evidence |
+| --- | --- | --- |
+| GitHub main | this commit, on top of `f06773a` (merge of PR #1) on top of `8464476` | Pushed from Replit's Git pane; verified through the GitHub API after the push |
+| Original Canvas sign-in commit | `5c8b6bc`, original SHA and parent `061f279` preserved | VERIFIED on GitHub main. Not recreated, not cherry-picked |
+| Replit main before this integration | `8464476` = `5c8b6bc` + Replit's empty "Published your App" marker; clean, no stash, no untracked files | VERIFIED in the Replit shell |
+| Published app code | `5c8b6bc` | VERIFIED: live client contains the sign-in helper; Claude's live checks below. The publish marker `8464476` records the deploy; it changes no file |
+| Capture metadata (separate from code) | Max `2026-09-19T03:30:21.534Z`, Adrian `2026-09-19T02:44:32.969Z` | VERIFIED: live `/api/students` and harness deep-compare. Frozen Friday-evening captures. Signing in to Canvas does not refresh them |
+
+**How GitHub alignment was recovered.** The Replit shell's saved GitHub credential expired overnight (`git push` refused: invalid username or token; retried twice, same result). Replit's Git pane holds a separate, still-valid GitHub connection. Its Push sent the existing commits unchanged. No credential was typed by anyone and Roberto did not need to act. Future pushes from Replit should use the Git pane until the shell credential is renewed. Correction accepted from Codex: pushing the original objects from another authorized place preserves history; only rebuilding or cherry-picking creates a different commit. Claude's earlier note that any other pusher would "split the history" was too broad.
+
+**Replit's agent panel.** It still shows an old audit ("fictional fixtures", "server ignores HALLWAY_SNAPSHOTS_JSON") and an "Active task: Publish Hallway at a stable HTTPS address". That text predates the takeover. Current files contradict it: `fixtures.cjs` does not exist, the server reads validated per-student bundles, and the live site serves both real captures. The panel was not acted on, applied or dismissed. The publishing pane can show a stale "Promote" spinner after a finished publish; the live site is the evidence, not the spinner.
+
+**Evidence for `5c8b6bc`**
+
+| Check | Result | By / where |
+| --- | --- | --- |
+| App tests | PASS 48/48 | Claude, Replit and cloud workspace |
+| All 58 assignment pages: "Sign in to Canvas" then "Open this assignment in Canvas", same Canvas origin, 44 px, no overflow, 320 and 390 px | PASS on LIVE | Claude, emulated iPhone in cloud Chromium |
+| Harness (contract + live HTTP deep-compare), 129-page walk, Settings 66/66 | PASS on LIVE | Claude |
+| Sign-in labels and helper present in live client; no qualifying link yields no button | VERIFIED by source inspection | Codex (independent) |
+| School `/login` exists and redirects | VERIFIED (redirect observed from a signed-in desktop tab, credentials omitted) | Claude |
+| Original commit diff reviewed by Codex | NOT RUN: commit is now on GitHub for that review | next: Codex |
+| Real iPhone: Safari sign-in, Home Screen mode, whether they share a Canvas session | NOT RUN: human acceptance | Roberto; short test in the closing note of this session |
+| Cause of Roberto's phone error | REPORTED, not proven: consistent with the phone's browser not being signed in to Canvas; all outbound links are plain canonical addresses (checked). Resolution on the actual device is unverified |
+
+**PR #1.** Reviewed against recovered code and merged by ordinary merge (`f06773a`); Codex's four commits are intact. D15 note reconciled in `docs/DECISIONS.md`. D16 (orchestration) and D17 (companion shell, native authority) accepted as recorded; D15 is an instance of D17. Review questions on the briefing packet were posted on the PR, not settled here.
+
+**Morning briefing.** Stays a scoped proposal: `docs/MORNING-BRIEFING-PACKET.md`. Claude's scope review is on PR #1. Not authorized, not started, no branch exists for it.
+
+**Open, with owners**
+1. Real-iPhone Safari/Home Screen sign-in check: Roberto.
+2. Independent review of `5c8b6bc`: Codex.
+3. Answers to the two packet questions on PR #1, then Roberto's go/no-go on building it: Codex, then Roberto.
+4. Data refresh before the students rely on it: Claude coordinates; needs Roberto at a signed-in Canvas tab. Not scheduled.
+5. Replit shell GitHub credential: expired; harmless while the Git pane works. Renew only if it becomes a blocker.
+
+No standing publication approval. Delivery of this state through GitHub is not proof that any other agent has read it.
+
+---
+
 Checkpoint: September 19, 2026 / Codex. This is the coordination entry point; it does not authorize implementation or publication.
 
 ## Owners and activity

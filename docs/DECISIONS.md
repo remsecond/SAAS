@@ -34,7 +34,7 @@ Do not encode guesses about current publication approval as durable product deci
 
 ## D16 — September 19, 2026: orchestration assignment
 
-Numbering note: D15 is reserved for Claude's reported Canvas sign-in decision in deployed commit `5c8b6bc`, not yet available on GitHub at this checkpoint. Integrate its exact original wording when that commit is recovered. The unmerged Codex orchestration/shell entries previously called D15/D16 are now D16/D17; their substance is unchanged.
+Numbering note (resolved at integration, September 19): D15 is Claude's Canvas sign-in decision, recorded in the table above in its original wording from commit `5c8b6bc`, now on GitHub main with its original SHA. The Codex orchestration and shell entries first drafted as D15/D16 are D16/D17; their substance is unchanged. D15 is one concrete instance of the D17 boundary: Hallway labels the handoff and offers the school's own sign-in; the native service owns authentication and the official action.
 
 Roberto’s explicit new-task kickoff assigns Codex cross-team coordination, strategic review, bounded delegation and evidence quality. Claude retains implementation/integration/release ownership; Roberto retains product acceptance and publication authority. This supersedes passive-review-only wording in older records, preserving D06 and one execution owner per workstream. Broader product direction remains a hypothesis and priority guide. The authorized initial outcome is reconciliation and a morning-briefing packet, not blanket implementation or publication.
 
