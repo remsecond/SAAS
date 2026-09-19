@@ -9,15 +9,14 @@
 
 ## Access
 
-- The fictional demo requires no passcode. Choose Max or Adrian and click **Open my snapshot**.
-- The ignored `private-data/access-hLfCFq/runtime.env` contains the session-signing secret.
-- Run `npm run setup-access` only when intentionally provisioning a new session secret; it creates a new directory and never overwrites an existing one.
-- The app uses fictional fixture data unless `HALLWAY_SNAPSHOTS_JSON` is supplied with reviewed, ownership-verified snapshots.
+- `/` opens the design preview directly: no passcode, name picker, logout, or session secret.
+- The workflow still loads the ignored `private-data/access-hLfCFq/runtime.env` if present; the app no longer needs it.
+- Content is the reviewed fictional design bundle in `fixtures.cjs`; no real student data.
 
 ## Checks
 
-Run `npm run check` for syntax, security, UI-logic, and access-provisioning tests.
+Run `npm run check` for syntax/content checks and 12 security and UI-logic tests.
 
 ## Publishing constraint
 
-Sessions and rate limits are held in memory. If publishing, use server hosting and configure a maximum of one server.
+Stateless public preview; published as a Replit autoscale deployment at https://hallway-robmoyer.replit.app.
