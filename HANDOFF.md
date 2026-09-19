@@ -30,3 +30,15 @@ Canvas quirk: for observers, `order_by=due_at` on the assignments endpoint retur
 
 - Backup branch on Replit: `pre-claude-merge-backup` (state before the Sept 18 merge). Older: `replit-pre-sync-backup`.
 - The earlier fictional fixture and the passcode login were removed on purpose. A parked Replit Agent task that would have restored them was cancelled with Roberto's approval.
+
+## Personality layer (branch `personality`, NOT on main, NOT published)
+
+Spec: `content/PERSONALITY-SPEC.md` (Roberto). First slice built Sept 18–19: one "Today's side note" on Home below Needs you;
+an honest scoped all-clear status plus one all-clear line (needs captured work that is all finished; empty, failed, mismatched
+and filtered states never qualify); "Not this one" on the line; "Side notes: On / Keep it straightforward" in Settings.
+Lines live in `content/personality.json`; `personality.cjs` is the gate (only approved, well-formed entries leave the server;
+a fact needs an https source and a review date). Off-switches: `"enabled": false` in the file, or `HALLWAY_PERSONALITY=off`
+in the environment. A missing or corrupt file means off; coursework is unaffected. Per-profile pick, 14-day history and hidden
+list are in `localStorage['hallway.notes.<profile>']`, with an in-memory fallback. `todayKey()` is the only real-clock read in
+the app and `check.cjs` enforces that. Deliberately not built yet: practical briefing prose, loading lines, More like this,
+audio. Ideas go in `content/personality-ideas.md`.

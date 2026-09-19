@@ -3,11 +3,12 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const {createStore} = require('./bundles.cjs');
+const {loadCollection} = require('./personality.cjs');
 
 // Serves each student's captured coursework bundle. There are no passcodes and
 // no fallback content: a missing or invalid bundle is reported as unavailable.
 // Old access secrets and HALLWAY_SNAPSHOTS_JSON are deliberately unused.
-function createServer({snapshotDir}={}) {
+function createServer({snapshotDir,personalityFile,env=process.env}={}) {
   const store=createStore({dir:snapshotDir});
   const json={'Content-Type':'application/json; charset=utf-8'};
   return http.createServer((req,res)=>{
@@ -29,6 +30,7 @@ function createServer({snapshotDir}={}) {
       const assets={'/saas.css':'text/css; charset=utf-8','/fonts/figtree-400.woff2':'font/woff2','/fonts/figtree-700.woff2':'font/woff2','/fonts/montserrat-700.woff2':'font/woff2','/fonts/montserrat-900.woff2':'font/woff2','/apple-touch-icon.png':'image/png'};
       if(Object.hasOwn(assets,route)) return reply(200,fs.readFileSync(path.join(__dirname,'public',route)),{'Content-Type':assets[route]});
       if(route==='/login') return reply(302,'',{Location:'/'});
+      if(route==='/content/personality.json') return reply(200,JSON.stringify(loadCollection({file:personalityFile,env})),json);
       if(route==='/api/students') return reply(200,JSON.stringify({students:store.list()}),json);
       if(route==='/api/snapshot') {
         const result=store.read(url.searchParams.get('student')||'');

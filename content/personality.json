@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "enabled": true,
+  "entries": [
+    {
+      "id": "unsupervised-orange",
+      "text": "Today's official color is Unsupervised Orange.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "color-discontinued",
+      "text": "Today's color has been discontinued for behavioral reasons.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "universe-management",
+      "text": "The universe remains poorly managed.",
+      "surfaces": [
+        "daily_extra",
+        "all_clear"
+      ],
+      "kind": "joke",
+      "tone": "cosmic",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "gravity-uninvited",
+      "text": "Gravity continues to show up without being asked.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "cosmic",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "forecast-time",
+      "text": "Today's forecast: time will pass. Further details unavailable.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "cosmic",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "department-of-tuesdays",
+      "text": "The Department of Tuesdays has declined to comment.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "printer-options",
+      "text": "Somewhere, a printer is considering its options.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "pencil-career",
+      "text": "Your pencil has requested a less demanding career.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "calendar-credit",
+      "text": "The calendar would like credit for being organized.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "no-objective",
+      "text": "This message has no educational objective. You're welcome.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "administrative-purple",
+      "text": "Today's color is Administrative Purple.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "universe-project-plan",
+      "text": "The universe has not submitted its project plan.",
+      "surfaces": [
+        "daily_extra"
+      ],
+      "kind": "joke",
+      "tone": "cosmic",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "thursday-back",
+      "text": "Putting Thursday back where it belongs.",
+      "surfaces": [
+        "daily_extra",
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "calendar-indoor-voice",
+      "text": "Asking the calendar to use its indoor voice.",
+      "surfaces": [
+        "daily_extra",
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "untangling-next-week",
+      "text": "Untangling the concept of next week.",
+      "surfaces": [
+        "daily_extra",
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "quiet-moment",
+      "text": "A rare quiet moment. Let's not give it more assignments.",
+      "surfaces": [
+        "all_clear"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "confetti-budget",
+      "text": "The imaginary confetti budget has been approved.",
+      "surfaces": [
+        "all_clear"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "sun-demise",
+      "text": "The Sun's eventual demise remains outside this planning window.",
+      "surfaces": [
+        "all_clear"
+      ],
+      "kind": "joke",
+      "tone": "cosmic",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "cooperative-calendar",
+      "text": "We recommend enjoying this unusually cooperative calendar.",
+      "surfaces": [
+        "all_clear"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "approved",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "consulting-hallway",
+      "text": "Consulting the hallway.",
+      "surfaces": [
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "draft",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "removing-doom",
+      "text": "Removing unnecessary doom.",
+      "surfaces": [
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "draft",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "adding-more-day",
+      "text": "Your day is loading. Please refrain from adding more day.",
+      "surfaces": [
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "draft",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "imaginary-noticeboard",
+      "text": "Straightening the imaginary noticeboard.",
+      "surfaces": [
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "nonsense",
+      "status": "draft",
+      "source": null,
+      "reviewedAt": null
+    },
+    {
+      "id": "absence-of-information",
+      "text": "Please enjoy this brief absence of information.",
+      "surfaces": [
+        "loading"
+      ],
+      "kind": "joke",
+      "tone": "app",
+      "status": "draft",
+      "source": null,
+      "reviewedAt": null
+    }
+  ]
+}

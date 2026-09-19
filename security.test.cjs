@@ -15,8 +15,8 @@ function snapshotDir(t, files = {max: JSON.stringify(bundleFor('max')), adrian: 
   for(const [name,text] of Object.entries(files)) fs.writeFileSync(path.join(dir,name+'.json'),text);
   return dir;
 }
-async function app(t, files) {
-  const server=createServer({snapshotDir:snapshotDir(t,files)});
+async function app(t, files, extra={}) {
+  const server=createServer({snapshotDir:snapshotDir(t,files),env:{},...extra});
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   t.after(()=>new Promise(resolve=>server.close(resolve)));
   const base=`http://127.0.0.1:${server.address().port}`;
@@ -141,4 +141,50 @@ test('SAAS theme and bundled fonts load through the public server',async t=>{
     assert.equal(response.headers.get('content-type'),'font/woff2');
     assert.equal(Buffer.from(await response.arrayBuffer()).subarray(0,4).toString(),'wOF2');
   }
+});
+
+// ---- personality collection: only approved, well-formed lines ever leave the server ----
+const {publicCollection,checkEntry,loadCollection}=require('./personality.cjs');
+const line=(over={})=>({id:'test-line',text:'A line.',surfaces:['daily_extra'],kind:'joke',tone:'app',status:'approved',source:null,reviewedAt:null,...over});
+
+test('personality: drafts, retired lines, malformed entries and unsourced facts never render',()=>{
+  const out=publicCollection({version:1,enabled:true,entries:[
+    line({id:'ok-one'}),line({id:'a-draft',status:'draft'}),line({id:'gone',status:'retired'}),
+    line({id:'fact-no-source',kind:'fact'}),line({id:'fact-http',kind:'fact',source:'http://example.com',reviewedAt:'2026-09-01'}),
+    line({id:'fact-no-review',kind:'fact',source:'https://example.com/a'}),
+    line({id:'fact-ok',kind:'fact',source:'https://example.com/a',reviewedAt:'2026-09-01'}),
+    line({id:'bad-surface',surfaces:['billboard']}),line({id:'too-long',text:'x'.repeat(161)}),line({id:'ok-one',text:'duplicate id'}),
+    line({id:'BAD ID'}),null,'string',
+  ]});
+  assert.deepEqual(out.entries.map(e=>e.id),['ok-one','fact-ok']);
+  assert.equal(out.entries[0].source,null);assert.equal(out.entries[1].source,'https://example.com/a');
+  assert.deepEqual(Object.keys(out.entries[0]).sort(),['id','kind','source','surfaces','text','tone'],'status, review notes and anything extra stay on the server');
+  assert.ok(checkEntry(line({kind:'fact'})).length>0);
+});
+
+test('personality: off switch, disabled file, missing file and corrupt file all mean off, and coursework still loads',async t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'hallway-personality-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const good=path.join(dir,'good.json'),corrupt=path.join(dir,'corrupt.json'),disabled=path.join(dir,'disabled.json');
+  fs.writeFileSync(good,JSON.stringify({version:1,enabled:true,entries:[line()]}));fs.writeFileSync(corrupt,'{not json');
+  fs.writeFileSync(disabled,JSON.stringify({version:1,enabled:false,entries:[line()]}));
+  assert.equal(loadCollection({file:good,env:{}}).entries.length,1);
+  assert.equal(loadCollection({file:good,env:{HALLWAY_PERSONALITY:'off'}}).enabled,false);
+  for(const file of [corrupt,disabled,path.join(dir,'missing.json')]) assert.deepEqual(loadCollection({file,env:{}}),{version:1,enabled:false,entries:[]});
+  const request=await app(t,undefined,{personalityFile:corrupt});
+  const response=await request('/content/personality.json');
+  assert.equal(response.status,200);assert.deepEqual(await response.json(),{version:1,enabled:false,entries:[]});
+  assert.equal((await request('/api/snapshot?student=max')).status,200,'a broken joke file never blocks coursework');
+});
+
+test('personality: the shipped collection is valid, holds no student data, and serves only approved lines',async t=>{
+  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,'content','personality.json'),'utf8'));
+  for(const entry of raw.entries) assert.deepEqual(checkEntry(entry),[],entry.id);
+  assert.equal(new Set(raw.entries.map(e=>e.id)).size,raw.entries.length);
+  assert.doesNotMatch(JSON.stringify(raw),/Max|Adrian|Moyer|grade|missing|late|overdue|lazy|behind/i,'jokes are never about a student, grades or missed work');
+  const request=await app(t);
+  const served=await (await request('/content/personality.json')).json();
+  assert.equal(served.enabled,true);
+  assert.equal(served.entries.length,raw.entries.filter(e=>e.status==='approved').length);
+  assert.ok(served.entries.filter(e=>e.surfaces.includes('daily_extra')).length>=14,'enough daily lines to avoid repeats for two weeks');
+  assert.ok(!JSON.stringify(served).includes('"status"'));
 });
