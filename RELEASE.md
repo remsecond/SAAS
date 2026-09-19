@@ -4,7 +4,7 @@ Beta punch list, then ship. No new features before release; everything else goes
 
 ## Release revision
 
-- The published revision is recorded in `TEST_READINESS.md` and in the Claude project's release status note. `cf77fb2` added the profile screen; later app changes were two fixes found on the live site: the Content-Security-Policy allowance for Replit's feedback widget, and removal of the in-app student switcher at Roberto's direction.
+- The published revision is recorded in `TEST_READINESS.md` and in the Claude project's release status note. `cf77fb2` added the profile screen; later app changes were two fixes found on the live site: a Content-Security-Policy allowance for Replit's feedback widget (since withdrawn: the widget needs a Replit account, so it is blocked again), and removal of the in-app student switcher at Roberto's direction.
 - GitHub `main` and Replit `main` must match before publishing: on Replit run `git fetch origin && git status -sb` (no "ahead"/"behind") and `git status --short` (empty).
 - Codex's commits `9833c25` and `7df2844` keep their original authorship. Do not rewrite history to clear GitHub's "Unverified" label. No force-pushes.
 - A Git push does **not** deploy. Only Publish/Republish in Replit changes the live site, and only on Roberto's explicit "publish".
@@ -41,7 +41,7 @@ The repository is public. Never commit captures or bundles. `npm run check` fail
 
 1. Open the permanent URL, https://hallway-robmoyer.replit.app. Both profiles load real coursework with the expected capture times; "Change profile" at the bottom of Home returns to the profile screen and the other profile then opens its own coursework.
 2. One assignment and one material open for each profile; links open.
-3. If Replit's feedback widget is on the published app, send one "QA TEST — please discard" note with no student content and confirm exactly one entry arrives.
+3. Confirm Replit's feedback widget does NOT appear (it is blocked on purpose; feedback comes to Roberto directly for now).
 4. On the iPhone: add the URL to the Home Screen, open it from there, pick each profile, open an assignment, go Back and Home.
 5. Only then share the URL.
 
