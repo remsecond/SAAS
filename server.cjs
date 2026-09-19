@@ -26,7 +26,7 @@ function createServer({snapshotDir}={}) {
     try {
       const url=new URL(req.url,'http://localhost'),route=url.pathname;
       if(!['GET','HEAD'].includes(req.method)) return reply(405,'Method not allowed',{Allow:'GET, HEAD'});
-      const assets={'/saas.css':'text/css; charset=utf-8','/fonts/figtree-400.woff2':'font/woff2','/fonts/figtree-700.woff2':'font/woff2','/fonts/montserrat-700.woff2':'font/woff2','/fonts/montserrat-900.woff2':'font/woff2'};
+      const assets={'/saas.css':'text/css; charset=utf-8','/fonts/figtree-400.woff2':'font/woff2','/fonts/figtree-700.woff2':'font/woff2','/fonts/montserrat-700.woff2':'font/woff2','/fonts/montserrat-900.woff2':'font/woff2','/apple-touch-icon.png':'image/png'};
       if(Object.hasOwn(assets,route)) return reply(200,fs.readFileSync(path.join(__dirname,'public',route)),{'Content-Type':assets[route]});
       if(route==='/login') return reply(302,'',{Location:'/'});
       if(route==='/api/students') return reply(200,JSON.stringify({students:store.list()}),json);
