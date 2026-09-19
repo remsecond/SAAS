@@ -1,40 +1,32 @@
 # Hallway handoff
 
-## Current test-release work (September 18, 2026)
+One owner, one status. Read TEST_READINESS.md for the dated release status and SNAPSHOT-INVENTORY.md for what was captured and how ownership was verified.
 
-See TEST_READINESS.md for the current scope and release gates. The sections below describe the previous shared-preview release. The user subsequently requested meaningful student switching without passcodes and a SAAS-themed test version. Styling and priority ordering are now implemented; actual-coursework capture, student switching, and browser/deployment verification remain open. Actual content for each student is mandatory; do not ask the user to choose fictional boards again. The last synchronized baseline was f68b8aa.
+## Settled requirements (do not reopen)
 
+- Max sees Max's actual coursework; Adrian sees Adrian's. A visible switcher; the screen always says whose coursework is showing.
+- No passcodes (Roberto re-confirmed "no passcode for now" on Sept 18, 2026). If a lock is added later it must be checked on the server, with codes typed by Roberto into Replit Secrets — never in code, GitHub or chat.
+- No fictional coursework, no fallback content, no invented deadlines or feedback. No grades.
+- SAAS design language; phone-first; frozen capture, not a live connection.
+- **Publishing only on Roberto's explicit "publish".** A Git push does not deploy.
 
-## Current direction
+## Where things live
 
-Max and Adrian each need their own actual course content. A visible student switcher must change the course/assignment/resource bundle and keep drafts/checklists separate. No passcodes. The user has reaffirmed this requirement repeatedly.
+- Replit project: https://replit.com/@robmoyer/Hallway · hosted URL: https://hallway-robmoyer.replit.app
+- GitHub: https://github.com/remsecond/SAAS (public — never commit captures or bundles)
+- Student data: `private-data/raw/*.raw.json` and `private-data/snapshots/*.json` in the Replit workspace, git-ignored.
+- `private-data/access-*/` holds retired passcode files; the app does not read them.
 
-The currently implemented shared preview contains authored examples and does NOT meet that requirement. Removing the passcode did not authorize replacing personal coursework with one shared board. The old implementation notes below describe the baseline, not acceptance criteria.
+## Refreshing the coursework
 
-Source capture: the parent-folder Kid Chief-of-Staff Data Model reports Canvas observee IDs and read-only endpoints. Its enrollment association is the starting point for mapping each student's courses. The frozen-demo plan requires actual snapshots. No raw course captures have yet been located in the checked workspace, Downloads, Documents/vault, or Documents/Claude. Browser transport remains unavailable; do not call that proof that the source data does not exist elsewhere.
+1. In a Chrome tab signed in to Canvas as the parent observer, run `tools/canvas-capture.js`.
+2. Save each student's capture to `private-data/raw/<student>.raw.json`.
+3. `node tools/build-bundle.cjs <student> private-data/raw/<student>.raw.json private-data/snapshots/<student>.json`
+4. Restart the app. The builder refuses wrong-student, mixed or incomplete captures; the server refuses invalid bundles.
 
-## Implementation
+Canvas quirk: for observers, `order_by=due_at` on the assignments endpoint returns an empty list. The capture script does not use it.
 
-- `/` opens the preview directly; `/api/snapshot` returns the single reviewed design bundle.
-- No passcode, identity picker, logout, secrets requirement, or provisioning step.
-- Legacy private snapshot environment settings are unused; no runtime student bundles are published by removing the gate.
-- Content and UI remain separate. Filters, tile/list layout, Home, nested Back, drafts/checklists, themes and text sizing remain.
-- Original schoolwork scenarios are restored as design examples with useful detail and explicit resource placeholders.
+## History worth keeping
 
-## Replit status
-
-Existing project: https://replit.com/@robmoyer/Hallway
-
-Existing hosted URL: https://hallway-robmoyer.replit.app
-
-The prior hosted page was verified over HTTP as a name selector with no passcode; signed-out snapshot requests returned 401. The user made Replit-side changes after import. The current local changes have not been compared against those Replit-only edits or published there. Browser-control calls still return `Transport closed`. Do not create another project or assume a git push updates hosting.
-
-On reconnection, inspect the existing project's git diff and revision, preserve user edits, synchronize this implementation, run checks and publish. Verify the actual hosted URL opens directly into the richer board with no name prompt. Review any new cost before accepting it.
-
-## Verification
-
-`npm run check` passed: 12 tests plus content/reference and script checks. The old authentication tests are replaced with tests for the new public-demo behavior and for keeping legacy runtime bundles outside the response. UI logic tests use a simulated DOM. Real browser appearance, keyboard traversal, phone-width rendering, large-text rendering, and actual iPhone acceptance remain unverified for this revision.
-
-## Updating content
-
-Edit `fixtures.cjs` for assignments, next steps, resource descriptions/previews and missing-material messages; use `public/index.html` for presentation. Keep provenance honest and retain the fixed reference clock. Test, push, synchronize the existing Replit project, republish, and verify the hosted result.
+- Backup branch on Replit: `pre-claude-merge-backup` (state before the Sept 18 merge). Older: `replit-pre-sync-backup`.
+- The earlier fictional fixture and the passcode login were removed on purpose. A parked Replit Agent task that would have restored them was cancelled with Roberto's approval.
