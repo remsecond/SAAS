@@ -12,6 +12,10 @@ for(const file of walk('public')) {
 }
 for(const tracked of ['server.cjs','bundles.cjs','README.md']) assert(!/require\(['"]\.\/fixtures/.test(fs.readFileSync(tracked,'utf8')),`${tracked}: authored fixtures must not be loadable at runtime`);
 assert(!fs.existsSync('fixtures.cjs'),'authored example coursework has been removed from the app');
+const page=fs.readFileSync('public/index.html','utf8');
+assert.equal((page.match(/new Date\(\)/g)||[]).length,1,'the real clock is read in exactly one place');
+assert(/function todayKey\(\)\{.{0,260}new Date\(\)/.test(page),'that one place is todayKey, which only picks the side note');
+assert(!/Date\.now|performance\.now/.test(page),'no other clock reads');
 const ignore=fs.readFileSync('.gitignore','utf8');
 for(const rule of ['private-data/','snapshots/']) assert(ignore.split(/\r?\n/).includes(rule),`.gitignore must keep ${rule} out of the repository`);
 const {bundleFor}=require('./test-support/synthetic-capture.cjs');

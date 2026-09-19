@@ -15,6 +15,8 @@ async function createUI(options = {}) {
   const bundles = options.bundles || {max: bundleFor('max'), adrian: bundleFor('adrian')};
   const storage = new Map(options.remembered === null ? [] : [['hallway.student', options.remembered || 'max']]);
   if (options.prefs) storage.set('hallway.prefs', options.prefs);
+  if (options.noteState) storage.set('hallway.notes.max', options.noteState);
+  const clock = {now: options.now || '2026-09-21T16:00:00Z'};
   const timers = [];
   const requests = [];
   const elements = new Map();
@@ -34,13 +36,14 @@ async function createUI(options = {}) {
     return elements.get(id);
   }
   const sandbox = {
-    console, URL, Intl, Date:class extends Date {}, CSS:{escape:s=>String(s).replace(/[^a-zA-Z0-9_-]/g,c=>'\\'+c)}, setTimeout: (fn, ms) => {timers.push({fn, ms, live:true});return timers.length;}, clearTimeout(id) {if(timers[id-1])timers[id-1].live=false;}, AbortController,
+    console, URL, Intl, Date:class extends Date {constructor(...a){if(a.length)super(...a);else super(clock.now)}}, CSS:{escape:s=>String(s).replace(/[^a-zA-Z0-9_-]/g,c=>'\\'+c)}, setTimeout: (fn, ms) => {timers.push({fn, ms, live:true});return timers.length;}, clearTimeout(id) {if(timers[id-1])timers[id-1].live=false;}, AbortController,
     document: {getElementById: element, querySelector: element, body:element('body')},
     window: {addEventListener(type,fn){listeners['window:'+type]=fn;},scrollY:17, scrollTo() {}, matchMedia: () => ({matches:false,addEventListener(){}})},
     location: {pathname:'/',search:'',hash:'',assign(url) {this.destination=url;}},
     ...(options.navigator?{navigator:options.navigator}:{}),
     localStorage: {getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>{storage.delete(k)}},
     fetch: options.fetch || (async url => {
+      if (url === '/content/personality.json') return options.personality ? {ok:true,status:200,json:async()=>structuredClone(options.personality)} : {ok:false,status:404,json:async()=>({})};
       requests.push(url);
       if (url === '/api/students') return {ok:true,status:200,json:async()=>({students:structuredClone(STUDENTS)})};
       const id = new URL(url,'http://localhost').searchParams.get('student');
@@ -59,7 +62,7 @@ async function createUI(options = {}) {
   }
   const settle=async()=>{for(let i=0;i<6;i++)await new Promise(resolve=>setImmediate(resolve));};
   await settle();
-  return {context,settle,requests,storage,element,timers,
+  return {context,settle,requests,storage,element,clock,timers,
     async fireTimeouts(){for(const x of timers.filter(x=>x.live&&x.ms>=5000)){x.live=false;x.fn();}await settle();},run:code=>vm.runInContext(code,context),html:()=>element('app').innerHTML,
     focused:()=>focused,
     windowEvent(type, event={}) {return listeners['window:'+type](event);},
@@ -369,6 +372,123 @@ test('leaving the page clears every student\'s local edits',async()=>{
   assert.equal(ui.html(),'');
 });
 module.exports={createUI};
+
+// ---- personality layer ----
+const NOTES=n=>({version:1,enabled:true,entries:Array.from({length:n},(_,i)=>({id:'daily-'+String(i).padStart(2,'0'),text:'DAILY-LINE-'+i+'.',surfaces:['daily_extra'],kind:'joke',tone:'app',source:null})).concat([{id:'clear-0',text:'CLEAR-LINE-0.',surfaces:['all_clear'],kind:'joke',tone:'app',source:null}])});
+const shown=html=>(html.match(/class="side-note-text">([^<]*)</)||[])[1]||null;
+const stripNote=html=>html.replace(/<aside class="side-note"[\s\S]*?<\/aside>/,'');
+
+test('personality: one side note on Home, below the real work, and nothing about it changes the coursework',async()=>{
+  const plain=await createUI();
+  const ui=await createUI({personality:NOTES(20)});
+  assert.match(shown(ui.html()),/^DAILY-LINE-\d+\.$/);
+  assert.equal((ui.html().match(/class="side-note"/g)||[]).length,1,'at most one line on Home');
+  assert.ok(ui.html().indexOf('class="side-note"')>ui.html().indexOf('Needs you'),'sits below Needs you');
+  assert.equal(stripNote(ui.html()),plain.html(),'titles, dates, status and order are identical with and without personality');
+  for(const tab of ['Board','Courses','Settings']){await ui.click({tab});assert.equal(shown(ui.html()),null,tab+' has no side note');}
+  await ui.click({tab:'Today'});await ui.click({go:'a9001'});assert.equal(shown(ui.html()),null,'never on an assignment');
+});
+
+test('personality: the real clock only picks the line; coursework stays on the frozen clock',async()=>{
+  const ui=await createUI({personality:NOTES(20)});
+  const first=ui.html();
+  ui.clock.now='2026-10-31T16:00:00Z';ui.run('render()');
+  assert.notEqual(shown(ui.html()),shown(first),'a new day brings a new line');
+  assert.equal(stripNote(ui.html()),stripNote(first),'forty days later every coursework word is unchanged');
+});
+
+test('personality: the pick is stable through navigation and reload, and each profile keeps its own',async()=>{
+  const ui=await createUI({personality:NOTES(20)});
+  const line=shown(ui.html());
+  await ui.click({tab:'Board'});await ui.click({tab:'Today'});ui.run('render()');
+  assert.equal(shown(ui.html()),line);
+  const saved=JSON.parse(ui.storage.get('hallway.notes.max'));
+  assert.equal(saved.day,'2026-09-21');assert.equal(saved.history.length,1);
+  assert.equal(ui.storage.has('hallway.notes.adrian'),false);
+  assert.doesNotMatch(JSON.stringify(saved),/SYNTHETIC|a900|Max/,'no coursework or names are stored with the pick');
+  await ui.click({tab:'Settings'});await ui.click({profiles:'1'});await ui.click({student:'adrian'});await ui.settle();
+  await ui.click({noteHide:JSON.parse(ui.storage.get('hallway.notes.adrian')).pick.daily_extra});
+  await ui.click({tab:'Settings'});await ui.click({profiles:'1'});await ui.click({student:'max'});await ui.settle();
+  assert.equal(shown(ui.html()),line,"Max's line and history are untouched by what Adrian did");
+  assert.deepEqual(JSON.parse(ui.storage.get('hallway.notes.max')).hidden,[]);
+});
+
+test('personality: no repeats inside 14 days while alternatives exist; when the pool runs out, the least recently shown comes back',async()=>{
+  const ui=await createUI({personality:NOTES(15)});
+  const seen=[shown(ui.html())];
+  for(let d=22;d<=30;d++){ui.clock.now=`2026-09-${d}T16:00:00Z`;ui.run('render()');seen.push(shown(ui.html()));}
+  for(let d=1;d<=4;d++){ui.clock.now=`2026-10-0${d}T16:00:00Z`;ui.run('render()');seen.push(shown(ui.html()));}
+  assert.equal(new Set(seen).size,14,'14 days, 14 different lines');
+  const small=await createUI({personality:NOTES(3)});
+  const order=[shown(small.html())];
+  for(let d=22;d<=26;d++){small.clock.now=`2026-09-${d}T16:00:00Z`;small.run('render()');order.push(shown(small.html()));}
+  assert.ok(order.every(Boolean),'never fails or goes blank when the pool is small');
+  assert.equal(new Set(order.slice(0,3)).size,3);
+  assert.deepEqual(order.slice(3),order.slice(0,3),'then cycles, least recently shown first');
+});
+
+test('personality: Not this one removes the line for that profile for good, without a replacement slot machine',async()=>{
+  const ui=await createUI({personality:NOTES(20)});
+  const line=shown(ui.html()),id=JSON.parse(ui.storage.get('hallway.notes.max')).pick.daily_extra;
+  await ui.click({noteHide:id});
+  assert.equal(shown(ui.html()),null);assert.match(ui.html(),/Got it\. That one won&#39;t come back\./);
+  assert.equal(ui.focused(),'#noteGone');
+  ui.run('render()');assert.equal(shown(ui.html()),null,'no reroll today');assert.doesNotMatch(ui.html(),/Got it/);
+  for(let d=22;d<=30;d++){ui.clock.now=`2026-09-${d}T16:00:00Z`;ui.run('render()');assert.ok(shown(ui.html()));assert.notEqual(shown(ui.html()),line);}
+  ui.clock.now='2026-12-01T16:00:00Z';ui.run('render()');assert.notEqual(shown(ui.html()),line,'still gone months later');
+});
+
+test('personality: Keep it straightforward turns it off everywhere for that profile and leaves no empty card',async()=>{
+  const plain=await createUI();
+  const ui=await createUI({personality:NOTES(20)});
+  await ui.click({tab:'Settings'});
+  assert.match(ui.html(),/Side notes/);assert.match(ui.html(),/aria-pressed="true" data-notes="on"/);
+  await ui.click({notes:'off'});
+  assert.match(ui.html(),/aria-pressed="true" data-notes="off"/);
+  await ui.click({tab:'Today'});
+  assert.equal(ui.html(),plain.html(),'Home is exactly the practical Home');
+  await ui.click({tab:'Settings'});await ui.click({notes:'on'});await ui.click({tab:'Today'});
+  assert.ok(shown(ui.html()));
+  assert.doesNotMatch((await (async()=>{const p=await createUI();await p.click({tab:'Settings'});return p})()).html(),/Side notes/,'no switch is offered when personality is off at the server');
+});
+
+test('personality: all-clear needs real, finished work; empty, failed, mismatched and filtered states never qualify',async()=>{
+  const done=bundleFor('max');for(const a of done.assignments)a.submission={...a.submission,state:'submitted'};
+  const ui=await createUI({bundles:{max:done},personality:NOTES(5)});
+  assert.match(ui.html(),/No unfinished work is listed in this snapshot\./);
+  assert.match(ui.html(),/check Canvas for anything newer/);
+  assert.equal(shown(ui.html()),'CLEAR-LINE-0.');
+  assert.ok(ui.html().indexOf('No unfinished work is listed')<ui.html().indexOf('CLEAR-LINE-0.'),'the truthful status comes first');
+  assert.doesNotMatch(ui.html(),/everything is done|all caught up|we checked/i);
+  const whole=structuredClone(done);whole.snapshot.coverage.state='complete';
+  const full=await createUI({bundles:{max:whole},personality:NOTES(5)});
+  assert.match(full.html(),/No unfinished work between /);assert.doesNotMatch(full.html(),/listed in this snapshot/);
+  const open=await createUI({personality:NOTES(5)});
+  assert.doesNotMatch(open.html(),/No unfinished work|CLEAR-LINE/);assert.match(shown(open.html()),/^DAILY-LINE/);
+  const empty=bundleFor('max');empty.assignments=[];
+  const none=await createUI({bundles:{max:empty},personality:NOTES(5)});
+  assert.doesNotMatch(none.html(),/No unfinished work is listed|CLEAR-LINE/);assert.match(none.html(),/not the same as no work/);
+  const failed=await createUI({bundles:{},personality:NOTES(5)});
+  assert.match(failed.html(),/not available/);assert.doesNotMatch(failed.html(),/side-note|CLEAR-LINE|DAILY-LINE/,'an error is never decorated');
+  const wrong=await createUI({bundles:{max:bundleFor('adrian')},personality:NOTES(5)});
+  assert.doesNotMatch(wrong.html(),/side-note|CLEAR-LINE|DAILY-LINE/);
+  await open.click({tab:'Board'});await open.click({focus:'assessments'});await open.click({period:'7'});
+  assert.doesNotMatch(open.html(),/No unfinished work is listed|CLEAR-LINE|side-note/,'an empty filter is a filter state');
+});
+
+test('personality: broken storage, a corrupt saved state and hostile text are all harmless',async()=>{
+  const ui=await createUI({personality:NOTES(20)});
+  ui.context.localStorage.setItem=()=>{throw new Error('full')};ui.context.localStorage.getItem=()=>{throw new Error('blocked')};
+  ui.run('render()');const line=shown(ui.html());assert.ok(line);
+  ui.run('render()');assert.equal(shown(ui.html()),line,'stable in memory when storage is blocked');
+  assert.match(ui.html(),/SYNTHETIC-M/,'coursework is unaffected');
+  const bad=await createUI({personality:NOTES(20),noteState:'{"day":5,"pick":"x","history":[1,{"id":2}],"hidden":"all","off":"yes"}'});
+  assert.ok(shown(bad.html()));
+  const evil=await createUI({personality:{version:1,enabled:true,entries:[{id:'x',text:'<img src=x onerror=alert(1)>',surfaces:['daily_extra'],kind:'fact',source:'javascript:alert(1)'}]}});
+  assert.match(evil.html(),/&lt;img src=x onerror=alert\(1\)&gt;/);assert.doesNotMatch(evil.html(),/<img|javascript:/);
+  for(const junk of [{enabled:true},{enabled:true,entries:'no'},{enabled:false,entries:NOTES(3).entries},{enabled:true,entries:[null,{id:1},{id:'x',text:'y'}]}]){
+    const off=await createUI({personality:junk});assert.doesNotMatch(off.html(),/side-note/);assert.match(off.html(),/SYNTHETIC-M/);}
+});
 
 // ---- Codex independent review, Sept 19: a stalled request must never trap a student on Loading ----
 const stall=(_url,opts={})=>new Promise((_,reject)=>opts.signal?.addEventListener('abort',()=>reject(new Error('aborted'))));

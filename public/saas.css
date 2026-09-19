@@ -80,3 +80,5 @@ nav button.active{color:var(--title);border-top:3px solid var(--brand)}
 
 .setting{margin:0 0 22px;padding-top:14px;border-top:1px solid var(--line)}.setting:first-of-type{border-top:0;padding-top:0}.setting .section-title{margin:0 0 8px}.setting .chips{display:flex;flex-wrap:wrap;gap:8px}.setting p{margin:6px 0}
 @media(max-width:730px){.controls{display:none}}
+
+.side-note{margin:18px 0;padding:12px 14px;border-left:4px solid var(--line);background:var(--panel)}.side-note .eyebrow{margin:0 0 4px}.side-note-text{margin:0 0 2px;font-size:1.02em}.side-note .linkish{padding-left:0;font-size:.85em;color:var(--muted)}.all-clear{margin:8px 0}
