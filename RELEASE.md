@@ -39,7 +39,7 @@ The repository is public. Never commit captures or bundles. `npm run check` fail
 
 ## After "publish": verify before sharing
 
-1. Open the permanent URL, https://hallway-robmoyer.replit.app. Both profiles load real coursework with the expected capture times; "Change profile" at the bottom of Home returns to the profile screen and the other profile then opens its own coursework.
+1. Open the permanent URL, https://hallway-robmoyer.replit.app. Both profiles load real coursework with the expected capture times; "Change profile" on the Settings tab returns to the profile screen and the other profile then opens its own coursework.
 2. One assignment and one material open for each profile; links open.
 3. Confirm Replit's feedback widget does NOT appear (it is blocked on purpose; feedback comes to Roberto directly for now).
 4. On the iPhone: add the URL to the Home Screen, open it from there, pick each profile, open an assignment, go Back and Home.
