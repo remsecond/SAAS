@@ -1,8 +1,6 @@
 run = "npm start"
 
 [deployment]
-# Configure maximum servers = 1 in Publishing settings before release.
-# Sessions and attempt limits are in-memory; restarts sign everyone out.
 run = ["sh", "-c", "npm start"]
 deploymentTarget = "autoscale"
 
