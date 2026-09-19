@@ -15,6 +15,7 @@ async function createUI(options = {}) {
   const bundles = options.bundles || {max: bundleFor('max'), adrian: bundleFor('adrian')};
   const storage = new Map(options.remembered === null ? [] : [['hallway.student', options.remembered || 'max']]);
   if (options.prefs) storage.set('hallway.prefs', options.prefs);
+  const timers = [];
   const requests = [];
   const elements = new Map();
   const listeners = {};
@@ -33,7 +34,7 @@ async function createUI(options = {}) {
     return elements.get(id);
   }
   const sandbox = {
-    console, URL, Intl, Date:class extends Date {}, CSS:{escape:s=>String(s).replace(/[^a-zA-Z0-9_-]/g,c=>'\\'+c)}, setTimeout: () => 1, clearTimeout() {},
+    console, URL, Intl, Date:class extends Date {}, CSS:{escape:s=>String(s).replace(/[^a-zA-Z0-9_-]/g,c=>'\\'+c)}, setTimeout: (fn, ms) => {timers.push({fn, ms, live:true});return timers.length;}, clearTimeout(id) {if(timers[id-1])timers[id-1].live=false;}, AbortController,
     document: {getElementById: element, querySelector: element, body:element('body')},
     window: {addEventListener(type,fn){listeners['window:'+type]=fn;},scrollY:17, scrollTo() {}, matchMedia: () => ({matches:false,addEventListener(){}})},
     location: {pathname:'/',search:'',hash:'',assign(url) {this.destination=url;}},
@@ -58,7 +59,8 @@ async function createUI(options = {}) {
   }
   const settle=async()=>{for(let i=0;i<6;i++)await new Promise(resolve=>setImmediate(resolve));};
   await settle();
-  return {context,settle,requests,storage,element,run:code=>vm.runInContext(code,context),html:()=>element('app').innerHTML,
+  return {context,settle,requests,storage,element,timers,
+    async fireTimeouts(){for(const x of timers.filter(x=>x.live&&x.ms>=5000)){x.live=false;x.fn();}await settle();},run:code=>vm.runInContext(code,context),html:()=>element('app').innerHTML,
     focused:()=>focused,
     windowEvent(type, event={}) {return listeners['window:'+type](event);},
     event(type, target) {return listeners['app:'+type]({target});},
@@ -367,3 +369,60 @@ test('leaving the page clears every student\'s local edits',async()=>{
   assert.equal(ui.html(),'');
 });
 module.exports={createUI};
+
+// ---- Codex independent review, Sept 19: a stalled request must never trap a student on Loading ----
+const stall=(_url,opts={})=>new Promise((_,reject)=>opts.signal?.addEventListener('abort',()=>reject(new Error('aborted'))));
+const okJson=value=>({ok:true,status:200,json:async()=>structuredClone(value)});
+
+test('a snapshot request that never answers times out into Try again and Change profile, and both work',async()=>{
+  let mode='stall';
+  const ui=await createUI({remembered:null,fetch:async(url,opts)=>{
+    if(url==='/content/personality.json')return {ok:false,status:404,json:async()=>({})};
+    if(url==='/api/students')return okJson({students:STUDENTS});
+    const id=new URL(url,'http://localhost').searchParams.get('student');
+    return mode==='stall'&&id==='max'?stall(url,opts):okJson(bundleFor(id));}});
+  await ui.click({student:'max'});await ui.settle();
+  assert.match(ui.html(),/Opening Max&#39;s coursework/);
+  assert.ok(ui.timers.some(x=>x.live&&x.ms>=5000&&x.ms<=20000),'a bounded timeout is armed');
+  await ui.fireTimeouts();
+  assert.match(ui.html(),/taking too long/);assert.match(ui.html(),/data-retry="snapshot"/);assert.match(ui.html(),/data-profiles="1"/);
+  assert.doesNotMatch(ui.html(),/SYNTHETIC|Needs you/,'nothing fake is shown');
+  await ui.click({retry:'snapshot'});await ui.settle();await ui.fireTimeouts();
+  assert.match(ui.html(),/taking too long/,'a second stall ends the same way');
+  await ui.click({profiles:'1'});assert.match(ui.html(),/Choose your profile/);
+  await ui.click({student:'adrian'});await ui.settle();
+  assert.match(ui.html(),/SYNTHETIC-A/,'the other profile is reachable while one is stalled');
+  await ui.click({tab:'Settings'});await ui.click({profiles:'1'});mode='ok';
+  await ui.click({student:'max'});await ui.settle();
+  assert.match(ui.html(),/SYNTHETIC-M/,'and the stalled one recovers when the connection does');
+  assert.equal(ui.timers.filter(x=>x.live&&x.ms>=5000).length,0,'finished requests leave no timeout behind');
+});
+
+test('a late answer after the timeout, or after moving on, never replaces the current screen',async()=>{
+  let release;
+  const ui=await createUI({remembered:null,fetch:async url=>{
+    if(url==='/content/personality.json')return {ok:false,status:404,json:async()=>({})};
+    if(url==='/api/students')return okJson({students:STUDENTS});
+    const id=new URL(url,'http://localhost').searchParams.get('student');
+    return id==='max'?new Promise(resolve=>{release=()=>resolve(okJson(bundleFor('max')))}):okJson(bundleFor(id));}});
+  await ui.click({student:'max'});await ui.settle();await ui.fireTimeouts();
+  assert.match(ui.html(),/taking too long/);
+  release();await ui.settle();
+  assert.match(ui.html(),/taking too long/,'the slow answer is ignored once the app has given up on it');
+  assert.doesNotMatch(ui.html(),/SYNTHETIC-M/);
+  await ui.click({profiles:'1'});await ui.click({student:'adrian'});await ui.settle();
+  assert.match(ui.html(),/SYNTHETIC-A/);assert.doesNotMatch(ui.html(),/SYNTHETIC-M/);
+});
+
+test('a profile list that never answers times out into Try again, which recovers',async()=>{
+  let mode='stall';
+  const ui=await createUI({remembered:null,fetch:async(url,opts)=>{
+    if(url==='/content/personality.json')return {ok:false,status:404,json:async()=>({})};
+    if(url==='/api/students')return mode==='stall'?stall(url,opts):okJson({students:STUDENTS});
+    return okJson(bundleFor(new URL(url,'http://localhost').searchParams.get('student')));}});
+  assert.match(ui.html(),/Opening Hallway/);
+  await ui.fireTimeouts();
+  assert.match(ui.html(),/Could not open Hallway/);assert.match(ui.html(),/data-retry="students"/);
+  mode='ok';await ui.click({retry:'students'});await ui.settle();
+  assert.match(ui.html(),/Choose your profile/);
+});

@@ -3,6 +3,6 @@
   "version": "0.3.0",
   "private": true,
   "description": "Hallway school companion design preview",
-  "scripts": { "start": "node server.cjs", "check": "node check.cjs && node --test security.test.cjs ui.test.cjs" },
+  "scripts": { "start": "node server.cjs", "check": "node check.cjs && node --test security.test.cjs ui.test.cjs capture.test.cjs" },
   "engines": { "node": ">=20" }
 }
