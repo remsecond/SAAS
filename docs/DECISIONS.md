@@ -34,3 +34,15 @@ Do not encode guesses about current publication approval as durable product deci
 ## D15 — September 19, 2026: orchestration assignment
 
 Roberto’s explicit new-task kickoff assigns Codex cross-team coordination, strategic review, bounded delegation and evidence quality. Claude retains implementation/integration/release ownership; Roberto retains product acceptance and publication authority. This supersedes passive-review-only wording in older records, preserving D06 and one execution owner per workstream. Broader product direction remains a hypothesis and priority guide. The authorized initial outcome is reconciliation and a morning-briefing packet, not blanket implementation or publication.
+
+## D16 — September 19, 2026: companion shell, native authority
+
+Source: Roberto explicitly chose this separation after investigating different access on iPhone and PC. Hallway should be capable of serving as the student's primary shell across school services: bring together permitted read-only information, analyze it, and help prepare study guides, drafts and other student-owned work. This is an architectural direction, not authorization to implement every possible service or analysis feature.
+
+Official actions remain in the authoritative native service. Submission, sending communications, creating or changing official assignments, and other official record changes hand off to the appropriate school service, where the user reviews and performs the action under that service's account and permissions. Local personal planning is distinct from changing an official assignment. Hallway does not submit or send on the student's behalf.
+
+Keep source facts, Hallway-derived guidance and personal drafts distinguishable. Preserve source links, capture time, coverage and uncertainty. Opening the native service, copying a draft, or checking a local box is not evidence that something was submitted or sent; Hallway may report official status only from source evidence, labeled with its freshness. A failed handoff must leave an honest explanation and preserve prepared work within the applicable storage behavior, not simulate success.
+
+The native service owns authentication, permissions and official outcomes. The shell does not bypass sign-in, promise identical access across devices, or require embedding native services. Sanctioned read-only access still needs demonstrated permission and availability. Existing privacy, no-reporting-upward and separate external-AI-transfer decisions continue to apply; read-only is not blanket permission to transmit student data elsewhere.
+
+Owner: Codex maintains the architectural boundary and independent review; Claude owns implementation/integration. Verification for future features must cover the handoff destination and correct account context, unavailable access, no silent writes/sends, and no false completion after returning. The supplied screenshot illustrates the existing original-assignment handoff; it does not diagnose the reported iPhone access loss or establish its cause. No app change or publication authorized by recording this decision.

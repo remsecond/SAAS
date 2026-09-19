@@ -27,6 +27,8 @@ Historical capture totals, not refreshed: Max 9 courses / 25 assignments / 34 re
 
 ## Implications and next actions
 
+New explicit product decision: D16 records Hallway as a potential primary companion shell with permitted read-only analysis/preparation and native-service authority for official actions. The morning-briefing packet now carries that boundary. Roberto reports lost iPhone access while PC access remains; the affected access path and cause are not established. The supplied screenshot demonstrates an original-assignment handoff, not an iPhone diagnosis. No access fix is claimed or running. Claude's scope review should preserve this boundary in any proposed implementation.
+
 Home already shows next captured deadline and three attention items. Builder supplies no task-specific nextAction; drafts/checklists/follow-up state reset on reload. Unknown/on-paper states require care in prose. The packet proposes one specific navigation action, not an inferred homework plan.
 
 Keep manual captures until sanctioned durable access is demonstrated. Prior notes report a transfer control requiring Roberto’s participation; it has not been retested or lifted here. Telemetry-first historical prompts are superseded by the newer priority guide; no usage logging starts.

@@ -4,6 +4,10 @@ Source: Roberto's supplied direction, written September 19, 2026 from his conver
 
 ## The product thesis
 
+### Accepted authority boundary — September 19 update
+
+Roberto subsequently chose Hallway as a potential primary companion shell across school services: permitted read-only aggregation and analysis, study preparation and personal drafts in Hallway; official submissions, communications and assignment changes in the authoritative native service. This boundary is an accepted design principle, unlike the broader feature hypotheses below. See D16 in `DECISIONS.md` for handoff, source-truth, access and privacy requirements. It does not authorize new integrations, external AI transfers or publication.
+
 Generic capture/summarize/prioritize/brief functionality is becoming commonplace. Hallway's value should not rest on being another assignment organizer. Its narrower opportunity is a school companion a teenager did not necessarily choose, grounded in actual school information and using a voice he does not hate.
 
 The important choices have often been anti-features: no other-brother UI in everyday screens, no surveillance, no nagging, no jokes at the student's expense. Hallway says what it cannot see because a false all-clear is especially damaging for schoolwork.

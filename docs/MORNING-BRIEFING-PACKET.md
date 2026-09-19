@@ -22,6 +22,8 @@ No eligible item: “No starting item selected from this capture. Check the boar
 
 ## Source and freshness contract
 
+Authority boundary: follow D16. Hallway prepares and explains; official submissions, communications and assignment changes happen in the native school service. The briefing opens captured details/source links, never submits or sends. Returning from an original-source link must not mark an assignment complete without new source evidence. Native sign-in or device-access failure is not a successful handoff and does not authorize a workaround.
+
 Every version of this slice is a capture briefing, including same-day captures. Show the absolute capture date/time and “Frozen copy; changes after capture are not included.” This avoids inventing a freshness threshold or adding a wall-clock dependency. A Friday capture opened Monday remains Friday’s capture. Never say “today’s work,” “due this afternoon,” “you are caught up,” or “the rest can wait.” `demoNow` is a reference clock, not freshness evidence; personality rotation is separate.
 
 Use only validated active-profile records and existing source links. Preserve partial-coverage disclosures. Missing instructions/date/link need distinct explanations. Missing, corrupt, wrong-profile and timed-out bundles retain the existing unavailable/retry path; no briefing is fabricated. A true current-day briefing needs a later freshness/coverage design and demonstrated permitted access.
