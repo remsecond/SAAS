@@ -36,7 +36,7 @@ async function createUI(options = {}) {
     document: {getElementById: element, querySelector: element, body:element('body')},
     window: {addEventListener(type,fn){listeners['window:'+type]=fn;},scrollY:17, scrollTo() {}, matchMedia: () => ({matches:false,addEventListener(){}})},
     location: {pathname:'/',search:'',hash:'',assign(url) {this.destination=url;}},
-    localStorage: {getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v))},
+    localStorage: {getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>{storage.delete(k)}},
     fetch: options.fetch || (async url => {
       requests.push(url);
       if (url === '/api/students') return {ok:true,status:200,json:async()=>({students:structuredClone(STUDENTS)})};
@@ -79,13 +79,55 @@ test('each student sees only their own captured coursework, labeled, with no pas
   assert.doesNotMatch(ui.html(),/SYNTHETIC-M/);
   assert.equal(ui.storage.get('hallway.student'),'adrian');
 });
-test('first visit asks who is looking instead of guessing a student',async()=>{
+test('profile screen: Hallway / Choose your profile, reusable cards, Add user is Coming soon',async()=>{
   const ui=await createUI({remembered:null});
-  assert.match(ui.html(),/Whose Hallway\?/);
-  assert.doesNotMatch(ui.html(),/SYNTHETIC-/);
+  const html=ui.html();
+  assert.match(html,/<h1 class="brand">[\s\S]*?Hallway/);
+  assert.match(html,/Choose your profile/);
+  const cards=[...html.matchAll(/<button class="profile-card"[^>]*data-student="([^"]+)"[^>]*>([\s\S]*?)<\/button>/g)];
+  assert.deepEqual(cards.map(c=>c[1]),['max','adrian']);
+  const shape=c=>c[2].replace(/>[^<]+</g,'><');
+  assert.equal(shape(cards[0]),shape(cards[1]),'every profile uses the same card layout');
+  assert.match(html,/data-add-user="1" aria-expanded="false"/);
+  assert.match(html,/Add user/);assert.match(html,/Coming soon/);
+  assert.match(html,/id="addUserNote"[^>]*hidden/);
+  assert.doesNotMatch(html,/Moyer|boys|parent|family|your kids|Whose Hallway|class="switcher"/i);
+  assert.doesNotMatch(html,/SYNTHETIC-/);
   assert.deepEqual(ui.requests,['/api/students']);
-  await ui.click({student:'adrian'});await ui.settle();
-  assert.match(ui.html(),/SYNTHETIC-A/);
+});
+test('Add user explains Coming soon without a form, a request, or a new profile',async()=>{
+  const ui=await createUI({remembered:null});
+  await ui.click({addUser:'1'});
+  const html=ui.html();
+  assert.match(html,/aria-expanded="true"/);
+  assert.match(html,/id="addUserNote" class="callout" role="status" >/);
+  assert.match(html,/New profiles are not available yet/);
+  assert.doesNotMatch(html,/<form|<input|<textarea|<select|type="password"|sign up here|register/i);
+  assert.deepEqual(ui.requests,['/api/students'],'no request is made');
+  assert.equal(ui.run('students.length'),2);assert.equal(ui.run('student'),null);assert.equal(ui.storage.has('hallway.student'),false);
+  await ui.click({addUser:'1'});
+  assert.match(ui.html(),/id="addUserNote"[^>]*hidden/);
+});
+test('each profile card opens that student\'s actual coursework; All profiles returns and forgets the choice',async()=>{
+  for(const [id,own,other] of [['max','SYNTHETIC-M','SYNTHETIC-A'],['adrian','SYNTHETIC-A','SYNTHETIC-M']]){
+    const ui=await createUI({remembered:null});
+    await ui.click({student:id});await ui.settle();
+    assert.match(ui.html(),new RegExp(own));assert.doesNotMatch(ui.html(),new RegExp(other));
+    assert.match(ui.html(),/class="switcher"/);assert.match(ui.html(),/data-profiles="1"/);
+    await ui.click({profiles:'1'});
+    assert.match(ui.html(),/Choose your profile/);
+    assert.doesNotMatch(ui.html(),/SYNTHETIC-/);
+    assert.equal(ui.run('student'),null);assert.equal(ui.run('bundle'),undefined);assert.equal(ui.storage.has('hallway.student'),false);
+  }
+});
+test('a slow response arriving after returning to the profile screen is ignored',async()=>{
+  const release={};
+  const ui=await createUI({remembered:null,bundles:id=>new Promise(resolve=>{release[id]=()=>resolve(bundleFor(id));})});
+  await ui.click({student:'max'});
+  await ui.click({profiles:'1'});
+  release.max();await ui.settle();
+  assert.match(ui.html(),/Choose your profile/);
+  assert.doesNotMatch(ui.html(),/SYNTHETIC-M/);
 });
 test('switching resets filters and navigation and never shows the previous student',async()=>{
   const ui=await createUI();

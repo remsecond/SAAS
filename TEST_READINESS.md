@@ -40,3 +40,14 @@ Not done:
 - Unknown until the first publish: whether a Replit deployment carries the git-ignored `private-data/` folder. If not, the live site will honestly show "not available" and the bundles need another home.
 - The capture is frozen at Friday evening. Re-capture shortly before the boys use it.
 - Roberto accepted "no passcode for now": anyone with the published link can read both boys' coursework.
+
+## Beta checklist item — school-style profile screen (added September 18, 2026)
+
+Requirement: `HALLWAY-PROFILE-SCREEN-REQUIREMENT.md` (agreed beta scope). The earlier QA at cbc2680 does not cover it.
+
+Implemented: entry screen headed "Hallway" with the prompt "Choose your profile"; one reusable card layout for every profile (Max, Adrian); an "Add user" card marked "Coming soon" that reveals a plain explanation and nothing else — no form, no request, no stored data, no new profile; responsive grid that takes more profiles; SAAS red/charcoal, square cards; no family-specific wording; no passcodes; the Max/Adrian switcher is unchanged, plus an "All profiles" link back to this screen (it forgets the remembered profile). No account system or enrollment flow was added.
+
+Focused checks — see the status line below for the revision they were run on:
+
+- Automated (simulated DOM), 4 new tests: screen content and identical card layout; Add user explains without form/request/profile; each card opens that student's own coursework and "All profiles" returns and forgets; a slow response arriving after returning to the profile screen is ignored. Suite total 25.
+- Real browser (cloud Chromium, real bundles), 23 checks: 3 cards with no overflow or clipping at 320, 390 and 1280 px at 100% and 180% text; Tab reaches Max, Adrian, Add user in order with a visible focus ring; Enter/Space toggle the Coming soon note with focus kept and no network request; keyboard opens the right coursework; switcher still works; reload reopens the remembered profile; contrast at least 4.5:1 in light, dark and high contrast; no family-specific language.
