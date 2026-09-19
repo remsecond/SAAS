@@ -4,7 +4,7 @@ One owner, one status. Read TEST_READINESS.md for the dated release status and S
 
 ## Settled requirements (do not reopen)
 
-- Max sees Max's actual coursework; Adrian sees Adrian's. A visible switcher; the screen always says whose coursework is showing.
+- Max sees Max's actual coursework; Adrian sees Adrian's. You say who you are on the profile screen and go; the header always says whose coursework is showing. **No in-app student switcher** (Roberto, Sept 18, 2026, after using it: the boys do not look at each other's work). The only way back is one quiet "Change profile" link at the bottom of Home and on the "not available" screen. This supersedes the earlier "visible switcher" requirement and the "existing switcher still works" line in the profile-screen requirement.
 - No passcodes (Roberto re-confirmed "no passcode for now" on Sept 18, 2026). If a lock is added later it must be checked on the server, with codes typed by Roberto into Replit Secrets — never in code, GitHub or chat.
 - No fictional coursework, no fallback content, no invented deadlines or feedback. No grades.
 - SAAS design language; phone-first; frozen capture, not a live connection.
