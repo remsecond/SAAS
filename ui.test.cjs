@@ -224,13 +224,13 @@ test('frozen clock, partial-coverage wording and submission states are truthful'
   const before=ui.html();
   ui.run('Date.now=()=>0;render()');
   assert.equal(ui.html(),before);
-  assert.match(before,/Next deadline in this sample/);
+  assert.match(before,/Next deadline in this capture/);
   assert.match(before,/Captured from Canvas/);
   assert.match(before,/frozen sample, not live/);
   const attention=ui.run("data.filter(d=>d.attention).map(d=>d.id).sort().join()");
   assert.equal(attention,'a9001,a9002,a9003,a9006','submitted, graded-with-old-due-date, excused and past on-paper items are not unfinished');
   await ui.click({go:'a9005'});
-  assert.match(ui.html(),/GRADED/);assert.match(ui.html(),/Hallway does not show grades/);
+  assert.match(ui.html(),/<b>Graded<\/b>/);assert.match(ui.html(),/Hallway does not show grades/);
   assert.doesNotMatch(ui.html(),/<span>Grade<\/span>|points possible|score/i);
   await ui.click({back:'1'});await ui.click({go:'a9007'});
   assert.match(ui.html(),/cannot tell whether it is done/);
@@ -239,7 +239,7 @@ test('frozen clock, partial-coverage wording and submission states are truthful'
   assert.match(ui.html(),/no written instructions in Canvas/);
   const empty=bundleFor('max');empty.assignments=[];
   const none=await createUI({bundles:{max:empty}});
-  assert.match(none.html(),/No upcoming deadline in this sample/);
+  assert.match(none.html(),/No upcoming dated item is listed in this capture/);
   assert.match(none.html(),/not the same as no work/);
   await none.click({tab:'Courses'});
   assert.match(none.html(),/8 of 10 Canvas items are included/);
@@ -334,15 +334,29 @@ test('theme, width and large text controls change presentation',async()=>{
   ui.element('theme').value='contrast';ui.element('theme').onchange();
   assert.equal(ui.element('body').dataset.theme,'contrast');
 });
-test('Home puts unfinished work first, soonest first, and keeps detail navigation',async()=>{
+test('Home leads with the next deadline, then upcoming work; earlier items sit in a labeled disclosure; detail navigation stays',async()=>{
   const ui=await createUI();
   const html=ui.html();
-  const start=html.indexOf('aria-label="Needs you"');
+  const hero=html.slice(html.indexOf('class="hero"'),html.indexOf('aria-label="Coming up"'));
+  assert.match(hero,/Next deadline in this capture/);
+  assert.match(hero,/Due Sun, Sep 20 · 7:35 PM/,'explicit Due, weekday, snapshot time zone');
+  assert.match(hero,/reference time, Sep 18, 2026, 7:35 PM\. Not live\./,'absolute reference date next to the lead');
+  assert.doesNotMatch(hero,/\btoday\b/i,'no today claim from frozen data');
+  assert.match(hero,/data-go="a9001"/);
+  const start=html.indexOf('aria-label="Coming up"');
   assert(start>=0 && start<html.indexOf('What changed'));
-  const attention=html.slice(start,html.indexOf('</section>',start));
-  assert(attention.indexOf('data-go="a9002"')<attention.indexOf('data-go="a9001"'));
-  assert.doesNotMatch(attention,/data-go="a9004"/);
-  assert.match(attention,/See all unfinished work \(3 dated, 1 with no date\)/);
+  const upcoming=html.slice(start,html.indexOf('</section>',start));
+  assert.match(upcoming,/data-go="a9003"/);
+  assert.doesNotMatch(upcoming,/data-go="a9001"/,'the hero item is not repeated');
+  assert.doesNotMatch(upcoming,/data-go="a9002"/,'overdue work is never the lead');
+  const earlier=html.slice(html.indexOf('<details class="earlier"'),html.indexOf('</details>',html.indexOf('<details class="earlier"')));
+  assert.match(earlier,/<summary>Earlier items to check \(1\)<\/summary>/);
+  assert.match(earlier,/recorded status can be out of date/);assert.match(earlier,/checking Canvas may be the next step/);
+  assert.match(earlier,/data-go="a9002"/);
+  assert.doesNotMatch(earlier,/data-go="a9004"|data-go="a9005"|data-go="a9007"|data-go="a9008"/,'finished and past on-paper items are not attention items');
+  assert(html.indexOf('<details class="earlier"')>html.indexOf('aria-label="Coming up"'),'earlier items come after upcoming');
+  assert.match(html,/1 unfinished item has no captured date\./);
+  assert.match(html,/See all unfinished work \(3 dated, 1 with no date\)/);
   await ui.click({seeAttention:'1'});
   assert.equal(ui.run('tab'),'Board');assert.equal(ui.run('focus'),'attention');assert.equal(ui.run('period'),'all');
   assert.match(ui.html(),/4 matching items/);
@@ -352,7 +366,68 @@ test('Home puts unfinished work first, soonest first, and keeps detail navigatio
   await ui.click({go:'a9002'});
   assert.match(ui.html(),/Next action/);
   await ui.click({back:'1'});
-  assert.match(ui.html(),/aria-label="Needs you"/);
+  assert.match(ui.html(),/aria-label="Coming up"/);
+});
+const AT=days=>new Date(Date.parse('2026-09-19T02:35:15.414Z')+days*86400000).toISOString();
+function withAssignments(list){const b=bundleFor('max');const tpl=b.assignments.find(a=>a.id==='a9001');b.assignments=list.map(([id,courseId,dueAt,state])=>({...structuredClone(tpl),id,courseId,dueAt,title:'T-'+id,submission:{...tpl.submission,state}}));return b}
+test('upcoming shows three after the hero, ordered by due date, then course, then assignment id',async()=>{
+  const t=AT(3);
+  const ui=await createUI({bundles:{max:withAssignments([['a5','c502',t,'not_submitted'],['a4','c501',t,'not_submitted'],['a3','c501',t,'not_submitted'],['a1','c501',AT(1),'not_submitted'],['a9','c501',AT(4),'not_submitted'],['a8','c501',AT(6),'not_submitted']])}});
+  const html=ui.html(),start=html.indexOf('aria-label="Coming up"'),upcoming=html.slice(start,html.indexOf('</section>',start));
+  const order=[...upcoming.matchAll(/data-go="(a\d)"/g)].map(m=>m[1]).join();
+  assert.equal(order,'a3,a4,a5','ties break by course id, then assignment id; only three visible');
+  assert.match(upcoming,/2 more upcoming in this capture\./);
+  assert.match(html.slice(html.indexOf('class="hero"'),start),/data-go="a1"/);
+  assert.doesNotMatch(html,/<details class="earlier"/,'no empty disclosure');
+});
+test('with no upcoming dated item, Home says so and still routes to earlier and undated work, never an all-clear',async()=>{
+  const ui=await createUI({bundles:{max:withAssignments([['a1','c501',AT(-2),'missing'],['a2','c501',AT(-5),'not_submitted'],['a3','c502',null,'not_submitted'],['a4','c502',AT(-1),'submitted']])}});
+  const html=ui.html();
+  assert.match(html,/No upcoming dated item is listed in this capture/);
+  assert.match(html,/not the same as no work/);
+  assert.match(html,/8 of 10 Canvas items are included/,'coverage limitation stays visible');
+  assert.match(html,/Earlier items to check \(2\)/);
+  const earlier=html.slice(html.indexOf('<details class="earlier"'));
+  assert(earlier.indexOf('data-go="a1"')<earlier.indexOf('data-go="a2"'),'most recent earlier item first inside the disclosure');
+  assert.match(html,/1 unfinished item has no captured date\./);
+  assert.doesNotMatch(html,/No unfinished work|all caught up|all clear/i);
+  assert.doesNotMatch(html,/st-green[^]*Coming up/,'no green summary');
+});
+test('course color comes from the course id alone and survives filters, layout, renames and status changes',async()=>{
+  const ui=await createUI();
+  const tone=id=>ui.run(`data.find(d=>d.id===${JSON.stringify(id)}).courseTone`);
+  assert.equal(tone('a9001'),tone('a9002'),'same course, same color');
+  assert.equal(tone('a9001'),ui.run("courseTone('c501')"));
+  const cls=html=>(html.match(/class="tile card course-(\d)" data-go="a9003"/)||[])[1];
+  await ui.click({period:'all'});
+  const before=cls(ui.html());assert.ok(before!==undefined);
+  await ui.click({layout:'yes'});assert.equal(cls(ui.html().replace('tile big card','tile card')),before);
+  await ui.click({layout:'yes'});await ui.click({focus:'attention'});assert.equal(cls(ui.html()),before);
+  const renamed=bundleFor('max');renamed.courses=renamed.courses.map(c=>({...c,title:'Renamed '+c.title}));for(const a of renamed.assignments)a.submission={...a.submission,state:'graded'};
+  const other=await createUI({bundles:{max:renamed}});
+  assert.equal(other.run("data.find(d=>d.id==='a9003').courseTone"),tone('a9003'),'names and status never pick the color');
+});
+test('status is a labeled marker in sentence case, separate from course color, and local checks never change it',async()=>{
+  const ui=await createUI();
+  await ui.click({period:'all'});
+  const html=ui.html();
+  assert.match(html,/st-amber" aria-hidden="true"><\/span><b>Marked missing at capture<\/b>/);
+  assert.match(html,/st-green" aria-hidden="true"><\/span><b>Submitted in captured Canvas data<\/b>/);
+  assert.match(html,/<b>Excused<\/b>/);assert.match(html,/<b>In class \/ on paper<\/b>/);
+  assert.doesNotMatch(html,/MISSING|NOT SUBMITTED|TURNED IN|GRADED|EXCUSED|ON PAPER|STATUS UNKNOWN/,'no all-caps status');
+  assert.doesNotMatch(html,/class="tile[^"]*\b(red|orange|blue)\b/,'status no longer paints the whole card');
+  const card=html.match(/<button class="tile card[^>]*data-go="a9006">[\s\S]*?<\/button>/)[0];
+  assert(card.indexOf('class-label')<card.indexOf('item-title')&&card.indexOf('item-title')<card.indexOf('class="due"')&&card.indexOf('class="due"')<card.indexOf('status-line'),'class, title, due, status');
+  assert.match(card,/Date not captured/);
+  ui.event('change',{dataset:{check:'a9001-0'},checked:true});
+  await ui.click({go:'a9001'});
+  assert.match(ui.html(),/<b>Not submitted in Canvas<\/b>/,'a local checkmark does not change recorded status');
+});
+test('due dates show the year only when it differs from the capture year',async()=>{
+  const ui=await createUI({bundles:{max:withAssignments([['a1','c501','2027-01-05T18:00:00Z','not_submitted'],['a2','c501',AT(2),'not_submitted']])}});
+  await ui.click({period:'all'});
+  assert.match(ui.html(),/Due Tue, Jan 5, 2027 · 10:00 AM/);
+  assert.match(ui.html(),/Due Sun, Sep 20 · 7:35 PM/);
 });
 test('undated work stays visible and an empty filter offers a reset',async()=>{
   const ui=await createUI();
@@ -383,7 +458,7 @@ test('personality: one side note on Home, below the real work, and nothing about
   const ui=await createUI({personality:NOTES(20)});
   assert.match(shown(ui.html()),/^DAILY-LINE-\d+\.$/);
   assert.equal((ui.html().match(/class="side-note"/g)||[]).length,1,'at most one line on Home');
-  assert.ok(ui.html().indexOf('class="side-note"')>ui.html().indexOf('Needs you'),'sits below Needs you');
+  assert.ok(ui.html().indexOf('class="side-note"')>ui.html().indexOf('aria-label="Coming up"'),'sits below the practical information');
   assert.equal(stripNote(ui.html()),plain.html(),'titles, dates, status and order are identical with and without personality');
   for(const tab of ['Board','Courses','Settings']){await ui.click({tab});assert.equal(shown(ui.html()),null,tab+' has no side note');}
   await ui.click({tab:'Today'});await ui.click({go:'a9001'});assert.equal(shown(ui.html()),null,'never on an assignment');
@@ -506,7 +581,7 @@ test('a snapshot request that never answers times out into Try again and Change 
   assert.ok(ui.timers.some(x=>x.live&&x.ms>=5000&&x.ms<=20000),'a bounded timeout is armed');
   await ui.fireTimeouts();
   assert.match(ui.html(),/taking too long/);assert.match(ui.html(),/data-retry="snapshot"/);assert.match(ui.html(),/data-profiles="1"/);
-  assert.doesNotMatch(ui.html(),/SYNTHETIC|Needs you/,'nothing fake is shown');
+  assert.doesNotMatch(ui.html(),/SYNTHETIC|Coming up|Earlier items/,'nothing fake is shown');
   await ui.click({retry:'snapshot'});await ui.settle();await ui.fireTimeouts();
   assert.match(ui.html(),/taking too long/,'a second stall ends the same way');
   await ui.click({profiles:'1'});assert.match(ui.html(),/Choose your profile/);

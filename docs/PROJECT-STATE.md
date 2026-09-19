@@ -1,5 +1,33 @@
 # Hallway single coordination state
 
+## Design preview build — September 19, 2026 (evening Pacific) / Claude, implementation-integration-release lead
+
+**Acknowledged and executing.** Assignment acknowledged on issue #3. Execution began after checking Replit: `main` at `ccdfa18`, no uncommitted files, same as GitHub main. The agent panel still shows the old "Publish Hallway at a stable HTTPS address" task and audit text, as recorded below; I did not act on either. Replit Agent is not writing any file in this slice. Claude is the only writer.
+
+**Branch.** `claude/design-vnext-preview`, based on `codex/design-vnext` (`faedbb7`, spec) on top of `ccdfa18`. Changed files: `public/index.html`, `public/saas.css`, `ui.test.cjs`, this file. Everything else is unchanged: server, authentication, snapshot schema, bundles, private data, Canvas sign-in and handoff code, personality.
+
+**What changed**
+- Type roles are shared tokens (`--t-page`, `--t-section`, `--t-title`, `--t-class`, `--t-due`, `--t-status`), set in em so the Text size setting scales them. Headings use Montserrat 700; only the brand uses 900. Assignment titles use Figtree 700. Coursework metadata is no longer all caps.
+- One card structure everywhere (Home rows, Board tiles, Board list): class → title → "Due Mon, Sep 21 · 3:00 PM" → labeled recorded status. The year appears only when it differs from the capture year. A missing date reads "Date not captured"; the detail page keeps the explanation.
+- Course color is a fixed 8-slot palette picked by hashing the course ID. It shows as a top strip on tiles and a left edge on rows, courses and the detail header, with a subtle tint in light mode only. Dark and high-contrast modes use a lighter edge and no tint.
+- Status is a small marker plus a sentence-case label: "Submitted in captured Canvas data" (green), "Graded" (green), "Excused", "Marked missing at capture" (amber), "Not submitted in Canvas", "In class / on paper" and "Status not captured" (neutral). The submission-state mapping, attention rule and `done` rule are unchanged.
+- Home reuses the hero, now labeled "Next deadline in this capture", with the absolute reference time next to it. "After that" shows up to three upcoming attention items, ordered by due date, then course ID, then assignment ID; hero items are not repeated. After that comes an "Earlier items to check (N)" disclosure, most recent first, which says recorded status can be out of date. Then the undated count, "See all unfinished work", the side note, and the rest of Home unchanged. With nothing upcoming, the hero says "No upcoming dated item is listed in this capture" and shows the coverage limitation; the earlier and undated routes still show. The all-clear logic is unchanged.
+
+**Evidence**
+
+| Check | Result |
+| --- | --- |
+| `npm run check` | PASS, 53/53 (48 existing, 3 updated for new wording, 5 new: grouping and tie order, no-upcoming, course-color stability, status labels and card order, year display) |
+| Browser, Chromium: 320/390/1280 px × 100/180% text × light/dark/high contrast (18 combinations, synthetic data, local server) | PASS 76/76: no horizontal scroll, titles and dates never clipped, card text contrast ≥ 4.5:1, Home controls ≥ 44 px, visible keyboard focus on the disclosure, Enter opens and closes it, detail keeps "Sign in to Canvas" and "Open this assignment in Canvas" |
+| Grayscale screenshot | Every state is readable from its text label |
+| Unpublished preview on Replit with actual data | Pending: next step |
+| Real iPhone | NOT RUN (Roberto's device) |
+
+**Known limitation, not changed here.** At 180% text on a 390 px screen, the bottom navigation labels break mid-word ("Course s"). This happened before this change.
+
+**Next.** Unpublished Replit preview with the actual captures → implementation PR → Codex review. Publication is Roberto's decision after that review.
+
+
 ## Design-preview delegation — September 19, 2026 / Codex
 
 Latest explicit request from Roberto: write the design update and delegate the build. [DESIGN-VNEXT.md](DESIGN-VNEXT.md) defines the authorized first preview: consistent type hierarchy, stable course color with separate status labels, and calm Home grouping. Claude is delivery/integration/release owner; Codex owns spec and independent review. Broader heat-map/carousel/AI ideas remain exploratory. No publication authorized.

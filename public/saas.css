@@ -36,7 +36,8 @@ body[data-theme=light]{--bg:#fff;--panel:#eaeaea;--text:#3d3d3d;--muted:#626262;
 body[data-theme=default]{color-scheme:dark;--bg:#2f2f31;--panel:#3d3d3d;--text:#fff;--muted:#d6d6d9;--line:#77777c;--neutral:#3d3d3d;--button:#a6192e;--ink:#fff;--orange:#a6192e;--orange-ink:#fff;--focus:#fff;--title:#fff}
 body[data-theme=contrast]{--title:#fff;--button:#fff;--ink:#000}
 body{background:var(--bg)}
-h1,h2,h3,.brand,.tile strong,.section-title{font-family:Montserrat,Arial,sans-serif;font-weight:900}
+h1,h2,h3,.section-title{font-family:Montserrat,Arial,sans-serif;font-weight:700}
+.brand{font-family:Montserrat,Arial,sans-serif;font-weight:900}
 .workspace{max-width:1180px}.phone{border-radius:0;box-shadow:none}
 .controls{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:0}
 .controls p,.controls small,.demoset>summary{color:var(--muted)}
@@ -48,14 +49,11 @@ header{background:var(--brand);color:#fff;padding:8px 16px;flex-wrap:wrap}
 .hero,.panel,.row,.change,.chip,.filterselect,.tile,.badge,.action,.callout,textarea,.home-shortcut{border-radius:0}
 .hero,.callout{border-left-color:var(--brand)}
 .row,.tile{border:1px solid var(--line)}
-.tile,.tile.red,.tile.orange,.tile.blue{background:var(--panel);color:var(--text)}
-.tile strong{color:var(--title);font-size:1em;font-weight:700;line-height:1.4}
-.tile .course,.tile small,.tile .status{font-size:.8em;line-height:1.45}
-.tile.red{border-left:4px solid var(--brand)}
+.tile{background:var(--panel);color:var(--text)}
 .tiles.list .tile{min-height:100px;padding:14px}
 .chip,.action,.row,.home-shortcut,select{min-height:44px}
 .chip.active{background:var(--button);color:var(--ink)}
-.attention-list{margin:0 0 24px}.attention-list .row{border-left:4px solid var(--brand)}
+.attention-list{margin:0 0 24px}
 .row small,.note{font-size:.8em;line-height:1.5}
 .brand button:focus-visible,header button:focus-visible,header select:focus-visible{outline-color:#fff}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
@@ -84,3 +82,49 @@ nav button.active{color:var(--title);border-top:3px solid var(--brand)}
 .side-note{margin:18px 0;padding:12px 14px;border-left:4px solid var(--line);background:var(--panel)}.side-note .eyebrow{margin:0 0 4px}.side-note-text{margin:0 0 2px;font-size:1.02em}.side-note .linkish{padding-left:0;font-size:.85em;color:var(--muted)}.all-clear{margin:8px 0}
 
 .canvas-out{margin:18px 0 6px;padding-top:6px;border-top:1px solid var(--line)}.canvas-out h3{margin:10px 0 4px}
+
+/* ---- Design vNext, first preview: type roles, course color, calm Home (docs/DESIGN-VNEXT.md) ----
+   Sizes are em so the Text size setting scales every role together. */
+.phone{--t-page:1.5em;--t-section:1.125em;--t-title:1.125em;--t-class:.875em;--t-due:1em;--t-status:.875em}
+.screen-title{font-size:var(--t-page);line-height:1.25}
+.section-title{font-size:var(--t-section);line-height:1.35}
+.phone .class-label{display:block;font-family:Figtree,Arial,sans-serif;font-weight:700;font-size:var(--t-class);line-height:1.4;text-transform:none;letter-spacing:0;color:var(--text)}
+.phone .item-title{display:block;font-family:Figtree,Arial,sans-serif;font-weight:700;font-size:var(--t-title);line-height:1.4;color:var(--text);overflow-wrap:anywhere;margin:2px 0}
+.phone .due{display:block;font-weight:400;font-size:var(--t-due);line-height:1.45;margin:0}
+.status-line{display:inline-flex;align-items:center;gap:.45em;font-size:var(--t-status);line-height:1.5;font-weight:400;margin-top:4px}
+.status-line b{font-weight:700}
+.st-mark{flex:none;width:.8em;height:.8em;border:2px solid var(--muted);background:transparent}
+.st-green{background:#2e7d32;border-color:#2e7d32}
+.st-amber{background:#b86e00;border-color:#b86e00}
+.st-excused{background:#46607f;border-color:#46607f}
+.st-neutral{background:transparent}
+body[data-theme=default] .st-green,body[data-theme=contrast] .st-green{background:#6fcf73;border-color:#6fcf73}
+body[data-theme=default] .st-amber,body[data-theme=contrast] .st-amber{background:#ffb74d;border-color:#ffb74d}
+body[data-theme=default] .st-excused,body[data-theme=contrast] .st-excused{background:#9fb8d8;border-color:#9fb8d8}
+/* Fixed palette; the slot comes from the course ID only. Collisions are fine: the class label is authoritative. */
+.course-0{--course:#2f5d9e}.course-1{--course:#6d4aa0}.course-2{--course:#11767a}.course-3{--course:#a3336d}
+.course-4{--course:#4a5a6a}.course-5{--course:#3f3fa0}.course-6{--course:#7a5230}.course-7{--course:#1b6f9a}
+.card,.card-edge{--edge:var(--course)}
+body[data-theme=default] .card,body[data-theme=default] .card-edge{--edge:color-mix(in srgb,var(--course) 45%,#fff)}
+body[data-theme=contrast] .card,body[data-theme=contrast] .card-edge{--edge:color-mix(in srgb,var(--course) 30%,#fff)}
+.tile.card{border-top:6px solid var(--edge);justify-content:flex-start;gap:2px;min-height:0}
+.row.card,.row.card-edge{border-left:6px solid var(--edge)}
+.detail-head{border-left:6px solid var(--edge);padding-left:12px;margin:8px 0 14px}
+.detail-head .screen-title{margin:4px 0 6px}
+.status-p{margin:6px 0 0}
+/* Subtle tint in light mode only; the reading surface stays quiet. */
+body[data-theme=light] .tile.card,body[data-theme=light] .row.card{background:color-mix(in srgb,var(--course) 6%,#fff)}
+.card-body{display:block;min-width:0;flex:1}
+.chev{flex:none;font-size:1.2em}
+.hero .row.card{background:var(--bg)}
+body[data-theme=light] .hero .row.card{background:color-mix(in srgb,var(--course) 6%,#fff)}
+.hero-due{font-size:var(--t-section);line-height:1.35;margin:4px 0 6px}
+/* Cards wrap fully: two across on a phone, one across at large text sizes. */
+.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tile{grid-column:auto}.tile.big{grid-column:1/-1}
+.tiles.list .tile{min-height:0}
+.phone.large-text .tiles{grid-template-columns:1fr}
+.earlier{margin:4px 0 16px;border:1px solid var(--line);padding:0 12px 8px;font-size:1em;color:var(--text);line-height:inherit}
+.earlier>summary{display:flex;align-items:center;min-height:44px;font-weight:700;cursor:pointer}
+.earlier>p{margin:4px 0 8px}
+.undated-count{margin:12px 0 0}
