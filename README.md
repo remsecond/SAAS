@@ -2,61 +2,35 @@
 
 **Know what you're walking into.**
 
-A phone-first frozen snapshot demo. Both student slots currently use fictional examples. Neither personal snapshot has been verified or installed; see [snapshot inventory](SNAPSHOT-INVENTORY.md).
+One direct-entry school companion design preview. No passcode, student picker, or account setup. The user changed the scope from two gated fictional student demos to one richer demonstration of the product.
 
-## Deployment status
+## Content
 
-No Replit deployment or hosted HTTPS URL has been verified. Browser access returned `Transport closed` when opening Replit; inventory retry and session reset also failed. The existing Sites preview was left untouched. GitHub publication is not Replit deployment.
+The preview develops the assignment and resource scenarios from the original Hallway design: what needs attention, what changed, useful next actions, related materials, drafts and checklists. Reported prototype examples and prepared placeholder content are labeled; they are not verified current school records. No personal grades are included. The demo clock remains fixed, separately from source-capture status. Trends & Learnings explains that history has not been collected; there is no working AI chat, email sending, school update or background refresh.
 
-## Run and test
+Edit the content in `fixtures.cjs`; edit the interface in `public/index.html`. Keep next steps and missing-material explanations useful at the point of use. Preserve instant filters, tile/list view, nested Back, Home, themes, large text, and draft/checklist retention during navigation. Reload resets local work.
 
-Node.js 20 or newer. No dependencies, database, school connection, AI, or background refresh.
+## Run
+
+Node.js 20 or newer; no package dependencies or secrets required.
 
 ```
 npm run check
-npm run setup-access
+npm start
 ```
 
-Setup writes a fresh ignored `private-data/access-*` directory containing `runtime.env` (the session secret) and separate student access notes. It never prints the secret or overwrites an earlier set. Windows access is restricted to the current user; Unix permissions are 0700/0600. Keep these files outside shared folders.
+Open http://localhost:3000. The server returns the one reviewed design snapshot through `/api/snapshot`. Old `HALLWAY_*` secret values and personal snapshot configuration are ignored. Requests cannot choose another bundle. Source files, runtime files, and filesystem paths are not served. The old `/login` URL redirects to the preview.
 
-Load local configuration with `node --env-file=private-data/access-<generated>/runtime.env server.cjs`, or set values through Replit's Secrets and published-app secrets. `npm start` uses its environment. Missing/invalid configuration leaves the app locked. Secure cookies require HTTPS for browser use. Automated tests exercise HTTP directly and verify cookie attributes.
+## Replit
 
-| Protected setting | Purpose |
-| --- | --- |
-| `HALLWAY_SESSION_SECRET` | Random session signing secret, at least 32 bytes |
-| `HALLWAY_SNAPSHOTS_JSON` | Optional JSON bundles keyed `max` and `adrian`; omitted identities use fictional fixtures |
+Project: https://replit.com/@robmoyer/Hallway
 
-Use setup to generate a session secret. Rotate sessions by replacing the secret and restarting or republishing.
+Hosted URL: https://hallway-robmoyer.replit.app
 
-## Security boundary
+The hosted URL was reachable, but this updated direct-entry version has not yet been synchronized or verified there. The earlier hosted version displayed a name picker without a passcode. See HANDOFF.md for exact status.
 
-The server gates both the page and `/api/snapshot`. The student chosen on the sign-in screen is stored in the signed session; parameters cannot select another bundle. This fictional demo does not require a passcode. Cookies are Secure, HttpOnly, SameSite, time-limited, and revoked on logout. Attempts are limited; personal responses use `Cache-Control: no-store`. No public route exposes snapshots, source files, or configuration. No service worker is installed. School text is escaped before rendering.
+To update: review and run `npm run check`, commit and push. In the existing Replit project inspect any Replit-only changes, synchronize the reviewed GitHub revision, run checks, and publish using `npm start` with port 3000. Confirm the actual hosted page opens directly to the board. Do not mistake GitHub push for deployment. Review any new paid commitment before accepting it.
 
-Sessions and attempt counters are in memory. **Run one instance only.** Set Autoscale maximum servers to 1. A Reserved VM is another option only after reviewing actual account cost. Restarts, scale-to-zero, and republishing invalidate sessions and reset counters. This is a small demo, not multi-instance authentication infrastructure.
+## Tests
 
-## Replit publication
-
-1. Inspect existing apps for matching `remsecond/SAAS` before importing a duplicate. Synchronize reviewed GitHub code, preserving any Replit-only work.
-2. Configure Secrets and published-app secrets. Start with fictional fixtures; leave `HALLWAY_SNAPSHOTS_JSON` unset.
-3. Run checks and start the app. Test the gate and both logins in the HTTPS preview.
-4. Use server hosting, never Static. Run `npm start`; internal port 3000, external port 80; maximum one instance. Read the actual cost and obtain approval for any new paid commitment.
-5. Publish and open the actual hosted HTTPS URL. Verify signed-out rejection, both identities, logout, and tampered student parameters. Check narrow widths, enlarged text, focus and navigation.
-6. Record URL and exact deployed commit in HANDOFF.md, update private access notes, and share privately. Preview or git push is not deployment verification.
-
-[Replit deployment types](https://docs.replit.com/features/publishing/deployment-types) documents hosting choices and maximum-server configuration. Check account-specific prices in the publishing screen.
-
-## Replacing snapshots
-
-Use `fixtures.cjs` and the parent-folder contract as structural examples. A personal import additionally requires `snapshot.ownership` containing `verified: true`, its matching `studentId`, and a nonempty `evidence` explanation from an actual ownership review. This flag is an operator attestation, not automated proof. Every owned record must match its bundle's student and all references must resolve. Include actual capture time, separate frozen reference time, timezone, declared coverage, and evidence. Distinguish no matching filters, nothing due in a verified scope, not captured, unavailable through the parent view, and unknown reasons. Never infer the reason from a blank field.
-
-Prepare and review bundles outside Git. Inject reviewed JSON into protected `HALLWAY_SNAPSHOTS_JSON`, restart/republish, and retest both identities and signed-out access. Keep fictional fixtures until source verification and protected deployment are complete. Never put private records in public assets, source maps, Git, browser storage, or caches.
-
-## Interface and test limits
-
-Only the authorized snapshot is loaded. Filters update immediately; tile/list views, Home, nested Back, themes, text sizing, and navigation-local drafts/checklists remain. Reload/logout resets local work. Source caveats appear beside affected content; prepared examples are labeled. Trends & Learnings has no history or fabricated analysis. No messages are sent or school records changed.
-
-Checks include syntax/privacy checks, HTTP security tests, simulated-DOM UI logic, and private session-secret provisioning. Simulated DOM tests do not establish rendered layout, browser cookies, actual keyboard accessibility, or iPhone usability. Browser/device verification remains required before distribution.
-
-## Updating code
-
-Review, run `npm run check`, commit and push. Pull that exact revision in Replit, recheck settings and tests, then republish. Verify the hosted URL and update HANDOFF.md. Keep secrets and records out of commits.
+Automated checks cover public demo routing, consistent content, ignored legacy runtime bundles, escaped source text, and UI behavior using a simulated DOM. Browser visual checks, real keyboard traversal, narrow-width/enlarged-text rendering, and actual iPhone testing must be recorded separately. A simulated DOM is not a device test.

@@ -6,9 +6,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const test = require('node:test');
-const {getFixture} = require('./fixtures.cjs');
+const {getDemoSnapshot} = require('./fixtures.cjs');
 
-async function createUI(snapshot = getFixture('max'), response = {}) {
+async function createUI(snapshot = getDemoSnapshot(), response = {}) {
   const elements = new Map();
   const listeners = {};
   let focused = null;
@@ -49,146 +49,105 @@ async function createUI(snapshot = getFixture('max'), response = {}) {
 }
 
 
-test('frozen reference clock and capture status remain explicit',async()=>{
+
+test('public demo has no identity gate, grades or clock drift',async()=>{
   const ui=await createUI();
-  assert.match(ui.html(),/Fictional sample data · no personal snapshot captured/);
-  assert.match(ui.html(),/Frozen demo clock:/);
-  assert.match(ui.html(),/1h 17m from the frozen clock/);
+  assert.doesNotMatch(ui.html(),/data-logout|passcode|Select.*student|Max|Adrian/);
+  assert.equal(ui.context.location.destination,undefined);
   const before=ui.html();
   ui.run('Date.now=()=>0;render()');
-  assert.equal(ui.html(),before,'wall clock must not change deadlines');
+  assert.equal(ui.html(),before);
+  for(const assignment of getDemoSnapshot().assignments) {
+    await ui.click({go:assignment.id});
+    assert.doesNotMatch(ui.html(),/<span>Grade<\/span>|points possible/i);
+  }
 });
-test('filters apply immediately, keep overdue/undated items, and explain empty views',async()=>{
+test('course and assessment filters retain selection across detail navigation',async()=>{
   const ui=await createUI();
   await ui.click({tab:'Board'});
-  ui.event('change',{id:'course',value:'science',dataset:{}});
-  assert.match(ui.html(),/3 matching items/);
-  assert.match(ui.html(),/data-go="welcome"/);
-  assert.match(ui.html(),/data-go="undated"/);
-  assert.doesNotMatch(ui.html(),/class="tile[^>]*data-go="outline"/);
-  await ui.click({focus:'assessments'});
-  assert.match(ui.html(),/0 matching items/);
-  assert.match(ui.html(),/not an all-clear/);
-  await ui.click({reset:'1'});
-  assert.match(ui.html(),/5 matching items/);
   await ui.click({period:'all'});
-  assert.match(ui.html(),/7 matching items/);
+  ui.event('change',{id:'course',value:'science',dataset:{}});
+  const expected=ui.run("data.filter(d=>d.courseId==='science').length");
+  assert.match(ui.html(),new RegExp(expected+' matching item'));
+  await ui.click({go:'lab'});
+  await ui.click({back:'1'});
+  assert.equal(ui.run('course'),'science');
+  assert.equal(ui.run('period'),'all');
   await ui.click({layout:'yes'});
   assert.match(ui.html(),/class="tiles list"/);
+  await ui.click({home:'1'});
+  assert.equal(ui.run('course'),'all');
+  assert.equal(ui.run('period'),'7');
 });
-test('nested Back restores logical focus target and Home resets filters',async()=>{
+test('drafts and checklists retain edits during navigation without pretending to send',async()=>{
   const ui=await createUI();
-  await ui.click({go:'reflection'});
-  await ui.click({go:'prepare:reflection'});
-  await ui.click({go:'resource:lab-preview'});
-  assert.match(ui.html(),/Prepared fictional example/);
+  await ui.click({go:'draft:email'});
+  assert.match(ui.html(),/Nothing is sent/i);
+  ui.event('input',{dataset:{draft:'email'},value:'My own <draft> & question'});
+  await ui.click({home:'1'});
+  await ui.click({go:'draft:email'});
+  assert.match(ui.html(),/My own &lt;draft&gt; &amp; question/);
+  await ui.click({go:'tracker:email'});
+  ui.event('change',{dataset:{check:'email-0'},checked:true});
+  await ui.click({home:'1'});
+  await ui.click({go:'tracker:email'});
+  assert.match(ui.html(),/data-check="email-0" checked/);
+});
+test('related material is readable and nested Back returns to its assignment',async()=>{
+  const demo=getDemoSnapshot();
+  const assignment=demo.assignments.find(a=>a.resourceIds.some(id=>demo.resources.find(r=>r.id===id)?.body));
+  const resource=demo.resources.find(r=>assignment.resourceIds.includes(r.id)&&r.body);
+  const ui=await createUI(demo);
+  await ui.click({go:assignment.id});
+  await ui.click({go:'prepare:'+assignment.id});
+  await ui.click({go:'resource:'+resource.id});
+  assert(ui.html().includes(ui.run('esc('+JSON.stringify(resource.body)+')')));
   await ui.click({back:'1'});
   assert.match(ui.html(),/Help me prepare/);
-  assert.equal(ui.focused(),'[data-go="resource\\:lab-preview"]');
   await ui.click({back:'1'});
-  assert.match(ui.html(),/Teacher feedback/);
-  await ui.click({home:'1'});
-  assert.equal(ui.run('navStack.length'),0);
-  assert.equal(ui.run('page'), 'home');
-  assert.equal(ui.run('period'), '7');
-});
-test('drafts, checklists and follow-up notes persist across navigation without clearing school flags',async()=>{
-  const ui=await createUI();
-  await ui.click({go:'welcome'});
-  await ui.click({sent:'welcome'});
-  assert.match(ui.html(),/MISSING/);
-  assert.match(ui.html(),/school status has not changed/);
-  await ui.click({go:'draft:welcome'});
-  ui.event('input',{dataset:{draft:'welcome'},value:'My own <draft> & question'});
-  await ui.click({home:'1'});
-  await ui.click({go:'draft:welcome'});
-  assert.match(ui.html(),/My own &lt;draft&gt; &amp; question/);
-  await ui.click({go:'tracker:welcome'});
-  ui.event('change',{dataset:{check:'welcome-0'},checked:true});
-  await ui.click({home:'1'});
-  await ui.click({go:'tracker:welcome'});
-  assert.match(ui.html(),/data-check="welcome-0" checked/);
-});
-test('unknown source values never become zero grades or reassuring all-clear',async()=>{
-  const ui=await createUI();
-  await ui.click({go:'undated'});
-  assert.match(ui.html(),/No due date is included/);
-  assert.match(ui.html(),/STATUS UNKNOWN/);
-  assert.match(ui.html(),/this does not mean zero/);
-  assert.match(ui.html(),/No feedback captured; this does not establish that none exists/);
-  await ui.click({go:'resource:lab-source'});
-  assert.match(ui.html(),/original material is not included/);
-  assert.match(ui.html(),/No verified external destination/);
+  assert.equal(ui.run('page'),assignment.id);
   await ui.click({go:'does-not-exist'});
   assert.match(ui.html(),/Item unavailable/);
-  await ui.click({home:'1'});
-  assert.match(ui.html(),/History has not been collected yet/);
 });
-test('school text and drafts are escaped and non-HTTPS source actions are suppressed',async()=>{
-  const fixture=getFixture('max');
-  fixture.assignments[0].title='<img src=x onerror=alert(1)>';
-  fixture.sources[0].url='javascript:alert(1)';
-  fixture.snapshot.student.displayName='<script>alert(1)</script>';
-  const ui=await createUI(fixture);
-  assert.doesNotMatch(ui.html(),/<img src=x|<script>alert/);
+test('content and drafts are escaped and non-HTTPS source actions suppressed',async()=>{
+  const demo=getDemoSnapshot();
+  demo.assignments[0].title='<img src=x onerror=alert(1)>';
+  demo.sources[0].url='javascript:alert(1)';
+  const ui=await createUI(demo);
+  await ui.click({tab:'Board'});await ui.click({period:'all'});
+  assert.doesNotMatch(ui.html(),/<img src=x/);
   assert.match(ui.html(),/&lt;img src=x/);
-  await ui.click({go:'welcome'});
+  await ui.click({go:demo.assignments[0].id});
   assert.doesNotMatch(ui.html(),/href="javascript:/);
   assert.equal(ui.run("safeUrl('https://example.com/a')"),'https://example.com/a');
   assert.equal(ui.run("safeUrl('data:text/html,hello')"),null);
 });
-test('load failures and expired sessions do not produce an empty work board',async()=>{
-  const failed=await createUI(undefined,{ok:false,status:503});
-  assert.match(failed.html(),/Could not open your snapshot/);
-  assert.match(failed.html(),/does not mean that no work is due/);
-  const expired=await createUI(undefined,{ok:false,status:401});
-  assert.equal(expired.context.location.destination,'/login');
+test('load failures show retry without introducing a login gate',async()=>{
+  for(const status of [401,503]) {
+    const ui=await createUI(undefined,{ok:false,status});
+    assert.match(ui.html(),/Try again/);
+    assert.equal(ui.context.location.destination,undefined);
+    assert.doesNotMatch(ui.html(),/sign-in|href="\/login"/);
+  }
 });
-test('theme and large text controls update settings; logout navigates only on success',async()=>{
+test('theme, width and large text controls change presentation',async()=>{
   const ui=await createUI();
   ui.element('size').oninput({target:{value:'180'}});
   assert.equal(ui.element('phone').style.fontSize,'1.8rem');
+  ui.element('width').oninput({target:{value:'320'}});
+  assert.equal(ui.element('phone').style.width,'320px');
   ui.element('theme').value='contrast';ui.element('theme').onchange();
   assert.equal(ui.element('body').dataset.theme,'contrast');
-  await ui.click({logout:'1'});
-  assert.equal(ui.context.location.destination,'/login');
 });
 module.exports={createUI};
-
-test('graded and excused work is complete and is not presented as needing attention',async()=>{
-  const fixture=getFixture('max');
-  fixture.assignments.find(a=>a.id==='practice').submission.state='graded';
-  fixture.assignments.find(a=>a.id==='quiz').submission.state='excused';
-  const ui=await createUI(fixture);
-  await ui.click({tab:'Board'});await ui.click({period:'all'});
-  assert.match(ui.html(),/GRADED/);assert.match(ui.html(),/EXCUSED/);
-  await ui.click({focus:'attention'});
-  assert.doesNotMatch(ui.html(),/data-go="practice"|data-go="quiz"/);
-});
-test('pagehide erases personal UI and local drafts; persisted return reloads authorization',async()=>{
+test('undated work stays visible and an empty filter offers a reset',async()=>{
   const ui=await createUI();
-  await ui.click({go:'draft:welcome'});
-  ui.event('input',{dataset:{draft:'welcome'},value:'Personal draft'});
-  ui.windowEvent('pagehide');
-  assert.equal(ui.html(),'');
-  assert.equal(ui.run('bundle'),undefined);
-  assert.equal(ui.run('data.length'),0);
-  assert.equal(ui.run('Object.keys(drafts).length'),0);
-  ui.context.fetch=async()=>({ok:false,status:401});
-  ui.windowEvent('pageshow',{persisted:true});
-  await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(ui.context.location.destination,'/login');
-  assert.doesNotMatch(ui.html(),/Personal draft|Example welcome note/);
-});
-
-test('a late snapshot response cannot refill a page after it is hidden',async()=>{
-  const ui=await createUI();
-  let finish;
-  ui.context.fetch=()=>new Promise(resolve=>{finish=resolve;});
-  const loading=ui.run('loadSnapshot()');
-  ui.windowEvent('pagehide');
-  finish({ok:true,status:200,json:async()=>getFixture('max')});
-  await loading;
-  assert.equal(ui.html(),'');
-  assert.equal(ui.run('bundle'),undefined);
+  await ui.click({tab:'Board'});
+  assert.match(ui.html(),/data-go="undated"/);
+  ui.event('change',{id:'course',value:'absent-course',dataset:{}});
+  assert.match(ui.html(),/0 matching items/);
+  assert.match(ui.html(),/Nothing matches these filters/);
+  assert.match(ui.html(),/data-reset="1"/);
+  await ui.click({reset:'1'});
+  assert.match(ui.html(),/data-go="undated"/);
 });

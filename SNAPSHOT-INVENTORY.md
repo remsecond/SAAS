@@ -1,5 +1,7 @@
 # Snapshot evidence inventory
 
+Historical inventory for the earlier personal-snapshot plan. The user has since requested one public design preview without a passcode or student selection. Reported prototype scenarios can inform that preview without being presented as verified personal records.
+
 Reviewed September 18, 2026. Neither personal snapshot is ready for deployment.
 
 | Material inspected | What it establishes | Suitable as a personal snapshot? |
