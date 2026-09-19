@@ -24,8 +24,8 @@ function rawCapture(who) {
       a(9007, course, `${tag} on paper`, at(-1), sub('unsubmitted'), {submissionTypes: ['on_paper']}),
       a(9008, course, `${tag} excused`, at(-4), sub('graded', {excused: true})),
     ],
-    modules: {[course]: [{id: 1, name: `${tag} Module`, position: 1, itemsCount: 3, itemsIncluded: true, items: [{id: 1, title: 'x', type: 'Assignment', contentId: 9001}, {id: 2, title: 'f', type: 'File', contentId: 77}, {id: 3, title: 'p', type: 'Page', pageUrl: `${tag.toLowerCase()}-guide`}]}], [other]: []},
-    pages: [{courseId: course, slug: `${tag.toLowerCase()}-guide`, title: `${tag} guide page`, body: `${tag} page body text`, htmlUrl: `https://canvas.test.example/courses/${course}/pages/${tag.toLowerCase()}-guide`, locked: false, links: []}],
+    modules: {[course]: [{id: 1, name: `${tag} Module`, position: 1, itemsCount: 3, itemsIncluded: true, items: [{id: 1, title: 'x', type: 'Assignment', contentId: 9001}, {id: 2, title: 'f', type: 'File', contentId: 77}, {id: 3, title: 'p', type: 'Page', pageUrl: `${tag.toLowerCase()}-guide`}, {id: 4, title: 'e', type: 'Page', pageUrl: 'embed-only'}]}], [other]: []},
+    pages: [{courseId: course, slug: 'embed-only', title: `${tag} slides page`, body: '[embedded: embedded content]', htmlUrl: `https://canvas.test.example/courses/${course}/pages/embed-only`, locked: false, links: [{text: 'embedded content', url: 'https://docs.google.com/presentation/d/test/embed'}]}, {courseId: course, slug: `${tag.toLowerCase()}-guide`, title: `${tag} guide page`, body: `${tag} page body text`, htmlUrl: `https://canvas.test.example/courses/${course}/pages/${tag.toLowerCase()}-guide`, locked: false, links: []}],
     files: [{courseId: course, id: 77, name: `${tag} handout.pdf`, contentType: 'application/pdf', size: 1, htmlUrl: `https://canvas.test.example/courses/${course}/files/77`, locked: false}],
   };
 }
