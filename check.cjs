@@ -10,16 +10,11 @@ for(const file of walk('public')) {
   if(file.endsWith('.html')) for(const match of source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new Function(match[1]);
   if(file.endsWith('.js'))new Function(source);
 }
-const {getDemoSnapshot}=require('./fixtures.cjs');
-const demo=getDemoSnapshot();
-assert(Number.isFinite(Date.parse(demo.snapshot.demoNow)),'fixed reference clock required');
-assert(demo.courses.length>=5,'demo should cover multiple classes');
-assert(demo.assignments.length>=8,'demo should contain a useful work board');
-assert(demo.resources.filter(r=>r.body).length>=5,'demo should include readable material');
-for(const record of demo.assignments) {
-  assert(!Object.hasOwn(record,'grade'),'no grades in the public design demo');
-  assert(demo.courses.some(c=>c.id===record.courseId),'assignment course resolves');
-  assert(demo.sources.some(s=>s.id===record.sourceId),'assignment source resolves');
-  for(const id of record.resourceIds) assert(demo.resources.some(r=>r.id===id),'related material resolves');
-}
-console.log('PASS: script syntax, useful demo content, no grades, and resolving references.');
+for(const tracked of ['server.cjs','bundles.cjs','README.md']) assert(!/require\(['"]\.\/fixtures/.test(fs.readFileSync(tracked,'utf8')),`${tracked}: authored fixtures must not be loadable at runtime`);
+assert(!fs.existsSync('fixtures.cjs'),'authored example coursework has been removed from the app');
+const ignore=fs.readFileSync('.gitignore','utf8');
+for(const rule of ['private-data/','snapshots/']) assert(ignore.split(/\r?\n/).includes(rule),`.gitignore must keep ${rule} out of the repository`);
+const {bundleFor}=require('./test-support/synthetic-capture.cjs');
+const {validateBundle}=require('./bundles.cjs');
+for(const id of ['max','adrian']) { const result=validateBundle(bundleFor(id),id); assert(result.ok,result.errors.join('; ')); }
+console.log('PASS: script syntax, no private identifiers in public files, no runtime fixtures, private data ignored, builder output validates.');

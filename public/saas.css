@@ -58,8 +58,11 @@ header{background:var(--brand);color:#fff;padding:8px 16px;flex-wrap:wrap}
 .row small,.note{font-size:.8em;line-height:1.5}
 .brand button:focus-visible,header button:focus-visible,header select:focus-visible{outline-color:#fff}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-.student-picker{background:#fff;color:#3d3d3d;border:1px solid #fff;max-width:100%;padding:8px;font-size:1em}
-.student-label{display:block;font-size:.85em;margin-bottom:4px}
+.switcher{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg)}
+.switcher-label{font-size:.8em;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.switcher .chip{min-width:88px;font-size:.95em;font-weight:700;color:var(--text);background:var(--bg)}
+.switcher .chip.active{background:var(--button);color:var(--ink);border-color:var(--button)}
+.prepared-copy{overflow-wrap:anywhere}
 nav button.active{color:var(--title);border-top:3px solid var(--brand)}
 @media(max-width:730px){.workspace{padding:0;gap:0}.phone{width:100%!important;max-width:100%;border:0;border-radius:0}.controls{margin:20px 12px 100px;width:calc(100% - 24px)}.content{padding-bottom:110px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}

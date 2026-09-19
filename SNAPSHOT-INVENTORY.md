@@ -1,22 +1,25 @@
 # Snapshot evidence inventory
 
-Current requirement: two personal snapshots using Max and Adrian's actual coursework, with student selection and no passcode. The previous assertion that the user wanted a single shared example board was incorrect. Prototype scenarios are not a replacement for actual course records.
+Requirement: two personal snapshots of Max's and Adrian's actual coursework, a visible switcher, no passcode.
 
-Reviewed September 18, 2026. Neither personal snapshot is ready for deployment.
+## Captured September 18, 2026 (Pacific)
 
-| Material inspected | What it establishes | Suitable as a personal snapshot? |
+Source: the school's Canvas site, read through the parent's signed-in observer session with `tools/canvas-capture.js`. No API token, cookie or password was used or stored.
+
+Ownership evidence: both students were confirmed as the signed-in parent's observees, and every course came from that student's own active **student** enrollment. Every submission record carried that student's Canvas user id. The builder re-checks all three and refuses a capture that fails any of them. Records are joined by Canvas ids, never by course names.
+
+| | Max | Adrian |
 | --- | --- | --- |
-| Repository at initial commit `8bf412a` | Fictional interface fixtures, no captured source bundles | No |
-| Parent-folder frozen demo plan and JSON data contract | Scope and example schema; contract explicitly says example-only | No |
-| Parent-folder study-tools audit and issue tracker | Reported observations, examples, and unresolved student-attribution concerns | No |
-| Parent-folder capability inventory and connection plan | Distinguishes reported access from verified access and missing evidence | No |
-| Parent-folder data-model note | Reported identifiers and proposed vault layout; no raw vault was found in the supplied workspace | No |
-| Older prototype HTML files and PDF-render artifacts | Design examples, not independently verified records with ownership and capture provenance | No |
+| Courses (own student enrollments) | 9 | 9 |
+| Assignments included / in Canvas | 25 / 113 | 33 / 41 |
+| Canvas pages copied (readable in Hallway) | 12 | 11 |
+| Files (link-only) | 4 | 5 |
+| Fetch errors | 0 | 0 |
 
-No raw snapshot JSON/CSV vault was found in the supplied workspace. The audit notes specifically warn that a parent grade view can contain both students' courses. Examples must not be promoted to either student's records based on course names or the selected dashboard student alone. The older Sites project was left untouched.
+Coverage is partial and declared in each bundle: 7 days back, 14 days ahead, older unfinished work, undated unfinished work. One of Max's courses lists 69 undated year-long items; those are counted and disclosed, not shown. Two courses per student had no assignments or modules in Canvas at capture.
 
-The connected-browser transport failed during this sprint, so fresh authorized source verification could not proceed. This is not evidence that the school source is unavailable or that either student has no work.
+Not captured: grades or scores (by design), Google Docs / Drive content (needs the student's own school Google account; links are kept and labeled), file contents, announcements, calendar events, change history (one capture cannot show changes).
 
-To replace each fictional fixture, obtain a bounded, read-only source capture with a verified student association for every record; actual capture timestamp; separate fixed demo reference time; declared date/course coverage; assignments, independent submission and grade fields, source evidence and linked resources. Include supported explanations for missing fields. Preserve uncertainty when a cause is unknown. Store the reviewed bundles only in protected runtime configuration, never this repository or public assets.
+Storage: `private-data/raw/*.raw.json` and `private-data/snapshots/*.json`, git-ignored. Never in this repository or `public/`.
 
-Status: Max — fictional fixture only. Adrian — fictional fixture only.
+The earlier fictional fixture (`fixtures.cjs`) has been removed. The earlier `HALLWAY_SNAPSHOTS_JSON` secret is not student data and is not read.

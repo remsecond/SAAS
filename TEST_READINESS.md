@@ -4,26 +4,20 @@
 
 Finish the existing Hallway application using the supplied SAAS design as a styling reference. Max and Adrian must each see their own actual course content, with a visible student switcher. This is a settled user requirement, not an open choice. Do not substitute fictional or prepared example boards. Keep useful assignment detail, resources, drafts, checklists, Back/Home, filters, and tile/list views. No passcodes. No replacement application or new hosting project.
 
-## Implemented locally
+## Implemented
 
-- SAAS red, charcoal, square panels, bundled Figtree/Montserrat fonts.
-- Light default; dark, device preference, and high contrast retained.
-- List default, with tile option retained.
-- Next deadline followed by Needs you before the changes feed.
-- Responsive full-width phone container; existing large-text reflow retained.
-- Existing rich coursework and prepared resources preserved.
-- Fourteen automated tests plus syntax/content checks pass. These include theme/font HTTP delivery, priority ordering, filters, nested navigation, drafts, and checklists.
+- SAAS red, charcoal, square panels, bundled Figtree/Montserrat fonts; light default with dark, device and high-contrast options; list default with tile option.
+- Actual Canvas coursework for each student, captured September 18, 2026 with verified ownership (see SNAPSHOT-INVENTORY.md). The fictional fixture is gone.
+- Visible Max/Adrian switcher. First visit asks who is looking; the choice is remembered on that device.
+- Switching resets filters and navigation, clears the previous student from the screen before loading, and ignores late responses for a student who is no longer selected.
+- Drafts, checklists and follow-up notes are separate per student, including for identical assignment ids.
+- Missing, corrupt, mislabeled or example bundles show an honest "not available" state with Try again. Never fallback content.
+- Truthful wording: "Next deadline in this sample", capture time in the header, link-only materials labeled, submitted/graded/excused never shown as unfinished, on-paper work labeled as not trackable, no grades.
+- 22 automated tests plus syntax/content checks.
 
-## Release gates still open
+## Release gates
 
-- Locate or capture each student's actual Canvas coursework and linked materials, associate records through student/course enrollment IDs, and load separate snapshots. No student selector or actual student bundles have been added in this revision.
-- Implement and test switching, including separate drafts/checklists per student.
-- Browser visual/keyboard check at 320px, 390px, desktop, and 180% text. Browser transport is unavailable in this session; automated DOM tests are not a substitute.
-- Pull into the existing Replit project without losing Replit-only edits; run checks and publish.
-- Verify the deployed revision, application behavior, and Replit/GitHub alignment.
-- Actual phone acceptance: open, switch student, filter, open an assignment/resource, go Back/Home, edit a draft, change theme, check overflow.
-
-The code is not yet a complete test release. Do not describe this styling commit as deployed or phone-tested.
+See the dated status block at the end of this file.
 
 ## Design assets
 
