@@ -28,6 +28,8 @@
       const m = (r.headers.get('Link') || '').match(/<([^>]+)>;\s*rel="next"/);
       url = m ? m[1] : null;
     }
+    // More pages than the cap: say so loudly. A silently shortened list would look like a clean capture.
+    if (url) return {error: 'pagination_exhausted', url, got: out.length};
     return out;
   };
   const parse = html => new DOMParser().parseFromString(html || '', 'text/html');
@@ -73,6 +75,11 @@
       }
       const mods = await cv(`/courses/${c.id}/modules?include[]=items&per_page=50`);
       if (!Array.isArray(mods)) { o.errors.push({what: 'modules', course: c.id, err: mods}); continue; }
+      // Canvas may embed only some (or none) of a module's items. Fetch the full list when the count says more exist.
+      for (const x of mods) if (!Array.isArray(x.items) || (x.items_count || 0) > x.items.length) {
+        const items = await cv(`/courses/${c.id}/modules/${x.id}/items?per_page=100`);
+        if (Array.isArray(items)) x.items = items; else o.errors.push({what: 'module_items', course: c.id, module: x.id, err: items});
+      }
       o.modules[c.id] = mods.map(x => ({id: x.id, name: x.name, position: x.position, itemsCount: x.items_count, itemsIncluded: Array.isArray(x.items), items: (x.items || []).map(i => ({id: i.id, title: i.title, type: i.type, contentId: i.content_id || null, pageUrl: i.page_url || null, htmlUrl: i.html_url || null, externalUrl: i.external_url || null}))}));
     }
     await Promise.all(o.assignments.map(async a => {
