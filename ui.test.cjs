@@ -215,6 +215,11 @@ test('captured material is readable, links are labeled, and nested Back returns 
   assert.match(ui.html(),/From Canvas · copied/);
   await ui.click({back:'1'});
   assert.match(ui.html(),/Help me prepare/);
+  await ui.click({go:'resource:p501-embed-only'});
+  assert.match(ui.html(),/only holds an embedded slideshow/);
+  assert.doesNotMatch(ui.html(),/From Canvas · copied/);
+  assert.match(ui.html(),/href="https:\/\/docs\.google\.com\/presentation\/d\/test\/embed"/);
+  await ui.click({back:'1'});
   await ui.click({go:'resource:l9001-1'});
   assert.match(ui.html(),/was not copied into Hallway/);
   assert.match(ui.html(),/href="https:\/\/docs\.google\.com\/document\/d\/test"/);
@@ -253,6 +258,13 @@ test('Home puts unfinished work first, soonest first, and keeps detail navigatio
   const attention=html.slice(start,html.indexOf('</section>',start));
   assert(attention.indexOf('data-go="a9002"')<attention.indexOf('data-go="a9001"'));
   assert.doesNotMatch(attention,/data-go="a9004"/);
+  assert.match(attention,/See all unfinished work \(3 dated, 1 with no date\)/);
+  await ui.click({seeAttention:'1'});
+  assert.equal(ui.run('tab'),'Board');assert.equal(ui.run('focus'),'attention');assert.equal(ui.run('period'),'all');
+  assert.match(ui.html(),/4 matching items/);
+  const board=ui.html();
+  assert(board.lastIndexOf('data-go="a9002"')<board.lastIndexOf('data-go="a9001"')&&board.lastIndexOf('data-go="a9003"')<board.lastIndexOf('data-go="a9006"'),'board is soonest first with undated last');
+  await ui.click({home:'1'});
   await ui.click({go:'a9002'});
   assert.match(ui.html(),/Next action/);
   await ui.click({back:'1'});

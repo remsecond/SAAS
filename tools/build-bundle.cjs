@@ -61,9 +61,10 @@ function buildBundle(studentId, raw, {reference} = {}) {
     if (resourceByKey.has(key)) return resourceByKey.get(key);
     const id = `p${p.courseId}-${p.slug}`.slice(0, 80);
     const sourceId = addSource('src-' + id, p.title || 'Canvas page', p.htmlUrl, 'Canvas page');
-    const body = p.body && p.body.trim();
+    const embedOnly = !!p.body && !p.body.replace(/\[embedded:[^\]]*\]/g, '').trim();
+    const body = embedOnly ? '' : p.body && p.body.trim();
     resources.push({id, studentId: sid, courseId: 'c' + p.courseId, title: p.title || 'Canvas page', kind: 'canvas_page', body: body || null, relationship,
-      availability: body ? {state: 'available'} : p.error ? unavailable('fetch_failed', 'Hallway could not read this Canvas page when the capture was taken. Open it in Canvas.') : p.locked ? unavailable('access_denied', 'This page is locked in Canvas right now.') : unavailable('empty_at_source', 'This Canvas page has no text on it.'),
+      availability: body ? {state: 'available'} : embedOnly ? unavailable('not_in_snapshot', 'This Canvas page only holds an embedded slideshow or file. Hallway saved the link, not the slides. Open it with your school account.') : p.error ? unavailable('fetch_failed', 'Hallway could not read this Canvas page when the capture was taken. Open it in Canvas.') : p.locked ? unavailable('access_denied', 'This page is locked in Canvas right now.') : unavailable('empty_at_source', 'This Canvas page has no text on it.'),
       action: {kind: 'open', label: 'Open in Canvas', url: p.htmlUrl || null}, links: (p.links || []).filter(l => classifyLink(l.url)).map(l => ({text: l.text || l.url, url: l.url})), sourceId});
     resourceByKey.set(key, id);
     return id;
