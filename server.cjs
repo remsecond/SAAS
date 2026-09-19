@@ -135,7 +135,11 @@ function createServer({ env = process.env, now = Date.now, sessionTtl = TTL, get
       if (!['GET','HEAD'].includes(req.method)) return reply(res,405,'Method not allowed');
       if (!['/','/index.html','/api/snapshot'].includes(route)) return reply(res,404,'Not found');
       const entry = session(req);
-      if (!entry) return route === '/api/snapshot' ? reply(res,401,JSON.stringify({error:'Sign in required'}),{'Content-Type':'application/json'}) : reply(res,303,'',{'Location':'/login'});
+      if (!entry) {
+        if (route === '/api/snapshot') return reply(res,401,JSON.stringify({error:'Sign in required'}),{'Content-Type':'application/json'});
+        if (route === '/') return reply(res,200,req.method === 'HEAD' ? '' : loginPage);
+        return reply(res,303,'',{'Location':'/login'});
+      }
       if (route === '/api/snapshot') return reply(res,200,req.method === 'HEAD' ? '' : JSON.stringify(config.snapshots[entry.student] || fixture(entry.student)),{'Content-Type':'application/json; charset=utf-8'});
       return reply(res,200,req.method === 'HEAD' ? '' : fs.readFileSync(path.join(__dirname,'public','index.html')));
     } catch { if (!res.headersSent) reply(res,500,'Unable to open Hallway. Please try again.'); else res.end(); }

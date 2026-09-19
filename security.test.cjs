@@ -21,7 +21,8 @@ test('configuration fails closed and never includes configuration contents in er
 });
 test('unauthenticated pages/data blocked; static assets and fixture files unavailable',async t=>{
   const {request}=await app(t);
-  for(const path of ['/','/index.html']){const r=await request(path);assert.equal(r.status,303);assert.equal(r.headers.get('location'),'/login');assert.equal(r.headers.get('cache-control'),'no-store');}
+  const root=await request('/');assert.equal(root.status,200);assert((await root.text()).includes('Open my snapshot'));assert.equal(root.headers.get('cache-control'),'no-store');
+  const index=await request('/index.html');assert.equal(index.status,303);assert.equal(index.headers.get('location'),'/login');assert.equal(index.headers.get('cache-control'),'no-store');
   assert.equal((await request('/api/snapshot')).status,401);
   for(const path of ['/fixtures.cjs','/public/index.html','/.env','/server.cjs','/snapshots/max.json']) assert.equal((await request(path)).status,404);
 });
