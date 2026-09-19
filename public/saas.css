@@ -75,3 +75,5 @@ body[data-theme=contrast] .profile-card .avatar{background:#fff;color:#000}
 nav button.active{color:var(--title);border-top:3px solid var(--brand)}
 @media(max-width:730px){.workspace{padding:0;gap:0}.phone{width:100%!important;max-width:100%;border:0;border-radius:0}.controls{margin:20px 12px 100px;width:calc(100% - 24px)}.content{padding-bottom:110px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.install-tip{margin:18px 0 0;padding:10px 12px;border:1px dashed var(--line);font-size:.85em;color:var(--muted)}.install-tip strong{color:var(--text,inherit)}

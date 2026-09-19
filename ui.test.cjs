@@ -36,6 +36,7 @@ async function createUI(options = {}) {
     document: {getElementById: element, querySelector: element, body:element('body')},
     window: {addEventListener(type,fn){listeners['window:'+type]=fn;},scrollY:17, scrollTo() {}, matchMedia: () => ({matches:false,addEventListener(){}})},
     location: {pathname:'/',search:'',hash:'',assign(url) {this.destination=url;}},
+    ...(options.navigator?{navigator:options.navigator}:{}),
     localStorage: {getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>{storage.delete(k)}},
     fetch: options.fetch || (async url => {
       requests.push(url);
@@ -95,6 +96,16 @@ test('profile screen: Hallway / Choose your profile, reusable cards, Add user is
   assert.doesNotMatch(html,/SYNTHETIC-/);
   assert.deepEqual(ui.requests,['/api/students']);
 });
+test('install tip shows only on an iPhone that has not added Hallway to the Home Screen',async()=>{
+  const iphone='Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)';
+  assert.match((await createUI({remembered:null,navigator:{userAgent:iphone,standalone:false}})).html(),/Add to Home Screen/);
+  assert.doesNotMatch((await createUI({remembered:null,navigator:{userAgent:iphone,standalone:true}})).html(),/Add to Home Screen/,'gone once installed');
+  assert.doesNotMatch((await createUI({remembered:null,navigator:{userAgent:'Mozilla/5.0 (Windows NT 10.0)'}})).html(),/Add to Home Screen/,'not on a desktop');
+  assert.doesNotMatch((await createUI({remembered:null})).html(),/Add to Home Screen/);
+  const home=(await createUI({navigator:{userAgent:iphone,standalone:false}})).html();
+  assert.doesNotMatch(home,/Add to Home Screen/,'only on the profile screen, never over coursework');
+});
+
 test('Add user explains Coming soon without a form, a request, or a new profile',async()=>{
   const ui=await createUI({remembered:null});
   await ui.click({addUser:'1'});
