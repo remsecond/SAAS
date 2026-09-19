@@ -22,3 +22,21 @@ See the dated status block at the end of this file.
 ## Design assets
 
 Font subsets come from the supplied saved Claude artifact. Their upstream SIL Open Font License texts are included in public/fonts. These are the artifact's font substitutes, not the school's licensed Proxima Nova. No school logo has been invented or substituted.
+
+## Status — September 18, 2026 (evening, Pacific)
+
+**Not published. Waiting on Roberto's "publish".**
+
+Verified on the unpublished Replit development preview with both boys' real captures loaded:
+
+- 22 of 22 automated tests pass on Replit.
+- 30 of 30 live acceptance checks pass in a real browser against the preview: both bundles served and labeled; all 129 assignment and material pages (Max 59, Adrian 70) plus Home at 320px and 390px, at 100% and 180% text, with no overflow and no broken text; touch targets at least 44px; every link https; text contrast at least 4.5:1 in light, dark and high contrast; switching resets view and shows none of the other boy's content; drafts stay with their owner and come back after switching; 15 rapid switches end on the last boy chosen; bad student ids and private file paths return 404; no passcode field anywhere.
+- Separately, in a cloud Chromium run of the same code: keyboard-only use, visible focus ring, Back restoring focus, remembered student after reload, missing-bundle screen and recovery.
+
+Not done:
+
+- **Real iPhone test.** Desktop browser checks are not an iPhone test.
+- GitHub is still at f68b8aa until the push from Replit is authorized; the local PC copy then needs `git pull origin main`.
+- Unknown until the first publish: whether a Replit deployment carries the git-ignored `private-data/` folder. If not, the live site will honestly show "not available" and the bundles need another home.
+- The capture is frozen at Friday evening. Re-capture shortly before the boys use it.
+- Roberto accepted "no passcode for now": anyone with the published link can read both boys' coursework.
