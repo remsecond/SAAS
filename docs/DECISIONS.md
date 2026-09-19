@@ -13,6 +13,11 @@ These decisions summarize explicit user direction. New explicit user instruction
 | D07 | Personality is a core part of affinity and usefulness. | Implement through the personality spec and editable content, not random filler or mandatory video. |
 | D08 | One lead coordinates delegates end to end. | Roberto is not the message bus; direct coordination and shared artifacts are the default. |
 | D09 | GitHub discipline and preserved authorship matter. | Isolate concurrent edits, preserve commits, verify alignment, and distinguish code from deployment. |
+| D10 | No in-app student switcher (Sept 18, after using the published beta: "they say who they are and go"). Supersedes the earlier visible-switcher requirement. | Profile screen at first open; Change profile lives only in Settings and on the not-available screen. Nothing about the other student on Home or detail pages. |
+| D11 | Replit's feedback widget is pulled (Sept 18): it needs a Replit account the students do not have, and it is not a release blocker. | The Content-Security-Policy allows no outside host. Feedback reaches Roberto directly until an account-free route is separately agreed. |
+| D12 | Hallway uses its own SURF mark, not Seattle Academy's logo, altered or otherwise (Sept 18). | Original wordmark and surfboard in the app's own type; no school name on it; header tile and Home Screen icon. |
+| D13 | A real Settings tab holds profile change, text size, look, data provenance, the privacy note, side-note control and Home Screen steps (Sept 18). | Text size and look persist on the device; the tester side panel is desktop-only. |
+| D14 | Personality first slice shipped Sept 19 on Roberto's "ship". More lines are an optional creative goal, never a gate. | Briefing prose, loading lines, More like this and audio stay out until separately scoped. Off switch documented in PROJECT-STATE.md. |
 
 ## Decision update format
 
