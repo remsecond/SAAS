@@ -1,46 +1,58 @@
 # Hallway single coordination state
 
-This is the coordination entry point. Keep it short and current at workstream checkpoints. RELEASE.md, TEST_READINESS.md, detailed QA reports, and the decision log remain supporting evidence. This note does not start a background task or authorize publishing.
+Checkpoint: September 19, 2026 / Codex. This is the coordination entry point; it does not authorize implementation or publication.
 
-## Current checkpoint
+## Owners and activity
 
-```text
-Updated at / by: 2026-09-19 (late evening Sept 18 Pacific) / Claude
-Accountable lead: Claude (implementation and release), per Roberto's explicit handoff. Codex: independent reviewer and test contributor. Roberto: product owner.
-Active outcome and scope: working beta in the students' hands at one stable URL. No feature work in flight.
-Actual agent activity: stopped. Nothing runs between messages. No scheduled task exists.
-Revisions:
-  - GitHub main: this commit's parent chain = 5d6934b (published app) + 77d6c0a (Codex operating model, fast-forwarded, authorship preserved) + this state update. Documentation only after 5d6934b.
-  - Published: app code 5d6934b. Evidence: Claude's live checks after publishing (below); Codex independently matched the live client script and both live bundles to 5d6934b.
-  - Replit: main was 5d6934b when published; Replit adds an empty "Published your App" commit after each publish, so its main can sit one empty commit ahead of GitHub. Merge there with `git merge --no-edit`, never `--ff-only`.
-  - Roberto's PC checkout: 5d6934b, clean (checked by Codex).
-Completed checks (LIVE at 5d6934b unless noted): app tests 47/47 (Replit; Codex reran locally); Codex harness PASS both students, live bundles equal approved copies; 129 assignment/material pages clean at 320 px; Settings 66/66; personality 77/77; install tip 5/5 (emulated iPhone); stalled-request recovery at 12.4 s; malformed-bundle isolation (browser, synthetic copies); all-clear state (synthetic finished work only, since neither real profile is clear).
-NOT RUN: real iPhone and Home Screen install; real Tab-key pass by a person; any Canvas read after the recorded captures.
-Open findings and owner: none open from Codex's Sept 19 review (all three fixed in 8d09279).
-Blocked on: nothing.
-Next action / owner:
-  1. Real-iPhone acceptance: Roberto, the boys where practical.
-  2. Data refresh near use: Claude coordinates; Roberto signs in to Canvas and pastes two captures (a safety control stops Claude moving Canvas data between sites itself). Then rebuild, validate, harness with reconciled counts, smoke test, publish, verify live hashes.
-  3. Post-beta backlog is in the Claude project status note; nothing there is a blocker.
-Publication authorization or hold: no standing approval. Each publish so far followed an explicit instruction from Roberto for that change. The data refresh publish needs his go at the time.
-Personality off switch: HALLWAY_PERSONALITY=off in Replit Secrets, then republish; or "enabled": false in content/personality.json.
-Links: RELEASE.md, HANDOFF.md, TEST_READINESS.md, content/PERSONALITY-SPEC.md, docs/DECISIONS.md. Detailed QA evidence and the consolidated release report live outside the public repo (Claude project "SAAS Hallway" and Roberto's PC), because they sit beside private capture records.
-```
+Roberto explicitly assigned Codex cross-team orchestration, strategic review, bounded delegation and evidence quality. Claude remains implementation/integration/release lead. Roberto retains product acceptance and publication authority. This supersedes older passive-review-only wording without creating a second implementation lead.
 
-History of this note: adopted from Codex's branch `codex/project-operating-model` (77d6c0a), which recorded the state at adoption. Correction carried from the consolidated report: Replit's feedback widget was blocked at first publish, allowed for two revisions (536e17f, bd1af36), then blocked again from 5fcedd3 on; it is "blocked in the current release", not "blocked since the first publish".
+Current outcome: state reconciliation and the smallest useful morning-briefing packet. [Packet](MORNING-BRIEFING-PACKET.md) is ready for scope review. No app changes, refresh, schedule or deployment started. A read-only independent code reviewer completed its bounded investigation; no implementation activity is confirmed. Nothing is implied to run after this response.
 
-## State format for subsequent checkpoints
+Delivery: `codex/morning-brief-packet`, one documentation PR to main including the pending kickoff/direction at `71224c5`. GitHub delivery is not acknowledgement by Claude. No supported direct Claude-session bridge is exposed. Claude’s next action is to review the complete GitHub packet, confirm scope and record any authorized implementation here. Roberto need not ferry routine micro-prompts.
 
-```text
-Updated at / by:
-Accountable lead:
-Active outcome and scope:
-Actual agent activity (running / ready for review / blocked / stopped):
-Local / GitHub / Replit / published revisions, each with evidence:
-Completed checks (environment and result):
-Open findings and owner:
-Blocked on (precise dependency):
-Next action / owner:
-Publication authorization or hold:
-Links to current artifacts and decisions:
-```
+## Reconciled evidence
+
+### Later checkpoint: Canvas sign-in release reported and live client confirmed
+
+This update supersedes the earlier live-client match below. Roberto supplied Claude's detailed status note: Claude reports Canvas sign-in code `5c8b6bc` deployed on the same URL, present in Replit main and backed up in Claude's workspace, but not pushed because Replit's GitHub credential expired. Fresh fetch still shows GitHub main `061f279`; `5c8b6bc` is not an available object locally. No exact commit/server attribution or ancestry verification is possible from the live HTML alone.
+
+Verified here via live HTTP/client inspection: client differs from main; contains “Sign in to Canvas” and “Open this assignment in Canvas”; old “Open original assignment” label absent. The helper derives an origin from an assignment-linked source URL and appends `/login`; no qualifying link yields no sign-in button. This is source inspection, not browser rendering, successful authentication or independent validation of the school login endpoint.
+
+Reported by Claude, not rerun here: 48/48 app tests; 58 assignment pages at 320/390 px; harness, page walk and Settings 66/66. Real iPhone Safari/Home Screen authentication and session sharing remain NOT RUN. Signing into Canvas enables native access; it does not refresh Hallway's frozen captures. The supplied note attributes the phone error to absent sign-in; actual-device resolution remains unverified.
+
+Next action: Roberto reconnects GitHub in Replit through its normal authentication UI; Claude then inspects refs and pushes the original commit, confirms remote alignment and provides its exact diff for Codex review. Replit credentials are not needed in chat. There is no demonstrated direct Claude-session bridge here, and no recovery task is running. Reconnection does not authorize another publish.
+
+History correction: a different authorized pusher does not inherently duplicate commits. Transferring and pushing the original Git objects with preserved parents/SHA can preserve history; rebuilding/cherry-picking the change can create a different commit. No alternate transfer is attempted here. If ordinary reconnection remains blocked, inspect the reported original-commit backup before proposing recovery; never recreate from live HTML.
+
+Decision collision reconciled: reserve D15 for Claude's original Canvas sign-in decision, pending recovery of `5c8b6bc`; renumber our unmerged orchestration and shell decisions to D16/D17. Claude's older role wording and older `5d6934b` current-release line in the supplied note are superseded by the explicit orchestration assignment and its newer release block. Preserve the note as attributed historical evidence, not instructions overriding Roberto's current request.
+
+PR integration dependency: recover/fetch `5c8b6bc` before merging the documentation PR, then reconcile its decision/state edits with this checkpoint. Do not overwrite the deployment record or treat the earlier morning-packet base as current app code.
+
+### Earlier checkpoint, before the new supplied release note
+
+| Check | Result / environment |
+| --- | --- |
+| Local and GitHub | PASS: fetched origin; SAAS main and origin/main both `061f279`, clean. Original hallway-orchestrator clean at `71224c5`, still unmerged. New isolated documentation worktree starts at `71224c5`. |
+| Operating model | PASS: `77d6c0a` and D10–D14 are already integrated. |
+| App code | PASS: tracked public/server/bundle/personality paths unchanged between `5d6934b` and `061f279`. |
+| Live client | PASS: root HTTP 200; inline script matches local `061f279` after CRLF normalization. This does not establish deployed server revision or browser correctness. |
+| Capture metadata | PASS: live `/api/students` reports both available; Max `2026-09-19T03:30:21.534Z`, Adrian `2026-09-19T02:44:32.969Z`, Friday evening Pacific. No later capture advertised. Full bundle/hash validation and current Canvas read NOT RUN here. |
+| GitHub coordination | Open-PR search returned none before this packet. No confirmed active implementation task. |
+| Replit | Current checkout/checkpoints NOT RUN; Claude must inspect before integration. Choose merge strategy from actual ancestry, not an unconditional old command. |
+| App QA | Historical 47/47 at `5d6934b`: reported by Claude and previously rerun by Codex. Not rerun for this documentation change. Browser/real-phone checks NOT RUN here. |
+
+Historical capture totals, not refreshed: Max 9 courses / 25 assignments / 34 resources; Adrian 9 / 33 / 37. Private captures remain outside public Git. Real iPhone/Home Screen acceptance and fresh Canvas reads remain unverified here. Claude-project `claude/hallway-release-status.md` is unavailable in this checkout.
+
+## Implications and next actions
+
+New explicit product decision: D17 records Hallway as a potential primary companion shell with permitted read-only analysis/preparation and native-service authority for official actions. The morning-briefing packet now carries that boundary. Roberto reports lost iPhone access while PC access remains; the affected access path and cause are not established. The supplied screenshot demonstrates an original-assignment handoff, not an iPhone diagnosis. No access fix is claimed or running. Claude's scope review should preserve this boundary in any proposed implementation.
+
+Home already shows next captured deadline and three attention items. Builder supplies no task-specific nextAction; drafts/checklists/follow-up state reset on reload. Unknown/on-paper states require care in prose. The packet proposes one specific navigation action, not an inferred homework plan.
+
+Keep manual captures until sanctioned durable access is demonstrated. Prior notes report a transfer control requiring Roberto’s participation; it has not been retested or lifted here. Telemetry-first historical prompts are superseded by the newer priority guide; no usage logging starts.
+
+Older RELEASE/TEST_READINESS/HANDOFF sections contain superseded switcher, icon, publication and personality-branch statements. D10–D14 and this checkpoint establish current state; those sections remain historical evidence, not instructions to rebuild or publish.
+
+No standing publication approval. Next owner: Claude for scope/integration review; Codex for independent review of returned implementation. Limitation: shared GitHub delivery is supported; Claude acknowledgement/wakeup is not confirmed.
+
+Supporting records: [decisions](DECISIONS.md), [operating model](OPERATING-MODEL.md), [direction](PRODUCT-DIRECTION-BEST-OF-BOTH.md), [kickoff](CODEX-ORCHESTRATOR-KICKOFF.md), [personality](../content/PERSONALITY-SPEC.md). Detailed earlier QA and consolidated report remain outside public Git alongside private evidence.
