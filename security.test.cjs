@@ -127,6 +127,7 @@ test('SAAS theme and bundled fonts load through the public server',async t=>{
   assert.match(csp,/connect-src 'self';/);
   assert.doesNotMatch(csp,/https?:|replit|\*|unsafe-eval/,'no outside hosts, wildcards or eval');
   assert.match(csp,/default-src 'none'/);assert.match(csp,/frame-ancestors 'none'/);
+  const icon=await request('/apple-touch-icon.png');assert.equal(icon.status,200);assert.equal(icon.headers.get('content-type'),'image/png');
   assert.match(await page.text(),/href="\/saas.css"/);
   const css=await request('/saas.css');
   assert.equal(css.status,200);
