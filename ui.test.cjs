@@ -69,11 +69,11 @@ async function createUI(options = {}) {
 test('each student sees only their own captured coursework, labeled, with no passcode',async()=>{
   const ui=await createUI();
   assert.match(ui.html(),/Max&#39;s coursework/);
-  assert.match(ui.html(),/data-student="max" aria-pressed="true"/);
-  assert.match(ui.html(),/data-student="adrian" aria-pressed="false"/);
+  assert.doesNotMatch(ui.html(),/class="switcher"|aria-pressed="(true|false)" data-student|data-student="adrian"/,'no in-app student switcher once a profile is open');
+  assert.match(ui.html(),/Not Max\? Change profile/);
   assert.match(ui.html(),/SYNTHETIC-M/);
   assert.doesNotMatch(ui.html(),/SYNTHETIC-A|passcode|type="password"|data-logout/);
-  await ui.click({student:'adrian'});await ui.settle();
+  await ui.click({profiles:'1'});await ui.click({student:'adrian'});await ui.settle();
   assert.match(ui.html(),/Adrian&#39;s coursework/);
   assert.match(ui.html(),/SYNTHETIC-A/);
   assert.doesNotMatch(ui.html(),/SYNTHETIC-M/);
@@ -108,12 +108,12 @@ test('Add user explains Coming soon without a form, a request, or a new profile'
   await ui.click({addUser:'1'});
   assert.match(ui.html(),/id="addUserNote"[^>]*hidden/);
 });
-test('each profile card opens that student\'s actual coursework; All profiles returns and forgets the choice',async()=>{
+test('each profile card opens that student\'s actual coursework; Change profile returns and forgets the choice',async()=>{
   for(const [id,own,other] of [['max','SYNTHETIC-M','SYNTHETIC-A'],['adrian','SYNTHETIC-A','SYNTHETIC-M']]){
     const ui=await createUI({remembered:null});
     await ui.click({student:id});await ui.settle();
     assert.match(ui.html(),new RegExp(own));assert.doesNotMatch(ui.html(),new RegExp(other));
-    assert.match(ui.html(),/class="switcher"/);assert.match(ui.html(),/data-profiles="1"/);
+    assert.doesNotMatch(ui.html(),/class="switcher"/);assert.match(ui.html(),/data-profiles="1"/);
     await ui.click({profiles:'1'});
     assert.match(ui.html(),/Choose your profile/);
     assert.doesNotMatch(ui.html(),/SYNTHETIC-/);
@@ -184,7 +184,7 @@ test('a missing or mismatched bundle is an honest recoverable state, never examp
   assert.match(ui.html(),/Adrian&#39;s coursework is not available/);
   assert.match(ui.html(),/EXPLAINED-UNAVAILABLE/);
   assert.match(ui.html(),/data-retry="snapshot"/);
-  assert.match(ui.html(),/data-student="max"/,'switcher stays usable');
+  assert.match(ui.html(),/data-profiles="1"/,'Change profile stays available');
   assert.doesNotMatch(ui.html(),/SYNTHETIC-|No unfinished work|<nav/);
   await ui.click({student:'max'});await ui.settle();
   assert.match(ui.html(),/SYNTHETIC-M/);
