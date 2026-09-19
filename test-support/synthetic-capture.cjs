@@ -15,7 +15,7 @@ function rawCapture(who) {
     courses: [{id: course, name: `${tag} Course One`, term: 'Test Term', enr: 'student:' + studentId, teachers: 'Teacher Placeholder'}, {id: other, name: `${tag} Course Two`, term: 'Test Term', enr: 'student:' + studentId, teachers: ''}],
     excluded: {[course]: {total: 9, undatedSkipped: 1, futureBeyondWindow: 2, olderFinished: 1}, [other]: {total: 1, undatedSkipped: 0, futureBeyondWindow: 0, olderFinished: 0}},
     assignments: [
-      a(9001, course, `${tag} shared-id essay`, at(2), sub('unsubmitted'), {links: [{text: `${tag} page`, url: `https://canvas.test.example/courses/${course}/pages/${tag.toLowerCase()}-guide`}, {text: `${tag} doc`, url: 'https://docs.google.com/document/d/test'}], comments: [{author: 'Teacher Placeholder', authorId: 1, text: `${tag} comment`, at: at(-1)}]}),
+      a(9001, course, `${tag} shared-id essay`, at(2), sub('unsubmitted'), {links: [{text: `${tag} page`, url: `https://canvas.test.example/courses/${course}/pages/${tag.toLowerCase()}-guide`}, {text: `${tag} doc`, url: 'https://docs.google.com/document/d/test'}, {text: 'teacher@school.test', url: 'mailto:teacher@school.test'}, {text: 'insecure', url: 'http://insecure.test/x'}], comments: [{author: 'Teacher Placeholder', authorId: 1, text: `${tag} comment`, at: at(-1)}]}),
       a(9002, course, `${tag} overdue missing`, at(-10), sub('unsubmitted', {missing: true})),
       a(9003, course, `${tag} unit test`, at(5), sub('unsubmitted')),
       a(9004, other, `${tag} turned in`, at(-2), sub('submitted', {submittedAt: at(-3)})),

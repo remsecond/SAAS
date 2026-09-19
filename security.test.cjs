@@ -114,6 +114,7 @@ test('builder refuses captures that are for the wrong student, mixed, or incompl
   assert.equal(built.snapshot.capturedAt,'2026-09-19T02:35:15.414Z');
   assert.equal(built.snapshot.demoNow,'2026-09-21T15:00:00.000Z','reference clock is kept separate from capture time');
   assert.doesNotMatch(JSON.stringify(built),/"grade"|"score"|points_possible/);
+  assert.doesNotMatch(JSON.stringify(built.resources)+JSON.stringify(built.sources),/mailto:|http:\/\//,'mailto and non-https links never become link resources');
 });
 
 test('SAAS theme and bundled fonts load through the public server',async t=>{

@@ -27,7 +27,7 @@ function submissionState(s, types) {
 
 function classifyLink(url) {
   let host = '';
-  try { host = new URL(url).host; } catch { return null; }
+  try { const u = new URL(url); if (u.protocol !== 'https:') return null; host = u.host; } catch { return null; }
   if (/(^|\.)google\.com$/.test(host)) return {kind: 'google', label: 'Open in Google', explanation: 'This opens in Google with your school account. Its content was not copied into Hallway.'};
   if (/youtube\.com$|youtu\.be$/.test(host)) return {kind: 'video', label: 'Open video', explanation: 'This is a video link. Hallway saved the link, not the video.'};
   if (/instructure\.com$/.test(host)) return {kind: 'canvas', label: 'Open in Canvas', explanation: 'This opens in Canvas. Its content was not copied into Hallway.'};
