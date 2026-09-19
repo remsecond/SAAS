@@ -18,6 +18,7 @@ These decisions summarize explicit user direction. New explicit user instruction
 | D12 | Hallway uses its own SURF mark, not Seattle Academy's logo, altered or otherwise (Sept 18). | Original wordmark and surfboard in the app's own type; no school name on it; header tile and Home Screen icon. |
 | D13 | A real Settings tab holds profile change, text size, look, data provenance, the privacy note, side-note control and Home Screen steps (Sept 18). | Text size and look persist on the device; the tester side panel is desktop-only. |
 | D14 | Personality first slice shipped Sept 19 on Roberto's "ship". More lines are an optional creative goal, never a gate. | Briefing prose, loading lines, More like this and audio stay out until separately scoped. Off switch documented in PROJECT-STATE.md. |
+| D15 | Links out to Canvas are labeled as Canvas and come with "Sign in to Canvas" (Sept 19, after the link failed on Roberto's phone). The students authenticate to Canvas themselves; Roberto is not in that loop. | Hallway never handles Canvas credentials. The sign-in address is derived from the captured assignment links, never hard-coded. Also offered once in Settings. |
 
 ## Decision update format
 

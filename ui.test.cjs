@@ -546,3 +546,21 @@ test('a profile list that never answers times out into Try again, which recovers
   mode='ok';await ui.click({retry:'students'});await ui.settle();
   assert.match(ui.html(),/Choose your profile/);
 });
+
+test('links out to Canvas say that sign-in is needed and offer the school sign-in page, taken from the data',async()=>{
+  const ui=await createUI();
+  await ui.click({go:'a9001'});
+  const html=ui.html();
+  assert.match(html,/Open this assignment in Canvas/);assert.doesNotMatch(html,/Open original assignment/);
+  assert.match(html,/If Canvas says you are not authorized, sign in first/);
+  const origin=new URL(bundleFor('max').sources.find(s=>/\/courses\/\d+\/assignments\//.test(s.url||'')).url).origin;
+  assert.ok(html.includes('href="'+origin+'/login"'),'sign-in goes to the same Canvas the coursework came from');
+  assert.ok(html.indexOf('Sign in to Canvas')<html.indexOf('Open this assignment in Canvas'),'sign in is offered first');
+  assert.match(html,/href="[^"]+\/login" target="_blank" rel="noopener noreferrer"/);
+  await ui.click({back:'1'});await ui.click({tab:'Settings'});
+  assert.match(ui.html(),/Hallway never sees your Canvas password/);assert.ok(ui.html().includes('href="'+origin+'/login"'));
+  const none=bundleFor('max');for(const s of none.sources)s.url=null;
+  const bare=await createUI({bundles:{max:none}});
+  await bare.click({go:'a9001'});assert.doesNotMatch(bare.html(),/Sign in to Canvas|In Canvas<\/h3>/,'no Canvas address captured means no sign-in link is invented');
+  await bare.click({back:'1'});await bare.click({tab:'Settings'});assert.doesNotMatch(bare.html(),/Sign in to Canvas/);
+});
