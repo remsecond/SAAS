@@ -45,3 +45,23 @@ test('public server does not expose source files, environment or arbitrary snaps
     assert.equal((await request(path)).status,404,path);
   }
 });
+
+test('SAAS theme and bundled fonts load through the public server',async t=>{
+  const request=await app(t);
+  const page=await request('/');
+  assert.match(page.headers.get('content-security-policy'),/style-src 'self'/);
+  assert.match(page.headers.get('content-security-policy'),/font-src 'self'/);
+  assert.match(await page.text(),/href="\/saas.css"/);
+  const css=await request('/saas.css');
+  assert.equal(css.status,200);
+  assert.match(css.headers.get('content-type'),/text\/css/);
+  const stylesheet=await css.text();
+  const fonts=[...stylesheet.matchAll(/url\("(\/fonts\/[^" ]+)"\)/g)].map(m=>m[1]);
+  assert.equal(fonts.length,4);
+  for(const path of fonts){
+    const response=await request(path);
+    assert.equal(response.status,200);
+    assert.equal(response.headers.get('content-type'),'font/woff2');
+    assert.equal(Buffer.from(await response.arrayBuffer()).subarray(0,4).toString(),'wOF2');
+  }
+});

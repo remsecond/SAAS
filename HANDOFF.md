@@ -1,5 +1,10 @@
 # Hallway handoff
 
+## Current test-release work (September 18, 2026)
+
+See TEST_READINESS.md for the current scope and release gates. The sections below describe the previous shared-preview release. The user subsequently requested meaningful student switching without passcodes and a SAAS-themed test version. Styling and priority ordering are now implemented; student-content selection and browser/deployment verification remain open. The last synchronized baseline was f68b8aa.
+
+
 ## Current direction
 
 The user explicitly removed the passcode requirement and rejected the name picker and repetitive fictional coursework. The current change delivers one direct-entry design preview, restoring detail from the original prototype and adding useful prepared content and placeholder messages. This supersedes the earlier two-gated-demo plan for this public preview.

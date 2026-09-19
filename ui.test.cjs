@@ -73,8 +73,9 @@ test('course and assessment filters retain selection across detail navigation',a
   await ui.click({back:'1'});
   assert.equal(ui.run('course'),'science');
   assert.equal(ui.run('period'),'all');
-  await ui.click({layout:'yes'});
   assert.match(ui.html(),/class="tiles list"/);
+  await ui.click({layout:'yes'});
+  assert.match(ui.html(),/class="tiles "/);
   await ui.click({home:'1'});
   assert.equal(ui.run('course'),'all');
   assert.equal(ui.run('period'),'7');
@@ -140,6 +141,19 @@ test('theme, width and large text controls change presentation',async()=>{
   assert.equal(ui.element('body').dataset.theme,'contrast');
 });
 module.exports={createUI};
+test('Home surfaces unfinished work before the changes feed and keeps detail navigation',async()=>{
+  const ui=await createUI();
+  const html=ui.html();
+  const start=html.indexOf('aria-label="Needs you"');
+  assert(start>=0 && start<html.indexOf('What changed'));
+  const attention=html.slice(start,html.indexOf('</section>',start));
+  assert(attention.indexOf('data-go="email"')<attention.indexOf('data-go="lab"'));
+  assert.doesNotMatch(attention,/data-go="math"/);
+  await ui.click({go:'email'});
+  assert.match(ui.html(),/Next action/);
+  await ui.click({back:'1'});
+  assert.match(ui.html(),/aria-label="Needs you"/);
+});
 test('undated work stays visible and an empty filter offers a reset',async()=>{
   const ui=await createUI();
   await ui.click({tab:'Board'});

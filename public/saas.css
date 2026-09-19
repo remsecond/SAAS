@@ -1,0 +1,65 @@
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/figtree-400.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/figtree-700.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/montserrat-700.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/montserrat-900.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* SAAS-inspired application theme. Layout and interactions stay in Hallway. */
+:root{font-family:Figtree,Arial,sans-serif;--brand:#a6192e}
+body[data-theme=light]{--bg:#fff;--panel:#eaeaea;--text:#3d3d3d;--muted:#626262;--line:#c9c9c9;--neutral:#eaeaea;--button:#a6192e;--ink:#fff;--orange:#a6192e;--orange-ink:#a6192e;--focus:#810d1e;--title:#a6192e}
+body[data-theme=default]{color-scheme:dark;--bg:#2f2f31;--panel:#3d3d3d;--text:#fff;--muted:#d6d6d9;--line:#77777c;--neutral:#3d3d3d;--button:#a6192e;--ink:#fff;--orange:#a6192e;--orange-ink:#fff;--focus:#fff;--title:#fff}
+body[data-theme=contrast]{--title:#fff;--button:#fff;--ink:#000}
+body{background:var(--bg)}
+h1,h2,h3,.brand,.tile strong,.section-title{font-family:Montserrat,Arial,sans-serif;font-weight:900}
+.workspace{max-width:1180px}.phone{border-radius:0;box-shadow:none}
+.controls{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:0}
+.controls p,.controls small,.demoset>summary{color:var(--muted)}
+.controls select{background:var(--bg);color:var(--text);border-radius:0}
+header{background:var(--brand);color:#fff;padding:8px 16px;flex-wrap:wrap}
+.brand{text-transform:uppercase;letter-spacing:.06em}.tagline{color:#fff;font-size:.65em}
+.identity{color:#fff}.demo{margin:12px 16px;font-size:.8em}
+.hero,.panel,.row,.change,.chip,.filterselect,.tile,.badge,.action,.callout,textarea,.home-shortcut{border-radius:0}
+.hero,.callout{border-left-color:var(--brand)}
+.row,.tile{border:1px solid var(--line)}
+.tile,.tile.red,.tile.orange,.tile.blue{background:var(--panel);color:var(--text)}
+.tile strong{color:var(--title);font-size:1em;font-weight:700;line-height:1.4}
+.tile .course,.tile small,.tile .status{font-size:.8em;line-height:1.45}
+.tile.red{border-left:4px solid var(--brand)}
+.tiles.list .tile{min-height:100px;padding:14px}
+.chip,.action,.row,.home-shortcut,select{min-height:44px}
+.chip.active{background:var(--button);color:var(--ink)}
+.attention-list{margin:0 0 24px}.attention-list .row{border-left:4px solid var(--brand)}
+.row small,.note{font-size:.8em;line-height:1.5}
+.brand button:focus-visible,header button:focus-visible,header select:focus-visible{outline-color:#fff}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.student-picker{background:#fff;color:#3d3d3d;border:1px solid #fff;max-width:100%;padding:8px;font-size:1em}
+.student-label{display:block;font-size:.85em;margin-bottom:4px}
+nav button.active{color:var(--title);border-top:3px solid var(--brand)}
+@media(max-width:730px){.workspace{padding:0;gap:0}.phone{width:100%!important;max-width:100%;border:0;border-radius:0}.controls{margin:20px 12px 100px;width:calc(100% - 24px)}.content{padding-bottom:110px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}

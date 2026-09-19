@@ -13,13 +13,15 @@ function createServer() {
       'X-Content-Type-Options':'nosniff',
       'Referrer-Policy':'no-referrer',
       'X-Frame-Options':'DENY',
-      'Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+      'Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
       'Content-Type':'text/html; charset=utf-8'
     };
     const reply=(status,body,extra={})=>{res.writeHead(status,{...headers,...extra});res.end(req.method==='HEAD'?'':body)};
     try {
       const route=new URL(req.url,'http://localhost').pathname;
       if(!['GET','HEAD'].includes(req.method)) return reply(405,'Method not allowed',{Allow:'GET, HEAD'});
+      const assets={'/saas.css':'text/css; charset=utf-8','/fonts/figtree-400.woff2':'font/woff2','/fonts/figtree-700.woff2':'font/woff2','/fonts/montserrat-700.woff2':'font/woff2','/fonts/montserrat-900.woff2':'font/woff2'};
+      if(Object.hasOwn(assets,route)) return reply(200,fs.readFileSync(path.join(__dirname,'public',route)),{'Content-Type':assets[route]});
       if(route==='/login') return reply(302,'',{Location:'/'});
       if(route==='/api/snapshot') return reply(200,JSON.stringify(getDemoSnapshot()),{'Content-Type':'application/json; charset=utf-8'});
       if(route==='/'||route==='/index.html') return reply(200,fs.readFileSync(path.join(__dirname,'public','index.html')));
