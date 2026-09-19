@@ -122,6 +122,11 @@ test('SAAS theme and bundled fonts load through the public server',async t=>{
   const page=await request('/');
   assert.match(page.headers.get('content-security-policy'),/style-src 'self'/);
   assert.match(page.headers.get('content-security-policy'),/font-src 'self'/);
+  const csp=page.headers.get('content-security-policy');
+  assert.match(csp,/script-src 'unsafe-inline' https:\/\/replit-cdn\.com;/,'only the Replit feedback widget script is allowed from outside');
+  assert.match(csp,/connect-src 'self' https:\/\/replit\.com;/);
+  assert.doesNotMatch(csp,/i\.replit\.com|\*|unsafe-eval/,'no analytics host, wildcards or eval');
+  assert.match(csp,/default-src 'none'/);assert.match(csp,/frame-ancestors 'none'/);
   assert.match(await page.text(),/href="\/saas.css"/);
   const css=await request('/saas.css');
   assert.equal(css.status,200);
