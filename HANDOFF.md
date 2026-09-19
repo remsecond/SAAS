@@ -1,10 +1,17 @@
 # Hallway handoff
 
+## Current test-release work (September 18, 2026)
+
+See TEST_READINESS.md for the current scope and release gates. The sections below describe the previous shared-preview release. The user subsequently requested meaningful student switching without passcodes and a SAAS-themed test version. Styling and priority ordering are now implemented; actual-coursework capture, student switching, and browser/deployment verification remain open. Actual content for each student is mandatory; do not ask the user to choose fictional boards again. The last synchronized baseline was f68b8aa.
+
+
 ## Current direction
 
-The user explicitly removed the passcode requirement and rejected the name picker and repetitive fictional coursework. The current change delivers one direct-entry design preview, restoring detail from the original prototype and adding useful prepared content and placeholder messages. This supersedes the earlier two-gated-demo plan for this public preview.
+Max and Adrian each need their own actual course content. A visible student switcher must change the course/assignment/resource bundle and keep drafts/checklists separate. No passcodes. The user has reaffirmed this requirement repeatedly.
 
-No personal grades or verified personal snapshots are included. Content provenance distinguishes reported prototype examples, prepared guidance, and material not captured. No live school connection, outgoing messages, AI service, or fabricated learning history.
+The currently implemented shared preview contains authored examples and does NOT meet that requirement. Removing the passcode did not authorize replacing personal coursework with one shared board. The old implementation notes below describe the baseline, not acceptance criteria.
+
+Source capture: the parent-folder Kid Chief-of-Staff Data Model reports Canvas observee IDs and read-only endpoints. Its enrollment association is the starting point for mapping each student's courses. The frozen-demo plan requires actual snapshots. No raw course captures have yet been located in the checked workspace, Downloads, Documents/vault, or Documents/Claude. Browser transport remains unavailable; do not call that proof that the source data does not exist elsewhere.
 
 ## Implementation
 

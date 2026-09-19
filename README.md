@@ -2,35 +2,55 @@
 
 **Know what you're walking into.**
 
-One direct-entry school companion design preview. No passcode, student picker, or account setup. The user changed the scope from two gated fictional student demos to one richer demonstration of the product.
+A phone-first school companion for two students. Max sees Max's actual Canvas coursework; Adrian sees Adrian's. A visible switcher chooses whose coursework is showing. No passcodes, no fictional coursework, no fallback content.
 
-## Content
+## How the content works
 
-The preview develops the assignment and resource scenarios from the original Hallway design: what needs attention, what changed, useful next actions, related materials, drafts and checklists. Reported prototype examples and prepared placeholder content are labeled; they are not verified current school records. No personal grades are included. The demo clock remains fixed, separately from source-capture status. Trends & Learnings explains that history has not been collected; there is no working AI chat, email sending, school update or background refresh.
+Hallway shows a **frozen capture** of real coursework, not a live connection.
 
-Edit the content in `fixtures.cjs`; edit the interface in `public/index.html`. Keep next steps and missing-material explanations useful at the point of use. Preserve instant filters, tile/list view, nested Back, Home, themes, large text, and draft/checklist retention during navigation. Reload resets local work.
+1. `tools/canvas-capture.js` runs in a signed-in parent/observer Canvas tab. It reads each observed student's own enrollments, a bounded window of assignments (7 days back, 14 days ahead, older unfinished work, undated work), submission status, teacher comments, and the Canvas pages and files linked from those assignments. No grades. No tokens, cookies or passwords are touched.
+2. `tools/build-bundle.cjs` turns a raw capture into a student bundle. It refuses captures that are for the wrong student, that mix students, or that recorded fetch errors. Nothing is authored: where Canvas had nothing, the bundle says so with a reason.
+3. `bundles.cjs` validates every bundle on every request (identity, references, timestamps, reasons, no grades). `server.cjs` serves `/api/students` and `/api/snapshot?student=max|adrian`. A missing or invalid bundle returns an honest "not available" — never example content.
+
+Raw captures and bundles live in `private-data/` (git-ignored). **They must never be committed**: this repository is public.
+
+```
+private-data/raw/max.raw.json         private-data/snapshots/max.json
+private-data/raw/adrian.raw.json      private-data/snapshots/adrian.json
+```
+
+```
+node tools/build-bundle.cjs max private-data/raw/max.raw.json private-data/snapshots/max.json
+node tools/build-bundle.cjs adrian private-data/raw/adrian.raw.json private-data/snapshots/adrian.json
+```
+
+Add `--reference <ISO time>` to set the frozen reference clock separately from the capture time. `HALLWAY_SNAPSHOT_DIR` overrides the bundle folder.
+
+## What is honest by design
+
+- The header always says whose coursework is showing and when it was captured.
+- Coverage is partial, so the home screen says "Next deadline in this sample", and an empty sample is never described as "no work".
+- Google Docs, videos and files are link-only: Hallway says their content was not copied.
+- Drafts, checklists and follow-up notes are kept per student, stay on the device, and reset on reload. Nothing is sent anywhere.
+- Fonts are Figtree/Montserrat substitutes (OFL licenses in `public/fonts`), not the school's Proxima Nova. No school logo is used.
 
 ## Run
 
-Node.js 20 or newer; no package dependencies or secrets required.
+Node.js 20 or newer; no dependencies.
 
 ```
 npm run check
 npm start
 ```
 
-Open http://localhost:3000. The server returns the one reviewed design snapshot through `/api/snapshot`. Old `HALLWAY_*` secret values and personal snapshot configuration are ignored. Requests cannot choose another bundle. Source files, runtime files, and filesystem paths are not served. The old `/login` URL redirects to the preview.
+Open http://localhost:3000. Old `HALLWAY_*` secrets and `/login` are ignored (`/login` redirects home).
 
 ## Replit
 
-Project: https://replit.com/@robmoyer/Hallway
+Project: https://replit.com/@robmoyer/Hallway · Hosted URL: https://hallway-robmoyer.replit.app
 
-Hosted URL: https://hallway-robmoyer.replit.app
-
-The hosted URL was reachable, but this updated direct-entry version has not yet been synchronized or verified there. The earlier hosted version displayed a name picker without a passcode. See HANDOFF.md for exact status.
-
-To update: review and run `npm run check`, commit and push. In the existing Replit project inspect any Replit-only changes, synchronize the reviewed GitHub revision, run checks, and publish using `npm start` with port 3000. Confirm the actual hosted page opens directly to the board. Do not mistake GitHub push for deployment. Review any new paid commitment before accepting it.
+A GitHub push does not deploy. The hosted URL only changes when someone presses Publish in Replit. See TEST_READINESS.md for current status.
 
 ## Tests
 
-Automated checks cover public demo routing, consistent content, ignored legacy runtime bundles, escaped source text, and UI behavior using a simulated DOM. Browser visual checks, real keyboard traversal, narrow-width/enlarged-text rendering, and actual iPhone testing must be recorded separately. A simulated DOM is not a device test.
+`npm run check` covers the server (per-student isolation, path and parameter abuse, missing/corrupt/mislabeled bundles, legacy secrets), bundle validation, the builder's refusal cases, and UI behavior in a simulated DOM (switching, rapid switching, per-student drafts, honest failure states, filters, navigation, escaping). Test data is synthetic and labeled `SYNTHETIC`. A simulated DOM is not a browser or phone test; those are recorded in TEST_READINESS.md.
