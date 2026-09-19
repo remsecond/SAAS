@@ -14,6 +14,7 @@ const STUDENTS=[{id:'max',displayName:'Max',available:true},{id:'adrian',display
 async function createUI(options = {}) {
   const bundles = options.bundles || {max: bundleFor('max'), adrian: bundleFor('adrian')};
   const storage = new Map(options.remembered === null ? [] : [['hallway.student', options.remembered || 'max']]);
+  if (options.prefs) storage.set('hallway.prefs', options.prefs);
   const requests = [];
   const elements = new Map();
   const listeners = {};
@@ -71,7 +72,8 @@ test('each student sees only their own captured coursework, labeled, with no pas
   const ui=await createUI();
   assert.match(ui.html(),/Max&#39;s coursework/);
   assert.doesNotMatch(ui.html(),/class="switcher"|aria-pressed="(true|false)" data-student|data-student="adrian"/,'no in-app student switcher once a profile is open');
-  assert.match(ui.html(),/Not Max\? Change profile/);
+  assert.doesNotMatch(ui.html(),/data-profiles|Change profile/,'no profile controls on Home; they live in Settings');
+  assert.match(ui.html(),/data-tab="Settings"/);
   assert.match(ui.html(),/SYNTHETIC-M/);
   assert.doesNotMatch(ui.html(),/SYNTHETIC-A|passcode|type="password"|data-logout/);
   await ui.click({profiles:'1'});await ui.click({student:'adrian'});await ui.settle();
@@ -124,7 +126,8 @@ test('each profile card opens that student\'s actual coursework; Change profile 
     const ui=await createUI({remembered:null});
     await ui.click({student:id});await ui.settle();
     assert.match(ui.html(),new RegExp(own));assert.doesNotMatch(ui.html(),new RegExp(other));
-    assert.doesNotMatch(ui.html(),/class="switcher"/);assert.match(ui.html(),/data-profiles="1"/);
+    assert.doesNotMatch(ui.html(),/class="switcher"/);
+    await ui.click({tab:'Settings'});assert.match(ui.html(),/<h1 class="screen-title">Settings/);assert.match(ui.html(),/data-profiles="1"/);
     await ui.click({profiles:'1'});
     assert.match(ui.html(),/Choose your profile/);
     assert.doesNotMatch(ui.html(),/SYNTHETIC-/);
@@ -293,6 +296,29 @@ test('content and drafts are escaped and non-HTTPS source actions suppressed',as
   assert.doesNotMatch(ui.html(),/href="javascript:/);
   assert.equal(ui.run("safeUrl('https://example.com/a')"),'https://example.com/a');
   assert.equal(ui.run("safeUrl('data:text/html,hello')"),null);
+});
+test('Settings: text size and look apply at once, are remembered on the device, and carry no other student',async()=>{
+  const ui=await createUI();
+  await ui.click({tab:'Settings'});
+  const html=ui.html();
+  assert.match(html,/This is Max&#39;s Hallway/);assert.match(html,/frozen copy, not live/);assert.match(html,/Add to Home Screen/);
+  assert.doesNotMatch(html,/Adrian|SYNTHETIC-A|type="password"|<input|<form/);
+  await ui.click({size:'150'});
+  assert.equal(ui.element('phone').style.fontSize,'1.5rem');
+  assert.match(ui.html(),/aria-pressed="true" data-size="150"/);
+  await ui.click({themeChoice:'default'});
+  assert.equal(ui.element('body').dataset.theme,'default');
+  assert.deepEqual(JSON.parse(ui.storage.get('hallway.prefs')),{size:150,theme:'default'});
+  await ui.click({size:'9000'});await ui.click({themeChoice:'javascript:alert(1)'});
+  assert.deepEqual(JSON.parse(ui.storage.get('hallway.prefs')),{size:150,theme:'default'},'junk values are ignored');
+});
+test('saved text size and look are applied on the next open; bad saved values fall back',async()=>{
+  const ui=await createUI({prefs:'{"size":180,"theme":"contrast"}'});
+  assert.equal(ui.element('phone').style.fontSize,'1.8rem');assert.equal(ui.element('body').dataset.theme,'contrast');
+  const bad=await createUI({prefs:'{"size":"huge","theme":"<script>"}'});
+  assert.equal(bad.element('phone').style.fontSize,'1rem');assert.equal(bad.element('body').dataset.theme,'light');
+  const broken=await createUI({prefs:'not json'});
+  assert.equal(broken.element('body').dataset.theme,'light');
 });
 test('theme, width and large text controls change presentation',async()=>{
   const ui=await createUI();

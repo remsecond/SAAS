@@ -77,3 +77,6 @@ nav button.active{color:var(--title);border-top:3px solid var(--brand)}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
 .install-tip{margin:18px 0 0;padding:10px 12px;border:1px dashed var(--line);font-size:.85em;color:var(--muted)}.install-tip strong{color:var(--text,inherit)}
+
+.setting{margin:0 0 22px;padding-top:14px;border-top:1px solid var(--line)}.setting:first-of-type{border-top:0;padding-top:0}.setting .section-title{margin:0 0 8px}.setting .chips{display:flex;flex-wrap:wrap;gap:8px}.setting p{margin:6px 0}
+@media(max-width:730px){.controls{display:none}}
