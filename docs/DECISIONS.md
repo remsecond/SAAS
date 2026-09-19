@@ -31,11 +31,13 @@ Owner / verification:
 
 Do not encode guesses about current publication approval as durable product decisions. Record publication state and authority in PROJECT-STATE.md for each release.
 
-## D15 — September 19, 2026: orchestration assignment
+## D16 — September 19, 2026: orchestration assignment
+
+Numbering note: D15 is reserved for Claude's reported Canvas sign-in decision in deployed commit `5c8b6bc`, not yet available on GitHub at this checkpoint. Integrate its exact original wording when that commit is recovered. The unmerged Codex orchestration/shell entries previously called D15/D16 are now D16/D17; their substance is unchanged.
 
 Roberto’s explicit new-task kickoff assigns Codex cross-team coordination, strategic review, bounded delegation and evidence quality. Claude retains implementation/integration/release ownership; Roberto retains product acceptance and publication authority. This supersedes passive-review-only wording in older records, preserving D06 and one execution owner per workstream. Broader product direction remains a hypothesis and priority guide. The authorized initial outcome is reconciliation and a morning-briefing packet, not blanket implementation or publication.
 
-## D16 — September 19, 2026: companion shell, native authority
+## D17 — September 19, 2026: companion shell, native authority
 
 Source: Roberto explicitly chose this separation after investigating different access on iPhone and PC. Hallway should be capable of serving as the student's primary shell across school services: bring together permitted read-only information, analyze it, and help prepare study guides, drafts and other student-owned work. This is an architectural direction, not authorization to implement every possible service or analysis feature.
 

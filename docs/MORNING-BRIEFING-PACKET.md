@@ -4,6 +4,8 @@ Status: proposed experiment, ready for Claude’s scope review. Preparing this p
 
 ## Ownership and scope
 
+Updated base dependency: Claude now reports deployed Canvas sign-in commit `5c8b6bc`, while fetched GitHub main remains `061f279`. Recover and inspect that original commit before implementation or documentation integration. Preserve its In Canvas block and Settings sign-in behavior; official-action handoffs remain native. Reported sign-in QA does not replace real-iPhone acceptance. This packet's original base below is historical until reconciled.
+
 Codex owns packet delivery, orchestration and independent review. Claude owns implementation, integration and release. Roberto owns product acceptance and publication authority.
 
 Base: main `061f279`, with pending direction/kickoff `71224c5`. Documentation branch: `codex/morning-brief-packet`. Before implementation, Claude must fetch and inspect Replit HEAD, local changes and pending checkpoints. Current allowed actions are documentation and read-only review. Candidate implementation files after scope acceptance: `public/index.html`, relevant `public/saas.css`, `ui.test.cjs`. No server, capture schema, access or personality collection change is needed.
@@ -22,7 +24,7 @@ No eligible item: “No starting item selected from this capture. Check the boar
 
 ## Source and freshness contract
 
-Authority boundary: follow D16. Hallway prepares and explains; official submissions, communications and assignment changes happen in the native school service. The briefing opens captured details/source links, never submits or sends. Returning from an original-source link must not mark an assignment complete without new source evidence. Native sign-in or device-access failure is not a successful handoff and does not authorize a workaround.
+Authority boundary: follow D17. Hallway prepares and explains; official submissions, communications and assignment changes happen in the native school service. The briefing opens captured details/source links, never submits or sends. Returning from an original-source link must not mark an assignment complete without new source evidence. Native sign-in or device-access failure is not a successful handoff and does not authorize a workaround.
 
 Every version of this slice is a capture briefing, including same-day captures. Show the absolute capture date/time and “Frozen copy; changes after capture are not included.” This avoids inventing a freshness threshold or adding a wall-clock dependency. A Friday capture opened Monday remains Friday’s capture. Never say “today’s work,” “due this afternoon,” “you are caught up,” or “the rest can wait.” `demoNow` is a reference clock, not freshness evidence; personality rotation is separate.
 

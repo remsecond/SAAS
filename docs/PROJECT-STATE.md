@@ -12,6 +12,24 @@ Delivery: `codex/morning-brief-packet`, one documentation PR to main including t
 
 ## Reconciled evidence
 
+### Later checkpoint: Canvas sign-in release reported and live client confirmed
+
+This update supersedes the earlier live-client match below. Roberto supplied Claude's detailed status note: Claude reports Canvas sign-in code `5c8b6bc` deployed on the same URL, present in Replit main and backed up in Claude's workspace, but not pushed because Replit's GitHub credential expired. Fresh fetch still shows GitHub main `061f279`; `5c8b6bc` is not an available object locally. No exact commit/server attribution or ancestry verification is possible from the live HTML alone.
+
+Verified here via live HTTP/client inspection: client differs from main; contains “Sign in to Canvas” and “Open this assignment in Canvas”; old “Open original assignment” label absent. The helper derives an origin from an assignment-linked source URL and appends `/login`; no qualifying link yields no sign-in button. This is source inspection, not browser rendering, successful authentication or independent validation of the school login endpoint.
+
+Reported by Claude, not rerun here: 48/48 app tests; 58 assignment pages at 320/390 px; harness, page walk and Settings 66/66. Real iPhone Safari/Home Screen authentication and session sharing remain NOT RUN. Signing into Canvas enables native access; it does not refresh Hallway's frozen captures. The supplied note attributes the phone error to absent sign-in; actual-device resolution remains unverified.
+
+Next action: Roberto reconnects GitHub in Replit through its normal authentication UI; Claude then inspects refs and pushes the original commit, confirms remote alignment and provides its exact diff for Codex review. Replit credentials are not needed in chat. There is no demonstrated direct Claude-session bridge here, and no recovery task is running. Reconnection does not authorize another publish.
+
+History correction: a different authorized pusher does not inherently duplicate commits. Transferring and pushing the original Git objects with preserved parents/SHA can preserve history; rebuilding/cherry-picking the change can create a different commit. No alternate transfer is attempted here. If ordinary reconnection remains blocked, inspect the reported original-commit backup before proposing recovery; never recreate from live HTML.
+
+Decision collision reconciled: reserve D15 for Claude's original Canvas sign-in decision, pending recovery of `5c8b6bc`; renumber our unmerged orchestration and shell decisions to D16/D17. Claude's older role wording and older `5d6934b` current-release line in the supplied note are superseded by the explicit orchestration assignment and its newer release block. Preserve the note as attributed historical evidence, not instructions overriding Roberto's current request.
+
+PR integration dependency: recover/fetch `5c8b6bc` before merging the documentation PR, then reconcile its decision/state edits with this checkpoint. Do not overwrite the deployment record or treat the earlier morning-packet base as current app code.
+
+### Earlier checkpoint, before the new supplied release note
+
 | Check | Result / environment |
 | --- | --- |
 | Local and GitHub | PASS: fetched origin; SAAS main and origin/main both `061f279`, clean. Original hallway-orchestrator clean at `71224c5`, still unmerged. New isolated documentation worktree starts at `71224c5`. |
@@ -27,7 +45,7 @@ Historical capture totals, not refreshed: Max 9 courses / 25 assignments / 34 re
 
 ## Implications and next actions
 
-New explicit product decision: D16 records Hallway as a potential primary companion shell with permitted read-only analysis/preparation and native-service authority for official actions. The morning-briefing packet now carries that boundary. Roberto reports lost iPhone access while PC access remains; the affected access path and cause are not established. The supplied screenshot demonstrates an original-assignment handoff, not an iPhone diagnosis. No access fix is claimed or running. Claude's scope review should preserve this boundary in any proposed implementation.
+New explicit product decision: D17 records Hallway as a potential primary companion shell with permitted read-only analysis/preparation and native-service authority for official actions. The morning-briefing packet now carries that boundary. Roberto reports lost iPhone access while PC access remains; the affected access path and cause are not established. The supplied screenshot demonstrates an original-assignment handoff, not an iPhone diagnosis. No access fix is claimed or running. Claude's scope review should preserve this boundary in any proposed implementation.
 
 Home already shows next captured deadline and three attention items. Builder supplies no task-specific nextAction; drafts/checklists/follow-up state reset on reload. Unknown/on-paper states require care in prose. The packet proposes one specific navigation action, not an inferred homework plan.
 
