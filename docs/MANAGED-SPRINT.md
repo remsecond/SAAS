@@ -28,7 +28,9 @@ Checks bundle validity, exact rebuild from saved raw (if supplied), both profile
 
 Synthetic demo after starting port4317:
 
-    node tools/demo-runner.cjs test-support/managed-sprint.storyboard.json --out <external-path>/managed-sprint.mp4
+    node tools/demo-runner.cjs test-support/managed-sprint.storyboard.json --frames-only --out <external-path>/managed-sprint.mp4
+
+The supplied complete clip is a 39.6-second storyboard assembled from actual browser frames, not continuous motion. All 15 interactions passed. Continuous recording finalized incompletely in this environment; --frames-only avoids that recorder and renders a 720p/5fps static-state walkthrough. Omit the flag to attempt continuous recording. Results distinguish step failures from video finalization.
 
 Set NODE_PATH to an installed Playwright parent module directory, HALLWAY_CHROME_PATH to Chrome, and have ffmpeg on PATH. Install Playwright's recording dependency with its supported `playwright install ffmpeg` command when needed. --headed is a visible rehearsal, not automatic recording. The runner stores an MP4 and adjacent results JSON with checkout revision; its simulated phone is Chromium, not real iPhone Safari. Run from a clean candidate, retain original source attribution in Git history, and keep real-coursework videos private. The storyboard deliberately demonstrates actual Map/Week/List content, scope comparison, drilldown and undated access.
 

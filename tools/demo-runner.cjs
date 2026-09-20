@@ -122,13 +122,14 @@ document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform='scale
       if(framesOnly){ await page.waitForTimeout(150); const file=path.join(videoDir,'step-'+String(frameFiles.length).padStart(3,'0')+'.png'); await page.screenshot({path:file}); frameFiles.push({file,duration:(s.pause??1600)/1000}); } else await page.waitForTimeout(s.pause ?? 1600);
     } catch (e) { await page.screenshot({path:path.join(path.dirname(out),`fail-${failures.length+1}.png`)}); failures.push(`${s.caption || JSON.stringify(s.tap)}: ${e.message.split('\n')[0]}`); console.error('STEP FAILED', failures.at(-1)); }
   }
-  fs.writeFileSync(out+'.results.json', JSON.stringify({revision,url:sb.url,phone:{width:PW,height:PH-50},checkedAt:new Date().toISOString(),steps:steps.length,failures,recordingMode:framesOnly?'storyboard frames (not continuous video)':'continuous'},null,2));
+  fs.writeFileSync(out+'.results.json', JSON.stringify({revision,url:sb.url,phone:{width:PW,height:PH-50},checkedAt:new Date().toISOString(),steps:steps.length,failures,videoComplete:false,recordingMode:framesOnly?'storyboard frames (not continuous video)':'continuous'},null,2));
   await page.waitForTimeout(1200);
   const video = page.video(); await ctx.close(); await browser.close();
-  if(framesOnly&&frameFiles.length){const manifest=path.join(videoDir,'frames.txt');const lines=frameFiles.flatMap(f=>["file '"+f.file.replace(/\\/g,'/')+"'",'duration '+f.duration]);lines.push("file '"+frameFiles.at(-1).file.replace(/\\/g,'/')+"'");fs.writeFileSync(manifest,lines.join('\n'));execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',manifest,'-r','25','-c:v','libx264','-preset','ultrafast','-crf','20','-pix_fmt','yuv420p','-movflags','+faststart',out]);console.log('Saved storyboard frames',out);}
+  if(framesOnly&&frameFiles.length){const manifest=path.join(videoDir,'frames.txt');const lines=frameFiles.flatMap(f=>["file '"+f.file.replace(/\\/g,'/')+"'",'duration '+f.duration]);lines.push("file '"+frameFiles.at(-1).file.replace(/\\/g,'/')+"'");fs.writeFileSync(manifest,lines.join('\n'));execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',manifest,'-vf','scale=1280:720','-r','5','-c:v','libx264','-preset','ultrafast','-crf','20','-pix_fmt','yuv420p','-movflags','+faststart',out]);console.log('Saved storyboard frames',out);}
   if (video) { const webm = await video.path();
     execFileSync('ffmpeg', ['-y','-loglevel','error','-i',webm,'-c:v','libx264','-preset','fast','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',out]);
     console.log('Saved', out); }
+  const report=JSON.parse(fs.readFileSync(out+'.results.json','utf8'));report.videoComplete=fs.existsSync(out)&&fs.statSync(out).size>0;fs.writeFileSync(out+'.results.json',JSON.stringify(report,null,2));
   console.log(failures.length ? `\n${failures.length} step(s) failed:\n- ` + failures.join('\n- ') : '\nAll steps passed ✔');
   process.exit(failures.length ? 1 : 0);
 })();
