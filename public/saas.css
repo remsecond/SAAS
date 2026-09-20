@@ -128,3 +128,17 @@ body[data-theme=light] .hero .row.card{background:color-mix(in srgb,var(--course
 .earlier>summary{display:flex;align-items:center;min-height:44px;font-weight:700;cursor:pointer}
 .earlier>p{margin:4px 0 8px}
 .undated-count{margin:12px 0 0}
+
+/* Board views share filters and card semantics. Each course map uses equal grid cells;
+   responsive text may expand the entire grid. No geometric grade/effort claim. */
+.board-routes,.week-nav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.board-routes .chip,.week-nav .chip{white-space:normal;text-align:left;overflow-wrap:anywhere}
+.slice-label{padding:10px;border-left:4px solid var(--line);overflow-wrap:anywhere}
+.week-days{display:grid;grid-template-columns:1fr;gap:8px}
+.week-day{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;min-height:56px;width:100%;padding:12px;border:1px solid var(--line);background:var(--panel);text-align:left;overflow-wrap:anywhere}
+.week-day strong{font-size:.875em}
+.board-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:8px}
+.board-map .map-tile{grid-column:auto;min-width:0;width:100%;height:100%;margin:0}
+.map-group h3{overflow-wrap:anywhere;line-height:1.4}
+.phone.large-text .board-map,.phone.narrow-preview .board-map{grid-template-columns:1fr}
+@media(max-width:360px){.board-map{grid-template-columns:1fr}}

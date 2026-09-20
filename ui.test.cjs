@@ -256,8 +256,8 @@ test('course and assessment filters retain selection across detail navigation',a
   assert.equal(ui.run('course'),'c502');
   assert.equal(ui.run('period'),'all');
   assert.match(ui.html(),/class="tiles list"/);
-  await ui.click({layout:'yes'});
-  assert.match(ui.html(),/class="tiles "/);
+  await ui.click({boardView:'map'});
+  assert.match(ui.html(),/class="board-map"/);
   await ui.click({focus:'assessments'});
   ui.event('change',{id:'course',value:'all',dataset:{}});
   assert.match(ui.html(),/1 matching item /);
@@ -642,4 +642,43 @@ test('links out to Canvas say that sign-in is needed and offer the school sign-i
   const bare=await createUI({bundles:{max:none}});
   await bare.click({go:'a9001'});assert.doesNotMatch(bare.html(),/Sign in to Canvas|In Canvas<\/h3>/,'no Canvas address captured means no sign-in link is invented');
   await bare.click({back:'1'});await bare.click({tab:'Settings'});assert.doesNotMatch(bare.html(),/Sign in to Canvas/);
+});
+
+
+test('Board views share scope, keep undated and earlier records reachable, and never infer completion',async()=>{
+  const ui=await createUI(); await ui.click({tab:'Board'}); await ui.click({period:'all'});
+  const ids=()=>JSON.parse(ui.run('JSON.stringify(boardItems().map(d=>d.id))'));
+  const expected=ids(), states=ui.run('JSON.stringify(data.map(d=>d.submission.state))');
+  for(const view of ['list','week','map']) {await ui.click({boardView:view});assert.deepEqual(ids(),expected);assert.match(ui.html(),/No captured date/);assert.match(ui.html(),/Earlier items/);}
+  assert.doesNotMatch(ui.html(),/Grade impact|Size by points/);
+  await ui.click({boardSlice:'undated'});assert.deepEqual(ids(),['a9006']);assert.match(ui.html(),/Selected: No captured date/);
+  await ui.click({boardView:'map'});assert.deepEqual(ids(),['a9006']);
+  await ui.click({period:'7'});assert.equal(ui.run('boardSlice'),'all');
+  await ui.click({boardSlice:'earlier'});assert(ids().includes('a9002'));assert(!ids().includes('a9004'),'submitted earlier item remains outside the original seven-day filter');
+  await ui.click({reset:'1'});assert.equal(ui.run('period'),'all');assert.equal(ids().length,8);
+  assert.equal(ui.run('JSON.stringify(data.map(d=>d.submission.state))'),states);
+});
+
+test('Board calendar uses school dates across UTC midnight and DST; day filters clear with range and profile',async()=>{
+  const b=bundleFor('max'); b.snapshot.demoNow='2026-11-01T08:30:00Z'; b.snapshot.timeZone='America/Los_Angeles';
+  b.assignments[0].dueAt='2026-11-02T07:30:00Z'; // Sunday locally, Monday UTC
+  const ui=await createUI({bundles:{max:b,adrian:bundleFor('adrian')}});
+  await ui.click({tab:'Board'});await ui.click({period:'all'});await ui.click({boardView:'week'});
+  assert.equal(ui.run("schoolDay('2026-11-02T07:30:00Z')"),'2026-11-01');
+  assert.equal(ui.run('boardWeek()[0]'),'2026-10-26');assert.equal(ui.run('boardWeek()[6]'),'2026-11-01');
+  await ui.click({boardSlice:'2026-11-01'});assert.equal(ui.run('boardView'),'list');assert.equal(ui.run('boardItems()[0].id'),'a9001');
+  await ui.click({go:'a9001'});await ui.click({back:'1'});assert.equal(ui.run('boardSlice'),'2026-11-01');
+  await ui.click({period:'30'});assert.equal(ui.run('boardSlice'),'all');
+  await ui.click({boardView:'week'});await ui.click({week:'1'});assert.equal(ui.run('boardWeek()[0]'),'2026-11-02');
+  await ui.click({home:'1'});assert.equal(ui.run('weekOffset'),0);assert.equal(ui.run('boardSlice'),'all');
+  await ui.click({tab:'Settings'});await ui.click({profiles:'1'});await ui.click({student:'adrian'});await ui.settle();
+  assert.equal(ui.run('boardView'),'list');assert.equal(ui.run('boardSlice'),'all');assert.doesNotMatch(ui.html(),/SYNTHETIC-M/);
+});
+
+test('Board count and week cells honor class and assessment filters; map detail returns to map',async()=>{
+  const ui=await createUI();await ui.click({tab:'Board'});await ui.click({period:'all'});
+  ui.event('change',{id:'course',value:'c501',dataset:{}});await ui.click({focus:'assessments'});
+  for(const view of ['list','week','map']) {await ui.click({boardView:view});assert.equal(ui.run('boardItems().length'),1);assert.match(ui.html(),/1 matching item/);}
+  await ui.click({go:'a9003'});await ui.click({back:'1'});assert.equal(ui.run('boardView'),'map');assert.equal(ui.run('course'),'c501');assert.equal(ui.run('focus'),'assessments');assert.match(ui.html(),/board-map/);
+  ui.event('change',{id:'course',value:'c502',dataset:{}});assert.match(ui.html(),/Nothing matches these filters/);assert.doesNotMatch(ui.html(),/No unfinished work/);
 });

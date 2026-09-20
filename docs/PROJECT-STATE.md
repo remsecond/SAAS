@@ -1,5 +1,23 @@
 # Hallway single coordination state
 
+## Board views contribution — September 19, 2026 / Codex
+
+The design session reported a read-only GitHub integration (403 creating refs) and no runtime. Codex completed the bounded code contribution in `codex/board-views`, based on Claude's `claude/design-vnext-preview` at `2a18c2c`. Claude remains integration, Replit-preview and release lead. Coordination is posted on issue #3. No credential changes, real-data capture, integration to main or publication performed.
+
+Scope: Board List / Week / equal-size Map; school-timezone calendar using the snapshot reference clock; week navigation and explicit undated/earlier/outside-week routes; shared filters and labeled day selections; preserve existing Home and native Canvas actions. The current bundle has no verified points. See [BOARD-VIEWS.md](BOARD-VIEWS.md).
+
+Evidence on this contribution, Windows/local, synthetic records only:
+- PASS: `npm run check`, 56/56 (53 base plus 3 focused Board regressions).
+- PASS: headless Chrome via Playwright, 54 combinations (320/390/1280px × 100/180% text × light/dark/high-contrast × List/Week/Map): no page horizontal overflow, checked card text not clipped, visible buttons at least 44px (1px measurement tolerance). Interaction checks cover map-detail/back focus, native Canvas link presence, keyboard week navigation and undated/range reset. This is not a complete accessibility certification.
+- PASS: independent read-only delegate reviewed the actual diff; no actionable correctness findings. Delegate did not run tests/browser; those checks were performed separately by Codex.
+- NOT RUN: real iPhone, actual-data Board preview, Replit runtime and integrated revision. Existing published app is unaffected.
+
+Reproducible browser harness: `test-support/board-browser-check.cjs`; provide external Playwright through HALLWAY_PLAYWRIGHT_PATH and Chrome executable through HALLWAY_CHROME_PATH when defaults do not apply. No new production dependency. Harness creates clearly synthetic bundles in an OS temp directory and binds the existing server to loopback only. Public evidence must remain synthetic.
+
+Next: Claude reviews the draft PR against `claude/design-vnext-preview`, reconciles any newer commits, runs combined checks and supplies the unpublished Replit preview. No other session is claimed to be running after this handoff. Publication requires Roberto's instruction for the reviewed result.
+
+Earlier checkpoint below remains history where it differs from this contribution.
+
 ## Design preview build — September 19, 2026 (evening Pacific) / Claude, implementation-integration-release lead
 
 **Acknowledged and executing.** Assignment acknowledged on issue #3. Execution began after checking Replit: `main` at `ccdfa18`, no uncommitted files, same as GitHub main. The agent panel still shows the old "Publish Hallway at a stable HTTPS address" task and audit text, as recorded below; I did not act on either. Replit Agent is not writing any file in this slice. Claude is the only writer.
