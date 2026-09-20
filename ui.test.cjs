@@ -415,8 +415,9 @@ test('status is a labeled marker in sentence case, separate from course color, a
   const ui=await createUI();
   await ui.click({period:'all'});
   const html=ui.html();
-  assert.match(html,/st-amber" aria-hidden="true"><\/span><b>Marked missing at capture<\/b>/);
-  assert.match(html,/st-green" aria-hidden="true"><\/span><b>Submitted in captured Canvas data<\/b>/);
+  assert.match(html,/st-amber sk-missing" aria-hidden="true">!<\/span><b>Marked missing at capture<\/b>/,'word and glyph, not color alone');
+  assert.match(html,/st-green sk-submitted" aria-hidden="true">✓<\/span><b>Submitted in captured Canvas data<\/b>/);
+  assert.match(html,/sk-not_tracked" aria-hidden="true">✎<\/span>/);
   assert.match(html,/<b>Excused<\/b>/);assert.match(html,/<b>In class \/ on paper<\/b>/);
   assert.doesNotMatch(html,/MISSING|NOT SUBMITTED|TURNED IN|GRADED|EXCUSED|ON PAPER|STATUS UNKNOWN/,'no all-caps status');
   assert.doesNotMatch(html,/class="tile[^"]*\b(red|orange|blue)\b/,'status no longer paints the whole card');
@@ -681,4 +682,31 @@ test('Board count and week cells honor class and assessment filters; map detail 
   for(const view of ['list','week','map']) {await ui.click({boardView:view});assert.equal(ui.run('boardItems().length'),1);assert.match(ui.html(),/1 matching item/);}
   await ui.click({go:'a9003'});await ui.click({back:'1'});assert.equal(ui.run('boardView'),'map');assert.equal(ui.run('course'),'c501');assert.equal(ui.run('focus'),'assessments');assert.match(ui.html(),/board-map/);
   ui.event('change',{id:'course',value:'c502',dataset:{}});assert.match(ui.html(),/Nothing matches these filters/);assert.doesNotMatch(ui.html(),/No unfinished work/);
+});
+
+test('Board review 3: VIEW control below filters, scope in words, week grid + class rows, route cards and three distinct empty states',async()=>{
+  const ui=await createUI();await ui.click({tab:'Board'});await ui.click({period:'all'});
+  let html=ui.html();
+  assert(html.indexOf('data-focus="assessments"')<html.indexOf('data-board-view="list"'),'VIEW sits below the filters');
+  assert.match(html,/Every title, class, date and recorded status in full\./);assert.doesNotMatch(html,/Tile view/);
+  await ui.click({focus:'attention'});assert.match(ui.html(),/matching items needing attention/);
+  await ui.click({period:'7'});assert.match(ui.html(),/needing attention in the next 7 days/);
+  await ui.click({period:'all'});await ui.click({focus:'all'});
+  await ui.click({boardView:'week'});html=ui.html();
+  assert.match(html,/Dated work only/);assert.match(html,/class="wk-bars"/);assert.equal((html.match(/class="wk-col/g)||[]).length,5,'Mon–Fri columns');
+  assert.match(html,/School days, in [^<]+ time/,'time zone stated');
+  assert.match(html,/See the undated work/);assert.match(html,/See earlier items/);assert.match(html,/1 is marked missing|are marked missing/);
+  const before=ui.run('boardItems().length');
+  await ui.click({weekCourse:'c501'});assert.equal(ui.run('course'),'c501');assert.equal(ui.run('boardView'),'week','class row stays in Week');
+  assert(ui.run('boardItems().length')<before);
+  await ui.click({weekCourse:'c501'});assert.equal(ui.run('course'),'all','tapping again clears the class scope');
+  await ui.click({reset:'1'});assert.equal(ui.run('course'),'all');assert.equal(ui.run('boardSlice'),'all');
+  await ui.click({boardView:'map'});html=ui.html();assert.match(html,/class="map-tile card/);assert.match(html,/An exploration, not a scoreboard/);assert.doesNotMatch(html,/points sizing|Size by/i);
+  ui.event('change',{id:'course',value:'c502',dataset:{}});await ui.click({focus:'assessments'});html=ui.html();
+  assert.match(html,/empty-filter/);assert.match(html,/not an all-clear/);assert.doesNotMatch(html,/empty-kind|empty-none/);
+  const b=bundleFor('max');for(const a of b.assignments)a.kind="assignment";
+  const ui2=await createUI({bundles:{max:b,adrian:bundleFor('adrian')}});await ui2.click({tab:'Board'});await ui2.click({focus:'assessments'});
+  html=ui2.html();assert.match(html,/empty-kind/);assert.match(html,/No matching records/);assert.doesNotMatch(html,/empty-filter/);
+  const e=bundleFor('max');e.assignments=[];const ui3=await createUI({bundles:{max:e,adrian:bundleFor('adrian')}});await ui3.click({tab:'Board'});
+  assert.match(ui3.html(),/empty-none/);assert.match(ui3.html(),/No capture/);
 });
