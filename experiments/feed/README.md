@@ -1,11 +1,11 @@
-# Phone feed experiment
+# School discovery feed sandbox
 
-Owner: Codex, explicitly authorized by Roberto on September 20, 2026. Isolated design exploration; not a replacement for the Board or an authorized production release.
+Owner: Codex. Roberto authorized this isolated experiment and then corrected its direction: browse a school world, not an assignment checklist. Current iteration replaces Feed/Focus with one finite discovery stream.
 
-Open index.html directly in a browser. No install, server, network assets, backend, or real student data required. Feed and Focus share four fictional assignments. Focus supports horizontal swipes plus explicit Back/Next controls. Class selection updates both views. Preparation checks and notes survive view changes, but intentionally reset on reload. Canvas buttons explain the unavailable fictional destination; they never submit or simulate success.
+Open index.html directly; no server, installation or external dependency. Seven fictional stories cover coursework, a teacher update, a creative prompt, feedback, dates, a resource and school life. Visual, text, quotation and poster treatments use fixed crimson/paper/ink tokens. One class selector and Saved are the only persistent controls. Expand a story for context/source information. Save or add a private note; state survives filtering but resets on reload. No school connection, sending, uploads, tracking or production changes.
 
-Fixed tokens: crimson #8B1E24, paper #F9F9F9, pale fill #EDEDED, border #D6D6D6, ink #1A1C1C. Square corners, no shadows, no title truncation, zoom allowed. Native system fonts for an offline, dependency-free prototype.
+Framework: authored posts have course, author, kind, title, summary, optional decorative media, detail, facts and native-handoff availability. Production adapters and content ranking are not implemented. Any future adapter must preserve source facts and provenance; current rendering trusts only hard-coded fictional content, not external HTML.
 
-Acceptance questions: Can a student see work immediately? Find the relevant class? Prepare without confusing personal checks with official submission? Does Focus help start a task, or hide useful context? Can they leave with a clear stopping point?
+Verification: run node experiments/feed/check.cjs with HALLWAY_PLAYWRIGHT_PATH if Playwright is external. PASS at 320/390/430px with normal and larger text: first-story position, overflow across every card, saved/class filters, personal-note retention, empty saved state, expandable stories and honest native-action placeholders; no page errors. Chromium only. Root inspected the rendered feed. Real-iPhone and student preference NOT RUN.
 
-Scope excludes NotebookLM, live schedules, countdowns, scoring models, uploads, social/peer activity, notifications, analytics, PWA changes, and deployment. Labels and example dates are fictional, not inferred from captured coursework.
+Acceptance: Does the varied stream invite useful exploration? Are facts findable without making every story a task? Does the ending feel settled? No publishing authorized for this sandbox.

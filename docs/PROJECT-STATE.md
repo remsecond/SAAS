@@ -1,10 +1,10 @@
 # Hallway single coordination state
 
-## September 20, 2026 / Codex — isolated feed experiment
+## September 20, 2026 / Codex — discovery feed sandbox
 
-Roberto authorized the proposed fictional phone-first Feed/Focus sandbox. Codex owns this experiment on `codex/feed-sandbox`, based on `fbbd45c`; Claude remains production integration/release lead. Artifact: `experiments/feed/index.html`, directly openable without dependencies or a server. No production files or data changed. All four assignments are fictional, no external requests or official actions, preparation state resets on reload.
+Roberto corrected the initial Feed/Focus experiment: the intended experience is browsing varied school stories, not a task checklist. Codex rebuilt the same isolated `experiments/feed/index.html` on `codex/feed-sandbox`. Seven fictional stories mix coursework, teacher updates, art prompts, feedback, dates, resources and school life. Minimal class/Saved controls, expandable context, in-memory saved items and private notes. No production code or student data changes, and no deployment.
 
-PASS locally: six Chromium combinations (320/390/430px, normal/larger text), first-card visibility, horizontal overflow, class filtering, Feed/Focus, preparation check/note retention, finite navigation and honest Canvas placeholder. Source test: `experiments/feed/check.cjs`; use HALLWAY_PLAYWRIGHT_PATH when Playwright is external. Root inspected the rendered 390px Feed screenshot. NOT RUN: real iPhone, touch-swipe device acceptance, student preference, publication.
+PASS: six local Chromium phone/text combinations (320/390/430px; normal/larger text), first-story visibility, overflow across all cards, saved/class filters, note retention, empty saved state, expand and honest Canvas handoff. Root visually inspected the full rendered 390px feed and the small/larger-text layout. Real-iPhone and human discovery acceptance NOT RUN. Previous Feed/Focus behavior is superseded. Next: Roberto tries the same local file; Claude remains production release lead. No background agent activity.
 
 Read-only release reconciliation by Codex delegate: remote main is `fbbd45cb0fc9afe758924400ecca41309306a65a`. Live CSS matches that revision byte-for-byte; live HTML matches after Replit injected script/newline normalization. This establishes current frontend assets, not server SHA or fresh student data. Managed Sprint `7768b16` remains separate and overlaps Claude's newer UI work. Do not overwrite main with that older branch. Next production owner: Claude, reconcile compact-control improvements against current main and verify integrated behavior. No deployment performed for this experiment. Older release records below are historical.
 
