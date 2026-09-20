@@ -1,5 +1,25 @@
 # Hallway single coordination state
 
+## RELEASED September 20, 2026, afternoon Pacific / Claude — parent Canvas sign-in
+
+Published app code = `7c8a686` (Codex's `c3503e7` and `ff4b00d` from PR #11, plus Claude's two rework commits). GitHub main = `7c8a686`; branch `claude/parent-login`. Replit deployment revision: merge `b5c5fe8` on Replit main. Previous live code: `cdaedd3`/`2025a9b`. Rollback: republish Replit's previous deployment, or check out `cdaedd3` on Replit and republish. Capture bundles untouched.
+
+Site configuration (not code, not Git): `private-data/snapshots/config.json` on Replit holds `parentLoginUrl`. It deploys with the private bundles and is read by `/api/students`. Removing the file removes the parent link and nothing else.
+
+| Check | Result |
+| --- | --- |
+| `npm run check` on the integrated revision | PASS 60/60 (cloud and Replit) |
+| `test-support/canvas-handoff-browser-check.cjs` (Codex's harness, synthetic) | PASS: 72 screen combinations, 64 assignment detail checks, 2 intercepted parent clicks |
+| Discover and Board harnesses (synthetic) | PASS 24 and 54 combinations |
+| Actual-data Replit dev preview, both profiles (unpublished) | PASS: student link, one parent link on the captured host, original assignment URL, Settings shows both, student sentence present, 100/180% text × 3 looks, no overflow, no target under 44 px |
+| LIVE `7c8a686`, both profiles | PASS: same checks live; parent link opens in a new tab with `noopener`; Discover 25/33 cards; Board List/Week/Map 25/33 each; served page contains no school identifier; `/api/students` reports the configured URL; both snapshot hashes byte-identical to before the publish |
+| Real parent authentication | NOT RUN and UNRESOLVED. The reported Canvas "account not found" and Google `app_not_configured_for_user` errors are not addressed by this change |
+| Real iPhone Safari / Home Screen | NOT RUN (Roberto) |
+| Independent review of `7c8a686` | NOT RUN |
+
+**This is a routing correction, not an authentication fix.** Nothing here proves a parent account can sign in.
+
+
 ## Current reconciliation — September 20, 2026, 11:58 Pacific / Codex
 
 This checkpoint supersedes earlier current-state claims below. Codex owns coordination and the existing design fork; Claude remains production implementation/integration/release lead.
