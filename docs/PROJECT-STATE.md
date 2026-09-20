@@ -1,5 +1,23 @@
 # Hallway single coordination state
 
+## RELEASED September 20, 2026, early Pacific / Claude — Discover live for both profiles
+
+Published app code = `2025a9b` (Codex's `800f7de` from PR #10, plus Claude's ordering fix). GitHub main = `2025a9b` (fast-forward from `fbbd45c`); branch `claude/discover`. Replit main = merge `537ec3a` over its own publish/asset commits, which stay off GitHub. Previous live code: `fbbd45c`. Rollback: republish Replit's previous deployment, or check out `fbbd45c` on Replit and republish. Private bundles and snapshot path untouched.
+
+Integration finding, fixed before release: `discover()` sorted with `byDueCourseId`, which reads a null `dueAt` as 1970 and put undated work at the top while the count line promises "dated first, then undated". New `byDueThenUndated` keeps the Board's course/assignment tiebreak; `ui.test.cjs` now asserts the order, that every captured record is reachable, and that no scores or points appear.
+
+| Check | Result |
+| --- | --- |
+| `npm run check` on the integrated revision | PASS 58/58 (cloud and Replit) |
+| `test-support/discover-browser-check.cjs` (synthetic, cloud Chromium) | PASS, 24 combinations |
+| `test-support/board-browser-check.cjs` (synthetic, cloud Chromium) | PASS, 54 combinations |
+| Actual-data Replit dev preview, both profiles (unpublished) | PASS: 25/33 cards = captured counts, undated last (1/14), class filter counts, shared detail + back to Discover with focus restored, Canvas sign-in link, 100/180% text x 3 looks at 390 px, no overflow, no nav button under 44 px |
+| LIVE `2025a9b`, both profiles, 390 and 320 px | PASS: same checks live, plus Board List/Week/Map counts and calm Home unchanged; `/api/students` and both snapshot hashes byte-identical to before the publish |
+| Real iPhone Safari / Home Screen | NOT RUN (Roberto) |
+| Independent review of `2025a9b` | NOT RUN. Claude reviewed `800f7de` as integrator; that is not an independent review |
+
+Published on Roberto's instruction for this change, at the existing URL. No second demo URL, no server, capture or official-action change.
+
 ## September 20 / real-coursework Discover candidate — Codex
 
 Roberto explicitly requested moving from sandbox to actual coursework so the boys can try the existing shared URL. Codex owns this bounded candidate on codex/real-discover from main fbbd45c; Claude remains release operator/integration lead. Added Discover using existing validated bundle and shared assignment detail; preserved Home/Board/Courses/Settings. No server, private capture, or official-action changes. Sandbox PR #9 stays separate.
