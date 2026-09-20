@@ -710,3 +710,18 @@ test('Board review 3: VIEW control below filters, scope in words, week grid + cl
   const e=bundleFor('max');e.assignments=[];const ui3=await createUI({bundles:{max:e,adrian:bundleFor('adrian')}});await ui3.click({tab:'Board'});
   assert.match(ui3.html(),/empty-none/);assert.match(ui3.html(),/No capture/);
 });
+
+test('Discover lists every captured record for the profile, dated first, and shares the Board detail page',async()=>{
+  const ui=await createUI();await ui.click({tab:'Discover'});
+  const html=ui.html();
+  const ids=[...html.matchAll(/data-discover-id="([^"]+)"/g)].map(m=>m[1]);
+  assert.equal(ids.length,ui.run('data.length'),'every captured assignment is reachable');
+  const dues=ids.map(id=>JSON.parse(ui.run('JSON.stringify(data.find(d=>d.id==="'+id+'").dueAt||null)')));
+  const firstUndated=dues.findIndex(v=>!v);
+  assert(firstUndated===-1||dues.slice(firstUndated).every(v=>!v),'undated records come after dated ones, as the count line says');
+  assert.deepEqual(dues.filter(Boolean),[...dues.filter(Boolean)].sort(),'dated records are soonest first');
+  assert.match(html,/From the instructions · excerpt/);
+  assert.doesNotMatch(html,/\b\d+\s*\/\s*\d+\b|points possible|grade impact/i,'no scores, points or invented summaries');
+  await ui.click({go:'a9006'});assert.match(ui.html(),/detail-title/);
+  await ui.click({back:'1'});assert.equal(ui.run('tab'),'Discover');
+});
