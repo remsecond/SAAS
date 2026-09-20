@@ -1,5 +1,14 @@
 # Hallway single coordination state
 
+## September 20, 2026 / Codex — isolated feed experiment
+
+Roberto authorized the proposed fictional phone-first Feed/Focus sandbox. Codex owns this experiment on `codex/feed-sandbox`, based on `fbbd45c`; Claude remains production integration/release lead. Artifact: `experiments/feed/index.html`, directly openable without dependencies or a server. No production files or data changed. All four assignments are fictional, no external requests or official actions, preparation state resets on reload.
+
+PASS locally: six Chromium combinations (320/390/430px, normal/larger text), first-card visibility, horizontal overflow, class filtering, Feed/Focus, preparation check/note retention, finite navigation and honest Canvas placeholder. Source test: `experiments/feed/check.cjs`; use HALLWAY_PLAYWRIGHT_PATH when Playwright is external. Root inspected the rendered 390px Feed screenshot. NOT RUN: real iPhone, touch-swipe device acceptance, student preference, publication.
+
+Read-only release reconciliation by Codex delegate: remote main is `fbbd45cb0fc9afe758924400ecca41309306a65a`. Live CSS matches that revision byte-for-byte; live HTML matches after Replit injected script/newline normalization. This establishes current frontend assets, not server SHA or fresh student data. Managed Sprint `7768b16` remains separate and overlaps Claude's newer UI work. Do not overwrite main with that older branch. Next production owner: Claude, reconcile compact-control improvements against current main and verify integrated behavior. No deployment performed for this experiment. Older release records below are historical.
+
+
 ## Current checkpoint: RELEASED September 19, 2026, evening Pacific / Claude
 
 This block is the current state; everything below it is history.
