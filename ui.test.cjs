@@ -45,7 +45,7 @@ async function createUI(options = {}) {
     fetch: options.fetch || (async url => {
       if (url === '/content/personality.json') return options.personality ? {ok:true,status:200,json:async()=>structuredClone(options.personality)} : {ok:false,status:404,json:async()=>({})};
       requests.push(url);
-      if (url === '/api/students') return {ok:true,status:200,json:async()=>({students:structuredClone(STUDENTS)})};
+      if (url === '/api/students') return {ok:true,status:200,json:async()=>({students:structuredClone(STUDENTS),parentLogin:options.parentLogin})};
       const id = new URL(url,'http://localhost').searchParams.get('student');
       const value = typeof bundles === 'function' ? await bundles(id) : bundles[id];
       if (value && value.ok === false) return value;
@@ -727,19 +727,33 @@ test('Discover lists every captured record for the profile, dated first, and sha
 });
 
 
-test('SAAS parent route is explicit, preserves original links and appears in Settings for both profiles',async()=>{
+test('parent sign-in is site configuration: offered beside the student link, only for the captured Canvas host',async()=>{
+  const CANVAS='https://canvas.test.example',PARENT=CANVAS+'/login/saml/99';
   for(const id of ['max','adrian']){
-    const b=bundleFor(id);
-    for(const s of b.sources)if(s.url){const u=new URL(s.url);s.url='https://saas.instructure.com'+u.pathname+u.search;}
-    const ui=await createUI({bundles:{[id]:b},remembered:id});
-    const a=b.assignments[0],original=b.sources.find(s=>s.id===a.sourceId).url;
+    const bundles={max:bundleFor('max'),adrian:bundleFor('adrian')};
+    const a=bundles[id].assignments[0],original=bundles[id].sources.find(s=>s.id===a.sourceId).url;
+
+    // configured for the same host as the capture: both links, original assignment URL kept
+    const ui=await createUI({bundles,remembered:id,parentLogin:PARENT});
     await ui.click({go:a.id});
-    assert.ok(ui.html().includes('href="https://saas.instructure.com/login/saml/11"'));
-    assert.ok(ui.html().includes('href="'+original+'"'));
-    assert.ok(!ui.html().includes('href="https://saas.instructure.com/login"'));
-    assert.match(ui.html(),/Students: use your usual school Canvas sign-in/);
-    assert.match(ui.html(),/does not change your Canvas account/);
+    let html=ui.html();
+    assert.ok(html.includes('href="'+CANVAS+'/login"'),'students keep their own sign-in link');
+    assert.ok(html.includes('href="'+PARENT+'"'),'parent route offered');
+    assert.ok(html.includes('href="'+original+'"'),'original assignment link preserved');
+    assert.match(html,/separate parent sign-in the school set up/);
+    assert.match(html,/does not change your Canvas account/);
     await ui.click({back:'1'});await ui.click({tab:'Settings'});
-    assert.ok(ui.html().includes('href="https://saas.instructure.com/login/saml/11"'));
+    html=ui.html();
+    assert.ok(html.includes('href="'+PARENT+'"')&&html.includes('href="'+CANVAS+'/login"'),'Settings offers both');
+
+    // configured for a different host, or not configured at all: student link only
+    for(const value of ['https://unrelated.example/login/saml/99',undefined]){
+      const other=await createUI({bundles,remembered:id,parentLogin:value});
+      await other.click({go:a.id});
+      const h=other.html();
+      assert.ok(h.includes('href="'+CANVAS+'/login"'),'student link still there');
+      assert.ok(!h.includes('Parent sign-in to Canvas'),'no parent link for '+(value||'no configuration'));
+      assert.ok(!h.includes('unrelated.example'),'never links off the captured Canvas host');
+    }
   }
 });

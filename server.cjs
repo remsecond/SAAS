@@ -8,8 +8,20 @@ const {loadCollection} = require('./personality.cjs');
 // Serves each student's captured coursework bundle. There are no passcodes and
 // no fallback content: a missing or invalid bundle is reported as unavailable.
 // Old access secrets and HALLWAY_SNAPSHOTS_JSON are deliberately unused.
+// The school's parent sign-in address is site configuration, not code: it names the
+// school, so it lives in HALLWAY_PARENT_LOGIN_URL or private-data/config.json (both
+// outside Git) and never in this repository. Missing or unusable config simply means
+// the parent link is not offered; the students' own sign-in link is unaffected.
+function parentLoginUrl({snapshotDir,env}) {
+  let value=env&&env.HALLWAY_PARENT_LOGIN_URL;
+  if(!value&&snapshotDir) try {
+    value=JSON.parse(fs.readFileSync(path.join(snapshotDir,'config.json'),'utf8')).parentLoginUrl;
+  } catch { value=null; }
+  try { const u=new URL(String(value)); return u.protocol==='https:'?u.href:null; } catch { return null; }
+}
 function createServer({snapshotDir,personalityFile,env=process.env}={}) {
   const store=createStore({dir:snapshotDir});
+  const parentLogin=parentLoginUrl({snapshotDir,env});
   const json={'Content-Type':'application/json; charset=utf-8'};
   return http.createServer((req,res)=>{
     const headers = {
@@ -31,7 +43,7 @@ function createServer({snapshotDir,personalityFile,env=process.env}={}) {
       if(Object.hasOwn(assets,route)) return reply(200,fs.readFileSync(path.join(__dirname,'public',route)),{'Content-Type':assets[route]});
       if(route==='/login') return reply(302,'',{Location:'/'});
       if(route==='/content/personality.json') return reply(200,JSON.stringify(loadCollection({file:personalityFile,env})),json);
-      if(route==='/api/students') return reply(200,JSON.stringify({students:store.list()}),json);
+      if(route==='/api/students') return reply(200,JSON.stringify({students:store.list(),parentLogin}),json);
       if(route==='/api/snapshot') {
         const result=store.read(url.searchParams.get('student')||'');
         if(result.status==='ok') return reply(200,JSON.stringify(result.bundle),json);

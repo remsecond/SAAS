@@ -226,3 +226,20 @@ test('nested junk, an unusable time zone and a backwards coverage window are val
   for(const whole of [null,undefined,42,'x',[]]) assert.equal(validateBundle(whole,'max').ok,false);
   assert.equal(validateBundle(bundleFor('max'),'max').ok,true,'a good bundle still passes');
 });
+
+test('parent sign-in configuration stays outside Git and is validated before it is served', async () => {
+  const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+  const {bundleFor}=require('./test-support/synthetic-capture.cjs');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'hallway-config-'));
+  for(const id of ['max','adrian'])fs.writeFileSync(path.join(dir,id+'.json'),JSON.stringify(bundleFor(id)));
+  const read=async (options)=>{const server=createServer({snapshotDir:dir,...options});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+    const body=await (await fetch('http://127.0.0.1:'+server.address().port+'/api/students')).json();
+    await new Promise(r=>server.close(r));return body};
+  assert.equal((await read({env:{}})).parentLogin,null,'no configuration means no parent link');
+  assert.equal((await read({env:{HALLWAY_PARENT_LOGIN_URL:'http://canvas.test.example/login/saml/99'}})).parentLogin,null,'plain http is refused');
+  assert.equal((await read({env:{HALLWAY_PARENT_LOGIN_URL:'not a url'}})).parentLogin,null,'junk is refused');
+  assert.equal((await read({env:{HALLWAY_PARENT_LOGIN_URL:'https://canvas.test.example/login/saml/99'}})).parentLogin,'https://canvas.test.example/login/saml/99');
+  fs.writeFileSync(path.join(dir,'config.json'),JSON.stringify({parentLoginUrl:'https://canvas.test.example/login/saml/98'}));
+  assert.equal((await read({env:{}})).parentLogin,'https://canvas.test.example/login/saml/98','private config file is read');
+  assert.ok(!fs.readFileSync('.gitignore','utf8').split('\n').every(l=>!l.includes('private-data')),'private-data stays git-ignored');
+});

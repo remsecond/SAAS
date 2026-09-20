@@ -230,12 +230,17 @@ No standing publication approval. Next owner: Claude for scope/integration revie
 
 Supporting records: [decisions](DECISIONS.md), [operating model](OPERATING-MODEL.md), [direction](PRODUCT-DIRECTION-BEST-OF-BOTH.md), [kickoff](CODEX-ORCHESTRATOR-KICKOFF.md), [personality](../content/PERSONALITY-SPEC.md). Detailed earlier QA and consolidated report remain outside public Git alongside private evidence.
 
-## 2026-09-20 parent Canvas handoff correction — ready for Claude
+## 2026-09-20 parent Canvas handoff — reworked by Claude from Codex's PR #11
 
-Codex prepared a bounded fix on codex/parent-canvas-login, based on cdaedd3. Claude remains integration/release lead. The live app was directly checked this session and still uses the generic /login route. The school email supplied by Roberto specifies /login/saml/11 for SAAS parents.
+Codex prepared `codex/parent-canvas-login` (`c3503e7`) after Roberto forwarded the school's instructions for parent Canvas access. Claude integrated it with two changes, on Roberto's decision:
 
-The change applies only to the exact SAAS Canvas origin, labels parent access explicitly, retains original assignment URLs, and tells students to use their usual school sign-in. Other origins retain existing behavior; absent source links do not invent login links. No captures or credentials changed. The private-source scan permits only the explicit public origin comparison; other source-identifier checks remain.
+1. **No school identifiers in this repository.** Codex's version wrote the school's Canvas host and parent path into `public/index.html` and the tests, and relaxed `check.cjs`'s private-identifier scan to permit them. This repository is public. The scan is restored unchanged, and the parent address is now site configuration read at runtime from `HALLWAY_PARENT_LOGIN_URL` or `private-data/config.json` — both outside Git — and served to the page through `/api/students`. Nothing school-specific is committed.
+2. **Students keep their own sign-in link.** Codex's version replaced the existing "Sign in to Canvas" link with a parent-only route wherever the captured host matched. The students are the users; the ordinary link stays, and the parent link is offered next to it.
 
-PASS: npm run check, 59/59 behavior/security/capture tests on local Node 24.13.1. New regression covers both profiles, assignment links, Settings, and absence of generic SAAS login. NOT RUN: real parent authentication, real iPhone, published acceptance. Fixing the route does not prove the reported account-mapping or Google SAML errors resolved.
+The parent link appears only when the configured URL is https and its origin equals the captured Canvas origin, so a wrong or stale setting cannot send anyone to an unrelated site. Assignment deep links are unchanged. No capture, bundle, schema or official-action change.
 
-Next owner: Claude. Integrate this branch, verify preview parent button and original deep link for both profiles, publish through the existing release workflow to the shared URL, and verify published links. Preserve all existing private capture packaging. Report deployment revision separately from GitHub. Codex has not republished or changed Replit. No background execution implied.
+**This is a routing correction, not an authentication fix.** The reported parent-account problems (Canvas account not found; Google `app_not_configured_for_user`) are unresolved and are not addressed by changing which page the button opens.
+
+PASS: `npm run check` 60/60 (59 existing plus a server test covering missing, non-https, malformed, env and private-file configuration); Discover harness 24 combinations; Board harness 54 combinations. NOT RUN: real parent authentication, real iPhone.
+
+Next: Claude records the integration and deployment revisions here after the release. Publication of this specific change was authorized by Roberto in the Cowork session on 2026-09-20, after preview verification.
