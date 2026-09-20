@@ -1,6 +1,6 @@
 # Hallway single coordination state
 
-## Managed Sprint #7 — candidate implementation / Codex
+## Managed Sprint #7 — implemented, verified locally, ready for acceptance / Codex
 
 Roberto explicitly reassigned this bounded sprint to Codex while Claude works elsewhere. Codex owns implementation, delegation, integration and evidence; Claude receives the subsequent release handoff. Branch `codex/managed-sprint` starts at main `c8a7e40` and preserves the scorecard foundation `3b93af2` unchanged. GitHub issue #7 is the scope and coordination record. No main merge or production publish.
 
@@ -8,11 +8,19 @@ Two delegated writers: UI (public HTML/CSS) and tests/evaluation (test files and
 
 Implemented: compact persistent Board controls, secondary filter disclosure, class-tinted compact Map previews and drilldown, counted undated disclosure, context retention and larger-text navigation. No points/urgency inference, Canvas writes, server change or new capture. Home behavior is preserved except shared navigation readability. See [MANAGED-SPRINT.md](MANAGED-SPRINT.md) for reproducible commands and limits.
 
-Evidence before candidate commit: 59/59 source/regression checks reported PASS by test delegate; strengthened browser matrix caught and fixed initial Board-entry visibility at 320px/180% text. Final pinned scorecard and demo are next. Root actual-data local check PASS: two validated private bundles, exact rebuild from saved raw, 36 scope checks and two detail/back/native-link checks. Saved captures remain partial and are not a fresh source verification. No private records/screenshots in GitHub.
+Verified candidate code/tooling revision: `8b6f5c11f0e66cd0ea03fda5e64b0f096a916724` (subsequent handoff documentation does not change evaluated code).
+
+- PASS: root pinned evaluator on clean Windows checkout, 59/59 regressions, source checks, 54 phone/desktop × text-size × theme × view combinations, six additional active-filter cases and scope/keyboard/detail/undated/profile interactions. Stronger tests caught and fixed initial 320px/180% Week visibility and an active-filter label squeeze. No test relaxation.
+- PASS: root actual-data local browser check on candidate, both validated private bundles, exact rebuild from saved raw, 36 scope checks and two detail/back/native-link checks. No private records/screenshots emitted. Saved captures remain partial; no fresh Canvas/source ownership verification or recapture.
+- PASS: 15-step synthetic demo against the candidate local preview, with actual Map/Week/List content and scope changes checked in the viewport. Chromium phone frame, not real Safari.
+- Independent UI source review: root reviewed delegated UI code, identified Home reset focus and overlay-close concerns, verified fixes. Tests delegate separately exercised UI. Root authored some tooling; those tools have no external-provider review.
+- NOT RUN: human storytelling acceptance on the new candidate, real iPhone, new deployment/live verification. Automated scorecard stays INCOMPLETE because it does not import separate private/human/live evidence. Private check evidence supplements it rather than silently changing its result.
+
+Local artifacts outside Git: `hallway-managed-scorecard-verified/`, `hallway-managed-demo/managed-sprint.mp4`, and private smoke results described above. Reproduction instructions are in MANAGED-SPRINT.md. Preview listeners bind only to loopback: synthetic port4317, saved actual bundles port4318. These are local processes, not hosted previews or autonomous agents.
 
 S8: existing local Git Credential Manager/connector can write without Replit; Claude's separate environment remains unverified and cannot be configured through tools exposed here. Real iPhone acceptance, source recapture if needed, human storytelling acceptance and new deployment remain outstanding. The reported separate post-beta list has not been located. These are not green checks.
 
-Earlier checkpoints below are history where superseded.
+S1–S6 implemented and technically verified; S7 saved-data portion verified with current-source/device follow-ups; S8 external Claude capability remains open; S9 synthetic demo delivered. No coding agent remains running after this handoff. Claude can review/integrate the candidate, but no new publication is implied. Earlier checkpoints below are history where superseded.
 
 ## Current checkpoint: RELEASED September 19, 2026, evening Pacific / Claude
 
