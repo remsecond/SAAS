@@ -36,6 +36,11 @@ const assert=require('node:assert/strict');
   await page.locator('[data-preview="Map"]').click();assert(await page.locator('#view-preview').isVisible());
   await page.locator('[data-page="settings"]').click();assert(await page.locator('#text').isVisible());
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Shell overflow');
+  await page.locator('[data-page="work"]').click();await page.locator('#work-boom').click();assert.equal(await page.locator('#work-items .boomcard').count(),2);
+  await page.locator('#work-items .boomcard button').first().click();assert.equal(await page.locator('#shared-note').inputValue(),'Shared across views');await page.keyboard.press('Escape');
+  await page.locator('[data-page="courses"]').click();await page.locator('#courses-boom').click();await page.selectOption('#boom-course','Science');assert.equal(await page.locator('#course-items .boomcard').count(),2);
+  await page.locator('[data-page="prepare"]').click();assert.equal(await page.locator('#lucky').getAttribute('aria-disabled'),'true');
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Boom overflow');
   cases++;
  }
  await page.setViewportSize({width:390,height:844});await page.reload();

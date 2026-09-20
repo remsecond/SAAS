@@ -1,5 +1,8 @@
 # Hallway single coordination state
 
+Latest sandbox iteration: Boom is now a view in My work and Courses with shared details/notes. Daily study hall is the user-stated context, not a live schedule. Lucky is an inactive placeholder in Prepare. Reviewed prior assistant/Hallway comparison; see BOOM-VIEW-DIRECTION.md for boundaries and hero hypothesis. No production change. Origin/main cdaedd3 records Claude reporting Discover release 2025a9b; this is attributed release evidence, not a new live verification here.
+
+
 ## September 20, 2026 / Codex — discovery feed sandbox
 
 Latest sandbox update: Roberto authorized a shell beyond scrolling. Discover, My work, Prepare and Settings now have separate destinations. Shared records/details/notes connect entry points; Week/Map and future study tools remain labeled previews. Added a sparse assignment. Six phone/text combinations passed route, shared-note, sparse-source and preview checks as well as prior discovery coverage. Production unchanged.
