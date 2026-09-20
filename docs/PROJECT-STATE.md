@@ -1,5 +1,24 @@
 # Hallway single coordination state
 
+## Current reconciliation — September 20, 2026, 11:58 Pacific / Codex
+
+This checkpoint supersedes earlier current-state claims below. Codex owns coordination and the existing design fork; Claude remains production implementation/integration/release lead.
+
+- **Local Canvas candidate:** c3503e7 on codex/parent-canvas-login, based on cdaedd3. No blocking review findings. Local-only verification harness and this checkpoint follow that candidate; they do not change production code.
+- **GitHub:** fresh fetch still main cdaedd3; PR #11 open at c3503e7. Review and browser results posted directly on PR #11. A comment alone is not execution evidence.
+- **Published:** fresh HTTP nonempty inline script matches 2025a9b after line-ending/outer-whitespace normalization; generic /login remains, parent /login/saml/11 absent. This identifies client content, not server/deployment SHA. Both live snapshot objects deep-equal approved local copies, 25/33 assignments; capturedAt remains September 19 UTC (September 18 Pacific). No refresh.
+- **Claude coordination:** directly messaged existing Canvas login review updates task through signed-in browser. Observed acknowledgement and commands: Claude said it would integrate, verify real data, and stop at publication gate. Browser transport then closed twice. Later activity, Replit revision, integration completion and preview result are UNVERIFIED. No assertion of continued background execution.
+- **Canvas PASS / Windows local c3503e7:** npm run check 59/59. Independent browser reviewer: 240 actual-data screen checks (all 58 assignments, 320/390px, 100/180% text, Settings, original URLs, parent route, touch target, overflow, focus); synthetic repeat 72 checks. Parent clicks intercepted locally; no external authentication. Reproduce with test-support/canvas-handoff-browser-check.cjs and external Playwright; optional private directory argument never copied/logged.
+- **Design delivered locally:** codex/feed-sandbox 023a6f2 in hallway-feed-sandbox/experiments/feed/index.html. Prior dirty work preserved. Simple List / Boom Card List / Heatmap Card share records, filters, details and now all instruction/study/Canvas actions. Saved-note synchronization, return focus, narrow-dialog wrapping and Show matching assignments completed. Local commit only, not pushed/published. README and reproducible experiment harness updated.
+- **Design PASS / Windows local 023a6f2:** 320/390/430px × normal/larger text × both actual profiles × all three presentations. Save → journal → reopen, profile isolation, shared filters/order, checklist retention, source status unchanged, focus, no horizontal overflow. Material/original URLs checked. Private screenshot reviewed. Notes reset on reload, explicitly disclosed. Private captures/screenshots remain outside Git.
+- **NOT RUN:** real parent authentication (reported account/SAML errors unresolved), real iPhone Safari/Home Screen, post-release acceptance. Correct route is not proof of authentication.
+- **Precise blocker / next action:** reconnect browser extension to inspect Claude's prepared result and finish coordination directly; request sent to Roberto. Claude has imposed a final specific-change publish gate, so obtain its completed preview/evidence before requesting that approval. No publication performed. Experimental design has no publication authorization.
+
+Coordination: https://github.com/remsecond/SAAS/pull/11 ; Claude task https://claude.ai/cowork/cse_01F62FhSDF9fQNcHPSDTGrJd . Codex's bounded delegates finished; no Codex background work implied after this checkpoint.
+
+## Historical checkpoints
+
+
 ## RELEASED September 20, 2026, early Pacific / Claude — Discover live for both profiles
 
 Published app code = `2025a9b` (Codex's `800f7de` from PR #10, plus Claude's ordering fix). GitHub main = `2025a9b` (fast-forward from `fbbd45c`); branch `claude/discover`. Replit main = merge `537ec3a` over its own publish/asset commits, which stay off GitHub. Previous live code: `fbbd45c`. Rollback: republish Replit's previous deployment, or check out `fbbd45c` on Replit and republish. Private bundles and snapshot path untouched.
