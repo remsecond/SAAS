@@ -7,7 +7,7 @@ const { chromium } = pw;
 
 const args = process.argv.slice(2);
 const sbPath = args.find(a => !a.startsWith('--')) || 'storyboard.json';
-const headed = args.includes('--headed');
+const headed = args.includes('--headed'), framesOnly=args.includes('--frames-only');
 const outIdx = args.indexOf('--out');
 const out = path.resolve(outIdx > -1 ? args[outIdx + 1] : 'demo.mp4');
 fs.mkdirSync(path.dirname(out),{recursive:true});
@@ -50,7 +50,7 @@ document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform='scale
   const browser = await chromium.launch({ headless: !headed, executablePath: process.env.HALLWAY_CHROME_PATH || undefined });
   const ctx = await browser.newContext({
     viewport: { width: W, height: H }, deviceScaleFactor: 1,
-    recordVideo: headed ? undefined : { dir: videoDir, size: { width: W, height: H } },
+    recordVideo: (headed||framesOnly) ? undefined : { dir: videoDir, size: { width: W, height: H } },
     userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
   });
   // Allow our own app to be framed for the recording only (strip anti-framing headers).
@@ -78,7 +78,7 @@ document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform='scale
     el.style.setProperty('--sf', b.fg || (lum < 140 ? '#fff' : '#111')); }, bar);
   await page.waitForTimeout(800);
 
-  let capIdx = -1, failures = [];
+  let capIdx = -1, failures = [], frameFiles=[];
   const setCaption = async (text, sub) => { capIdx++;
     await page.evaluate(([t, s, i]) => { const c = document.getElementById('cap'); c.classList.add('hide');
       setTimeout(() => { c.innerHTML = t + (s ? '<div class="sub">' + s + '</div>' : ''); c.classList.remove('hide') }, 350);
@@ -119,12 +119,13 @@ document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform='scale
         });
         if (!shown) throw new Error('Expected content is outside viewport or obscured');
       }
-      await page.waitForTimeout(s.pause ?? 1600);
+      if(framesOnly){ await page.waitForTimeout(150); const file=path.join(videoDir,'step-'+String(frameFiles.length).padStart(3,'0')+'.png'); await page.screenshot({path:file}); frameFiles.push({file,duration:(s.pause??1600)/1000}); } else await page.waitForTimeout(s.pause ?? 1600);
     } catch (e) { await page.screenshot({path:path.join(path.dirname(out),`fail-${failures.length+1}.png`)}); failures.push(`${s.caption || JSON.stringify(s.tap)}: ${e.message.split('\n')[0]}`); console.error('STEP FAILED', failures.at(-1)); }
   }
-  fs.writeFileSync(out+'.results.json', JSON.stringify({revision,url:sb.url,phone:{width:PW,height:PH-50},checkedAt:new Date().toISOString(),steps:steps.length,failures},null,2));
+  fs.writeFileSync(out+'.results.json', JSON.stringify({revision,url:sb.url,phone:{width:PW,height:PH-50},checkedAt:new Date().toISOString(),steps:steps.length,failures,recordingMode:framesOnly?'storyboard frames (not continuous video)':'continuous'},null,2));
   await page.waitForTimeout(1200);
   const video = page.video(); await ctx.close(); await browser.close();
+  if(framesOnly&&frameFiles.length){const manifest=path.join(videoDir,'frames.txt');const lines=frameFiles.flatMap(f=>["file '"+f.file.replace(/\\/g,'/')+"'",'duration '+f.duration]);lines.push("file '"+frameFiles.at(-1).file.replace(/\\/g,'/')+"'");fs.writeFileSync(manifest,lines.join('\n'));execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',manifest,'-r','25','-c:v','libx264','-preset','ultrafast','-crf','20','-pix_fmt','yuv420p','-movflags','+faststart',out]);console.log('Saved storyboard frames',out);}
   if (video) { const webm = await video.path();
     execFileSync('ffmpeg', ['-y','-loglevel','error','-i',webm,'-c:v','libx264','-preset','fast','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',out]);
     console.log('Saved', out); }
