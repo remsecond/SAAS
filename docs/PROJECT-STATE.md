@@ -1,5 +1,16 @@
 # Hallway single coordination state
 
+## September 20, 2026 / Codex — discovery feed sandbox
+
+Latest sandbox update: Roberto authorized a shell beyond scrolling. Discover, My work, Prepare and Settings now have separate destinations. Shared records/details/notes connect entry points; Week/Map and future study tools remain labeled previews. Added a sparse assignment. Six phone/text combinations passed route, shared-note, sparse-source and preview checks as well as prior discovery coverage. Production unchanged.
+
+Roberto corrected the initial Feed/Focus experiment: the intended experience is browsing varied school stories, not a task checklist. Codex rebuilt the same isolated `experiments/feed/index.html` on `codex/feed-sandbox`. Seven fictional stories mix coursework, teacher updates, art prompts, feedback, dates, resources and school life. Minimal class/Saved controls, expandable context, in-memory saved items and private notes. No production code or student data changes, and no deployment.
+
+PASS: six local Chromium phone/text combinations (320/390/430px; normal/larger text), first-story visibility, overflow across all cards, saved/class filters, note retention, empty saved state, expand and honest Canvas handoff. Root visually inspected the full rendered 390px feed and the small/larger-text layout. Real-iPhone and human discovery acceptance NOT RUN. Previous Feed/Focus behavior is superseded. Next: Roberto tries the same local file; Claude remains production release lead. No background agent activity.
+
+Read-only release reconciliation by Codex delegate: remote main is `fbbd45cb0fc9afe758924400ecca41309306a65a`. Live CSS matches that revision byte-for-byte; live HTML matches after Replit injected script/newline normalization. This establishes current frontend assets, not server SHA or fresh student data. Managed Sprint `7768b16` remains separate and overlaps Claude's newer UI work. Do not overwrite main with that older branch. Next production owner: Claude, reconcile compact-control improvements against current main and verify integrated behavior. No deployment performed for this experiment. Older release records below are historical.
+
+
 ## Current checkpoint: RELEASED September 19, 2026, evening Pacific / Claude
 
 This block is the current state; everything below it is history.
