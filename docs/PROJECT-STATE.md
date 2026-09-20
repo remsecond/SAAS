@@ -1,5 +1,19 @@
 # Hallway single coordination state
 
+## Managed Sprint #7 — candidate implementation / Codex
+
+Roberto explicitly reassigned this bounded sprint to Codex while Claude works elsewhere. Codex owns implementation, delegation, integration and evidence; Claude receives the subsequent release handoff. Branch `codex/managed-sprint` starts at main `c8a7e40` and preserves the scorecard foundation `3b93af2` unchanged. GitHub issue #7 is the scope and coordination record. No main merge or production publish.
+
+Two delegated writers: UI (public HTML/CSS) and tests/evaluation (test files and evaluator). Root independently reviewed the UI diff and owns private-data smoke, synthetic preview/demo and documentation. A separate third reviewer could not be launched because the agent thread limit was reached; no independent external-provider review is claimed.
+
+Implemented: compact persistent Board controls, secondary filter disclosure, class-tinted compact Map previews and drilldown, counted undated disclosure, context retention and larger-text navigation. No points/urgency inference, Canvas writes, server change or new capture. Home behavior is preserved except shared navigation readability. See [MANAGED-SPRINT.md](MANAGED-SPRINT.md) for reproducible commands and limits.
+
+Evidence before candidate commit: 59/59 source/regression checks reported PASS by test delegate; strengthened browser matrix caught and fixed initial Board-entry visibility at 320px/180% text. Final pinned scorecard and demo are next. Root actual-data local check PASS: two validated private bundles, exact rebuild from saved raw, 36 scope checks and two detail/back/native-link checks. Saved captures remain partial and are not a fresh source verification. No private records/screenshots in GitHub.
+
+S8: existing local Git Credential Manager/connector can write without Replit; Claude's separate environment remains unverified and cannot be configured through tools exposed here. Real iPhone acceptance, source recapture if needed, human storytelling acceptance and new deployment remain outstanding. The reported separate post-beta list has not been located. These are not green checks.
+
+Earlier checkpoints below are history where superseded.
+
 ## Current checkpoint: RELEASED September 19, 2026, evening Pacific / Claude
 
 This block is the current state; everything below it is history.

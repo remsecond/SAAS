@@ -25,8 +25,14 @@ check('automated-regressions',process.execPath,['--test','security.test.cjs','ui
 let browserAvailable=false;try{require.resolve(process.env.HALLWAY_PLAYWRIGHT_PATH||'playwright',{paths:[repo]});browserAvailable=true}catch{}
 if(browserAvailable)check('browser-smoke',process.execPath,['test-support/board-browser-check.cjs',path.join(out,'browser')]);
 else report.checks.push({id:'browser-smoke',status:'NOT RUN',reason:'Provide Playwright via HALLWAY_PLAYWRIGHT_PATH and Chrome via HALLWAY_CHROME_PATH.'});
+const browserEvidence=path.join(out,'browser','results.json');
+if(report.checks.find(c=>c.id==='browser-smoke')?.status==='PASS'&&fs.existsSync(browserEvidence)){
+  const result=JSON.parse(fs.readFileSync(browserEvidence,'utf8'));
+  report.browserAcceptance={evidence:'browser/results.json',scope:result.scope,checks:result.checks||[]};
+  for(const c of result.checks||[])report.checks.push({id:c.id,status:c.status,log:'browser/results.json'});
+}
 for(const [id,reason] of [
- ['phone-comparison-usability','Human acceptance required: useful content on arrival; change scope while viewing results; no scroll-up/down comparison loop. Existing overflow checks do not establish this.'],
+ ['phone-comparison-usability','Human acceptance still required: judge storytelling, scanability and confidence on the phone. Automated geometry and interaction checks cover visible content/comparison mechanics, not whether the overview helps a student decide.'],
  ['actual-data-preview','Verify both profiles privately in the intended preview; synthetic tests do not establish capture ownership, freshness or completeness.'],
  ['real-iphone','Safari/Home Screen, larger text, touch and native Canvas sign-in must be checked on a real device.'],
  ['deployment-identity-and-live-smoke','This runner does not contact production. Verify intended release commit, deployment identity, both live views and recovery separately.']

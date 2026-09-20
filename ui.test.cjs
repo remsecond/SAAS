@@ -250,7 +250,7 @@ test('course and assessment filters retain selection across detail navigation',a
   await ui.click({period:'all'});
   ui.event('change',{id:'course',value:'c502',dataset:{}});
   const expected=ui.run("data.filter(d=>d.courseId==='c502').length");
-  assert.match(ui.html(),new RegExp(expected+' matching item'));
+  assert.match(ui.html(),new RegExp(expected+' item'));
   await ui.click({go:'a9004'});
   await ui.click({back:'1'});
   assert.equal(ui.run('course'),'c502');
@@ -260,7 +260,7 @@ test('course and assessment filters retain selection across detail navigation',a
   assert.match(ui.html(),/class="board-map"/);
   await ui.click({focus:'assessments'});
   ui.event('change',{id:'course',value:'all',dataset:{}});
-  assert.match(ui.html(),/1 matching item /);
+  assert.match(ui.html(),/1 item /);
   await ui.click({home:'1'});
   assert.equal(ui.run('course'),'all');
   assert.equal(ui.run('period'),'7');
@@ -359,7 +359,7 @@ test('Home leads with the next deadline, then upcoming work; earlier items sit i
   assert.match(html,/See all unfinished work \(3 dated, 1 with no date\)/);
   await ui.click({seeAttention:'1'});
   assert.equal(ui.run('tab'),'Board');assert.equal(ui.run('focus'),'attention');assert.equal(ui.run('period'),'all');
-  assert.match(ui.html(),/4 matching items/);
+  assert.match(ui.html(),/4 items/);
   const board=ui.html();
   assert(board.lastIndexOf('data-go="a9002"')<board.lastIndexOf('data-go="a9001"')&&board.lastIndexOf('data-go="a9003"')<board.lastIndexOf('data-go="a9006"'),'board is soonest first with undated last');
   await ui.click({home:'1'});
@@ -438,7 +438,7 @@ test('undated work stays visible and an empty filter offers a reset',async()=>{
   await ui.click({tab:'Board'});
   assert.match(ui.html(),/data-go="a9006"/);
   ui.event('change',{id:'course',value:'absent-course',dataset:{}});
-  assert.match(ui.html(),/0 matching items/);
+  assert.match(ui.html(),/0 items/);
   assert.match(ui.html(),/Nothing matches these filters/);
   await ui.click({reset:'1'});
   assert.match(ui.html(),/data-go="a9006"/);
@@ -651,7 +651,7 @@ test('Board views share scope, keep undated and earlier records reachable, and n
   const expected=ids(), states=ui.run('JSON.stringify(data.map(d=>d.submission.state))');
   for(const view of ['list','week','map']) {await ui.click({boardView:view});assert.deepEqual(ids(),expected);assert.match(ui.html(),/No captured date/);assert.match(ui.html(),/Earlier items/);}
   assert.doesNotMatch(ui.html(),/Grade impact|Size by points/);
-  await ui.click({boardSlice:'undated'});assert.deepEqual(ids(),['a9006']);assert.match(ui.html(),/Selected: No captured date/);
+  await ui.click({boardSlice:'undated'});assert.deepEqual(ids(),['a9006']);assert.match(ui.html(),/data-board-clear-slice="1">No captured date/);
   await ui.click({boardView:'map'});assert.deepEqual(ids(),['a9006']);
   await ui.click({period:'7'});assert.equal(ui.run('boardSlice'),'all');
   await ui.click({boardSlice:'earlier'});assert(ids().includes('a9002'));assert(!ids().includes('a9004'),'submitted earlier item remains outside the original seven-day filter');
@@ -678,7 +678,48 @@ test('Board calendar uses school dates across UTC midnight and DST; day filters 
 test('Board count and week cells honor class and assessment filters; map detail returns to map',async()=>{
   const ui=await createUI();await ui.click({tab:'Board'});await ui.click({period:'all'});
   ui.event('change',{id:'course',value:'c501',dataset:{}});await ui.click({focus:'assessments'});
-  for(const view of ['list','week','map']) {await ui.click({boardView:view});assert.equal(ui.run('boardItems().length'),1);assert.match(ui.html(),/1 matching item/);}
+  for(const view of ['list','week','map']) {await ui.click({boardView:view});assert.equal(ui.run('boardItems().length'),1);assert.match(ui.html(),/1 item/);}
   await ui.click({go:'a9003'});await ui.click({back:'1'});assert.equal(ui.run('boardView'),'map');assert.equal(ui.run('course'),'c501');assert.equal(ui.run('focus'),'assessments');assert.match(ui.html(),/board-map/);
   ui.event('change',{id:'course',value:'c502',dataset:{}});assert.match(ui.html(),/Nothing matches these filters/);assert.doesNotMatch(ui.html(),/No unfinished work/);
+});
+
+
+
+test('Map previews are bounded, class drilldown reaches every dated record, and no status is inferred',async()=>{
+  const ui=await createUI();await ui.click({tab:'Board'});ui.event('change',{id:'board-period',value:'all',dataset:{}});await ui.click({boardView:'map'});
+  const states=ui.run('JSON.stringify(data.map(d=>d.submission))');
+  const tiles=html=>[...html.matchAll(/class="map-tile[^>]*data-go="([^"]+)"/g)].map(m=>m[1]);
+  assert.equal(tiles(ui.html()).length,5,'all-class overview caps the five-item class at three; second class has two dated items');
+  assert.match(ui.html(),/data-map-course="c501">Explore class · 5 dated items/);
+  assert(!tiles(ui.html()).includes('a9006'),'undated work belongs to the separate disclosure');
+  assert.match(ui.html(),/id="board-undated"[^>]*><summary>No captured date \(1\)/);
+  await ui.click({mapCourse:'c501'});
+  const expected=JSON.parse(ui.run("JSON.stringify(boardItems().filter(d=>d.dueAt).map(d=>d.id))"));
+  assert.deepEqual(tiles(ui.html()),expected);assert.equal(expected.length,5);assert.equal(ui.run('boardView'),'map');
+  assert.equal(ui.run('course'),'c501');assert.doesNotMatch(ui.html(),/class="class-label"/,'compact map does not repeat class names per tile');
+  await ui.click({go:expected[3]});await ui.click({back:'1'});assert.deepEqual(tiles(ui.html()),expected);
+  assert.equal(ui.run('JSON.stringify(data.map(d=>d.submission))'),states);
+});
+
+test('Undated disclosure retains detail-return context and range/profile changes clear its state',async()=>{
+  const b=bundleFor('max'),tpl=b.assignments.find(a=>!a.dueAt);
+  for(let i=0;i<8;i++)b.assignments.push({...structuredClone(tpl),id:'undated-'+i,title:'SYNTHETIC undated '+i});
+  const ui=await createUI({bundles:{max:b,adrian:bundleFor('adrian')}});await ui.click({tab:'Board'});await ui.click({boardView:'map'});
+  assert.match(ui.html(),/No captured date \(9\)/);assert.equal(ui.run('boardUndatedOpen'),false);
+  ui.event('toggle',{id:'board-undated',open:true});await ui.click({go:'undated-7'});await ui.click({back:'1'});
+  assert.equal(ui.run('boardUndatedOpen'),true);assert.match(ui.html(),/id="board-undated"[^>]* open>/);
+  ui.event('change',{id:'board-period',value:'30',dataset:{}});assert.equal(ui.run('boardUndatedOpen'),false);
+  await ui.click({boardSlice:'undated'});assert.equal(ui.run('boardItems().length'),9);assert.match(ui.html(),/id="board-undated"[^>]* open>/);
+  await ui.click({profiles:'1'});await ui.click({student:'adrian'});await ui.settle();assert.equal(ui.run('boardUndatedOpen'),false);assert.equal(ui.run('boardSlice'),'all');assert.doesNotMatch(ui.html(),/SYNTHETIC undated 7/);
+});
+
+test('Secondary filters close after application and Board selectors preserve independent Home controls',async()=>{
+  const ui=await createUI();await ui.click({tab:'Board'});await ui.click({boardFilters:'1'});
+  assert.equal(ui.run('boardFiltersOpen'),true);assert.match(ui.html(),/aria-expanded="true" aria-controls="board-filters"/);
+  await ui.click({focus:'attention'});assert.equal(ui.run('boardFiltersOpen'),false);assert.equal(ui.run('focus'),'attention');
+  ui.event('change',{id:'board-period',value:'all',dataset:{}});await ui.click({boardSlice:'earlier'});
+  ui.event('change',{id:'board-period',value:'30',dataset:{}});assert.equal(ui.run('boardSlice'),'all');assert.equal(ui.run('period'),'30');
+  for(const view of ['map','week','list']){await ui.click({boardView:view});assert.equal(ui.run('focus'),'attention');assert.equal(ui.run('period'),'30');}
+  await ui.click({boardFilters:'1'});await ui.click({reset:'1'});assert.equal(ui.run('boardFiltersOpen'),false);assert.equal(ui.run('period'),'all');
+  await ui.click({home:'1'});await ui.click({period:'30'});await ui.click({reset:'1'});assert.equal(ui.run('period'),'7');assert.equal(ui.focused(),'[data-reset]');
 });
