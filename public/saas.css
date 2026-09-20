@@ -205,3 +205,12 @@ body[data-theme=light] .map-tile{background:#fff}
 .map-tile .status-line{font-size:.75em;margin-top:2px}
 .phone.large-text .map-tile{flex-basis:100%}
 @media(prefers-reduced-motion:reduce){.map-tile,.wk-bar{transition:none!important;animation:none!important}}
+
+/* Discover: source-led previews, one shared assignment destination, no image or summary filler. */
+.discover-controls{margin:0 0 16px}.discover-controls .filterselect{margin:0}.discover-controls .result-count{margin:8px 0}
+.discover-card{padding:16px;border:1px solid var(--line);border-left:4px solid var(--edge);background:var(--bg);margin:0 0 18px;overflow-wrap:anywhere}
+.discover-title{font-size:1.2em;line-height:1.3;margin:8px 0}.discover-card .due{margin:8px 0}.discover-card .status-p{margin:8px 0 12px}
+.discover-excerpt,.discover-feedback{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.discover-excerpt p:not(.eyebrow),.discover-feedback blockquote{font-size:.95em;line-height:1.5;margin:8px 0}.discover-feedback blockquote{border-left:3px solid var(--line);padding-left:12px}.discover-materials{font-size:.85em;line-height:1.5;background:var(--panel);padding:12px}.discover-card .action{margin-top:12px}.discover-end{padding:16px 0;font-size:.9em;line-height:1.5;color:var(--muted)}
+nav button{min-width:0;padding-left:2px;padding-right:2px;font-size:.72em;overflow-wrap:normal}
+.phone.large-text nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.phone.large-text nav button{overflow-wrap:normal;word-break:normal;font-size:.65em;min-height:52px}.phone.large-text .content{padding-bottom:160px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

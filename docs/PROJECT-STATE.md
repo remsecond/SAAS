@@ -1,5 +1,14 @@
 # Hallway single coordination state
 
+## September 20 / real-coursework Discover candidate — Codex
+
+Roberto explicitly requested moving from sandbox to actual coursework so the boys can try the existing shared URL. Codex owns this bounded candidate on codex/real-discover from main fbbd45c; Claude remains release operator/integration lead. Added Discover using existing validated bundle and shared assignment detail; preserved Home/Board/Courses/Settings. No server, private capture, or official-action changes. Sandbox PR #9 stays separate.
+
+PASS: 57 regressions/source/security checks; existing Board Chromium 54 combinations; Discover synthetic and private saved captures each 24 combinations (both profiles, 320/390px, 100/180% text, three themes), counts/filter/shared detail/return focus/profile reset. Private captures validated locally, remain frozen September 18 Pacific (25/33 assignments). No private records emitted or committed. Real-iPhone and post-deployment checks NOT RUN.
+
+Publication is requested for this outcome, but not performed: Replit browser bridge returned Transport closed and no Replit API tool is available. Concrete operator handoff: docs/DISCOVER-RELEASE.md. GitHub delivery is not Claude acknowledgement. Do not tell students this candidate is live until deployment verified.
+
+
 ## Current checkpoint: RELEASED September 19, 2026, evening Pacific / Claude
 
 This block is the current state; everything below it is history.
