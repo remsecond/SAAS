@@ -1,0 +1,138 @@
+{
+  "url": "http://127.0.0.1:4317",
+  "brand": "Hallway \u00b7 synthetic demo",
+  "title": "Know what you're walking into.",
+  "accent": "#a6192e",
+  "phone": {
+    "width": 390,
+    "height": 844
+  },
+  "steps": [
+    {
+      "caption": "A phone-first look at captured coursework.",
+      "sub": "Clearly synthetic test records. Not a live school connection.",
+      "pause": 1400
+    },
+    {
+      "caption": "Choose your own starting point.",
+      "tap": {
+        "selector": "[data-student=\"max\"]"
+      },
+      "pause": 1200
+    },
+    {
+      "caption": "The work and its controls share one screen.",
+      "tap": {
+        "selector": "[data-tab=\"Board\"]"
+      },
+      "pause": 3000,
+      "expect": {
+        "selector": ".board-results .tile"
+      }
+    },
+    {
+      "caption": "Class color gives the overview structure.",
+      "tap": {
+        "selector": "[data-board-view=\"map\"]"
+      },
+      "pause": 3500,
+      "expect": {
+        "selector": ".map-tile"
+      }
+    },
+    {
+      "caption": "Narrow to a class without leaving the results.",
+      "select": {
+        "selector": "#course",
+        "value": "c501"
+      },
+      "expect": {
+        "selector": ".map-tile"
+      },
+      "pause": 3200
+    },
+    {
+      "caption": "Change the date range right here.",
+      "select": {
+        "selector": "#board-period",
+        "value": "all"
+      },
+      "expect": {
+        "selector": ".map-tile"
+      },
+      "pause": 3000
+    },
+    {
+      "caption": "Compare the same selection by day.",
+      "tap": {
+        "selector": "[data-board-view=\"week\"]"
+      },
+      "pause": 3500,
+      "expect": {
+        "selector": ".week-day"
+      }
+    },
+    {
+      "caption": "Or read it as a list. Your scope stays put.",
+      "tap": {
+        "selector": "[data-board-view=\"list\"]"
+      },
+      "pause": 3000,
+      "expect": {
+        "selector": ".board-results .tile"
+      }
+    },
+    {
+      "caption": "Open an item for its instructions and recorded status.",
+      "tap": {
+        "selector": ".board-results .tile"
+      },
+      "pause": 2500
+    },
+    {
+      "caption": "Back to the same view and selection.",
+      "tap": {
+        "selector": "[data-back]"
+      },
+      "pause": 2000
+    },
+    {
+      "caption": "Undated work stays reachable in one counted group.",
+      "select": {
+        "selector": "#course",
+        "value": "all"
+      },
+      "pause": 1000
+    },
+    {
+      "reveal": {
+        "selector": "#board-undated summary"
+      },
+      "expect": {
+        "selector": "#board-undated summary"
+      },
+      "pause": 2200
+    },
+    {
+      "caption": "Expand when you want to see those items.",
+      "tap": {
+        "selector": "#board-undated summary"
+      },
+      "pause": 2600
+    },
+    {
+      "caption": "More context. Less hunting.",
+      "tap": {
+        "selector": "[data-board-view=\"map\"]"
+      },
+      "pause": 2500,
+      "expect": {
+        "selector": ".map-tile"
+      }
+    },
+    {
+      "caption": "In. Out. Laugh. Feel settled.",
+      "pause": 2500
+    }
+  ]
+}
