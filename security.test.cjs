@@ -241,5 +241,8 @@ test('parent sign-in configuration stays outside Git and is validated before it 
   assert.equal((await read({env:{HALLWAY_PARENT_LOGIN_URL:'https://canvas.test.example/login/saml/99'}})).parentLogin,'https://canvas.test.example/login/saml/99');
   fs.writeFileSync(path.join(dir,'config.json'),JSON.stringify({parentLoginUrl:'https://canvas.test.example/login/saml/98'}));
   assert.equal((await read({env:{}})).parentLogin,'https://canvas.test.example/login/saml/98','private config file is read');
+  assert.equal((await read({snapshotDir:undefined,env:{HALLWAY_SNAPSHOT_DIR:dir}})).parentLogin,'https://canvas.test.example/login/saml/98','deployment resolves the config beside the bundles');
+  fs.writeFileSync(path.join(dir,'config.json'),'{ broken');
+  assert.equal((await read({env:{}})).parentLogin,null,'a broken config file never breaks the app');
   assert.ok(!fs.readFileSync('.gitignore','utf8').split('\n').every(l=>!l.includes('private-data')),'private-data stays git-ignored');
 });

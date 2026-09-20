@@ -14,8 +14,11 @@ const {loadCollection} = require('./personality.cjs');
 // the parent link is not offered; the students' own sign-in link is unaffected.
 function parentLoginUrl({snapshotDir,env}) {
   let value=env&&env.HALLWAY_PARENT_LOGIN_URL;
-  if(!value&&snapshotDir) try {
-    value=JSON.parse(fs.readFileSync(path.join(snapshotDir,'config.json'),'utf8')).parentLoginUrl;
+  // Same directory the bundles come from, resolved the same way, so production
+  // (which passes no snapshotDir) reads the deployed private folder too.
+  const dir=path.resolve(snapshotDir||(env&&env.HALLWAY_SNAPSHOT_DIR)||path.join(__dirname,'private-data','snapshots'));
+  if(!value) try {
+    value=JSON.parse(fs.readFileSync(path.join(dir,'config.json'),'utf8')).parentLoginUrl;
   } catch { value=null; }
   try { const u=new URL(String(value)); return u.protocol==='https:'?u.href:null; } catch { return null; }
 }
