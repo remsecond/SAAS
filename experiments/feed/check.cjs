@@ -26,10 +26,20 @@ const assert=require('node:assert/strict');
    await story.locator('summary').click();
   }
   await page.getByRole('button',{name:'Back to top'}).click();assert.equal(await page.evaluate(()=>document.activeElement.id),'class');
+  await page.locator('[data-page="work"]').click();
+  await page.locator('#work-items .workrow').first().click();assert(await page.locator('#item-detail').isVisible());
+  await page.locator('#shared-note').fill('Shared across views');await page.locator('#close-detail').click();
+  await page.locator('[data-page="discover"]').click();await page.locator('.detail-open').first().click();
+  assert.equal(await page.locator('#shared-note').inputValue(),'Shared across views');await page.keyboard.press('Escape');
+  await page.locator('[data-page="prepare"]').click();assert(await page.locator('#prepare-items .workrow').count()>0);
+  await page.locator('[data-page="work"]').click();await page.locator('#work-items .workrow').last().click();assert(await page.locator('#detail-body').getByText('No due date provided.',{exact:true}).isVisible());await page.keyboard.press('Escape');
+  await page.locator('[data-preview="Map"]').click();assert(await page.locator('#view-preview').isVisible());
+  await page.locator('[data-page="settings"]').click();assert(await page.locator('#text').isVisible());
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Shell overflow');
   cases++;
  }
  await page.setViewportSize({width:390,height:844});await page.reload();
- if(process.env.HALLWAY_FEED_SCREENSHOT)await page.screenshot({path:process.env.HALLWAY_FEED_SCREENSHOT,fullPage:true});
- assert.deepEqual(errors,[]);console.log(`PASS ${cases} phone/text combinations: visible first story, overflow, mixed cards, class/saved filtering, note retention, empty saved state, expandable sources, honest Canvas handoff; no page errors.`);
+ if(process.env.HALLWAY_FEED_SCREENSHOT)await page.screenshot({path:process.env.HALLWAY_FEED_SCREENSHOT,fullPage:false});
+ assert.deepEqual(errors,[]);console.log(`PASS ${cases} phone/text combinations: visible first story, overflow, mixed cards, class/saved filtering, note retention, empty saved state, expandable sources, honest Canvas handoff, shell routes, shared detail/notes, sparse record, preview labels; no page errors.`);
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
