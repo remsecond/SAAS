@@ -6,7 +6,9 @@ process.chdir(__dirname);
 function walk(dir) {return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
 for(const file of walk('public')) {
   const source=fs.readFileSync(file,'utf8');
-  assert(!/sk-proj-|appgprj_|saas\.instructure|Zeinemann/.test(source),`${file}: private source identifiers absent`);
+  // Allow only the public school origin in the explicit parent-login host guard.
+  const privateScan=source.replace("o==='https://saas.instructure.com'",'');
+  assert(!/sk-proj-|appgprj_|saas\.instructure|Zeinemann/.test(privateScan),`${file}: private source identifiers absent`);
   if(file.endsWith('.html')) for(const match of source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new Function(match[1]);
   if(file.endsWith('.js'))new Function(source);
 }

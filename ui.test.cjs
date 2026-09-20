@@ -725,3 +725,21 @@ test('Discover lists every captured record for the profile, dated first, and sha
   await ui.click({go:'a9006'});assert.match(ui.html(),/detail-title/);
   await ui.click({back:'1'});assert.equal(ui.run('tab'),'Discover');
 });
+
+
+test('SAAS parent route is explicit, preserves original links and appears in Settings for both profiles',async()=>{
+  for(const id of ['max','adrian']){
+    const b=bundleFor(id);
+    for(const s of b.sources)if(s.url){const u=new URL(s.url);s.url='https://saas.instructure.com'+u.pathname+u.search;}
+    const ui=await createUI({bundles:{[id]:b},remembered:id});
+    const a=b.assignments[0],original=b.sources.find(s=>s.id===a.sourceId).url;
+    await ui.click({go:a.id});
+    assert.ok(ui.html().includes('href="https://saas.instructure.com/login/saml/11"'));
+    assert.ok(ui.html().includes('href="'+original+'"'));
+    assert.ok(!ui.html().includes('href="https://saas.instructure.com/login"'));
+    assert.match(ui.html(),/Students: use your usual school Canvas sign-in/);
+    assert.match(ui.html(),/does not change your Canvas account/);
+    await ui.click({back:'1'});await ui.click({tab:'Settings'});
+    assert.ok(ui.html().includes('href="https://saas.instructure.com/login/saml/11"'));
+  }
+});

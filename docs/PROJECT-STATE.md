@@ -210,3 +210,13 @@ Older RELEASE/TEST_READINESS/HANDOFF sections contain superseded switcher, icon,
 No standing publication approval. Next owner: Claude for scope/integration review; Codex for independent review of returned implementation. Limitation: shared GitHub delivery is supported; Claude acknowledgement/wakeup is not confirmed.
 
 Supporting records: [decisions](DECISIONS.md), [operating model](OPERATING-MODEL.md), [direction](PRODUCT-DIRECTION-BEST-OF-BOTH.md), [kickoff](CODEX-ORCHESTRATOR-KICKOFF.md), [personality](../content/PERSONALITY-SPEC.md). Detailed earlier QA and consolidated report remain outside public Git alongside private evidence.
+
+## 2026-09-20 parent Canvas handoff correction — ready for Claude
+
+Codex prepared a bounded fix on codex/parent-canvas-login, based on cdaedd3. Claude remains integration/release lead. The live app was directly checked this session and still uses the generic /login route. The school email supplied by Roberto specifies /login/saml/11 for SAAS parents.
+
+The change applies only to the exact SAAS Canvas origin, labels parent access explicitly, retains original assignment URLs, and tells students to use their usual school sign-in. Other origins retain existing behavior; absent source links do not invent login links. No captures or credentials changed. The private-source scan permits only the explicit public origin comparison; other source-identifier checks remain.
+
+PASS: npm run check, 59/59 behavior/security/capture tests on local Node 24.13.1. New regression covers both profiles, assignment links, Settings, and absence of generic SAAS login. NOT RUN: real parent authentication, real iPhone, published acceptance. Fixing the route does not prove the reported account-mapping or Google SAML errors resolved.
+
+Next owner: Claude. Integrate this branch, verify preview parent button and original deep link for both profiles, publish through the existing release workflow to the shared URL, and verify published links. Preserve all existing private capture packaging. Report deployment revision separately from GitHub. Codex has not republished or changed Replit. No background execution implied.
