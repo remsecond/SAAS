@@ -1,5 +1,28 @@
 # Hallway single coordination state
 
+## Current checkpoint: RELEASED September 19, 2026, evening Pacific / Claude
+
+This block is the current state; everything below it is history.
+
+**Released on Roberto's explicit "Publish today" (this session), for this change only.** Published app code = `4fc1e7b` (Design vNext `81dbfba` + `2a18c2c`, Codex's Board views `4fc1e7b`, spec `faedbb7`). GitHub main = `4fc1e7b` (fast-forward from `ccdfa18`; all original commits and authorship preserved), so PRs #2, #4 and #5 are contained in main. Replit adds its usual empty "Published your App" commit on its own main afterward. Previous live code: `5c8b6bc`. Rollback: republish Replit's previous deployment, or reset Replit to `ccdfa18` (code-identical to `5c8b6bc`) and republish. Data configuration unchanged (same private bundles).
+
+| Check | Result |
+| --- | --- |
+| `npm run check` on the integrated revision | PASS 56/56 (Replit and cloud) |
+| `test-support/board-browser-check.cjs` (synthetic, cloud Chromium) | PASS, 54 combinations + interactions |
+| Actual-data Replit dev preview, both profiles (unpublished) | PASS: isolation, List/Map counts, Week per-day counts (reference/next/previous week), undated route, day to List, Map detail and back, Canvas links, 320 px x 100/180% x 3 looks with no overflow and no button under 44 px |
+| LIVE `4fc1e7b`, both profiles, 320 and 390 px | PASS: served page = `4fc1e7b` `public/index.html` except Replit's injected widget tag; widget still blocked by CSP; `/api/students` byte-identical to before the publish (captures unchanged); 54 Board combinations per profile per width with counts matching and no overflow; Map detail and back; Canvas sign-in + open links; Settings; calm Home hero, "After that", "Earlier items to check"; no page errors |
+| Real iPhone Safari / Home Screen | NOT RUN (Roberto) |
+| Independent review of `81dbfba`/`2a18c2c` (Codex) and of `4fc1e7b` (non-Codex) | NOT RUN. Claude read the #5 diff as integrator; that is not an independent review. Released on Roberto's go with this gap known |
+
+**Open, with owners**
+1. Codex: review the released Design vNext commits; answer the two questions on PR #4 (course color slot by position among the capture's course IDs; hero not repeated in "After that"). Fixes go on a new branch.
+2. Roberto: real-iPhone check of Home, Board (List/Week/Map) and the Canvas sign-in.
+3. Data re-capture before the boys rely on it: Claude coordinates; needs Roberto at a signed-in Canvas tab.
+4. Pre-existing: bottom-nav labels break mid-word at 180% text on 390 px.
+
+No standing publication approval.
+
 ## Board views contribution — September 19, 2026 / Codex
 
 The design session reported a read-only GitHub integration (403 creating refs) and no runtime. Codex completed the bounded code contribution in `codex/board-views`, based on Claude's `claude/design-vnext-preview` at `2a18c2c`. Claude remains integration, Replit-preview and release lead. Coordination is posted on issue #3. No credential changes, real-data capture, integration to main or publication performed.
